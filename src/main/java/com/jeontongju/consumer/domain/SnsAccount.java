@@ -19,6 +19,7 @@ import lombok.NoArgsConstructor;
 @Builder
 @Getter
 public class SnsAccount extends BaseEntity {
+
     @Id
     @Column(name = "sns_unique_id")
     private String snsUniqueId;

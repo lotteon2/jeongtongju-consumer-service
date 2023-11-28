@@ -2,10 +2,10 @@ package com.jeontongju.consumer.domain;
 
 import static javax.persistence.GenerationType.IDENTITY;
 
+import com.jeontongju.consumer.domain.common.BaseEntity;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.OneToOne;
@@ -21,7 +21,8 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @Builder
 @Getter
-public class SubscriptionKakao {
+public class SubscriptionKakao extends BaseEntity {
+
     @Id
     @GeneratedValue(strategy = IDENTITY)
     @Column(name = "kakao_subscription_id")

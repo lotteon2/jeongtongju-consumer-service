@@ -24,6 +24,7 @@ import lombok.NoArgsConstructor;
 @Builder
 @Getter
 public class Subscription extends BaseEntity {
+
     @Id
     @GeneratedValue(strategy = IDENTITY)
     @Column(name = "subscription_id")
@@ -44,9 +45,6 @@ public class Subscription extends BaseEntity {
     @Column(name = "payment_type", nullable = false)
     private PaymentTypeEnum paymentType;
 
-    @OneToOne(mappedBy = "subscription", cascade = CascadeType.REMOVE)
+    @OneToOne(mappedBy = "subscription")
     private SubscriptionKakao subscriptionKakao;
-
-    @OneToOne(mappedBy = "subscription", cascade = CascadeType.REMOVE)
-    private SubscriptionNaver subscriptionNaver;
 }

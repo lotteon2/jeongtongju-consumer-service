@@ -23,6 +23,7 @@ import lombok.NoArgsConstructor;
 @Builder
 @Getter
 public class Consumer extends BaseEntity {
+
     @Id
     @GeneratedValue(strategy = IDENTITY)
     @Column(name = "consumer_id")
@@ -67,9 +68,12 @@ public class Consumer extends BaseEntity {
     @Builder.Default
     private Boolean isDeleted = false;
 
-    @OneToMany(mappedBy = "consumer", cascade = CascadeType.REMOVE)
+    @OneToMany(mappedBy = "consumer")
     private List<SnsAccount> snsAccountList;
 
-    @OneToMany(mappedBy = "consumer", cascade = CascadeType.REMOVE)
+    @OneToMany(mappedBy = "consumer")
     private List<Address> addressList;
+
+    @OneToMany(mappedBy = "consumer")
+    private List<PointHistory> pointHistoryList;
 }

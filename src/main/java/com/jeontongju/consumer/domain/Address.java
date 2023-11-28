@@ -22,6 +22,7 @@ import lombok.NoArgsConstructor;
 @Builder
 @Getter
 public class Address extends BaseEntity {
+
     @Id
     @GeneratedValue(strategy = IDENTITY)
     @Column(name = "address_id")
