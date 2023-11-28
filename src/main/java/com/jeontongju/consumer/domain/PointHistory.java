@@ -23,18 +23,18 @@ import lombok.NoArgsConstructor;
 @Getter
 public class PointHistory {
 
-    @Id
-    @GeneratedValue(strategy = IDENTITY)
-    @Column(name = "trade_id")
-    private Long tradeId;
+  @Id
+  @GeneratedValue(strategy = IDENTITY)
+  @Column(name = "trade_id")
+  private Long tradeId;
 
-    @Column(name = "trade_point", nullable = false)
-    private Long tradePoint;
+  @Column(name = "trade_point", nullable = false)
+  private Long tradePoint;
 
-    @Column(name = "trade_path", nullable = false)
-    private TradePathEnum tradePathEnum;
+  @Column(name = "trade_path", nullable = false)
+  private TradePathEnum tradePathEnum;
 
-    @ManyToOne
-    @JoinColumn(name = "consumer_id")
-    private Consumer consumer;
+  @ManyToOne
+  @JoinColumn(name = "consumer_id")
+  private Consumer consumer;
 }

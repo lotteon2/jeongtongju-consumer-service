@@ -15,23 +15,24 @@ import org.springframework.web.servlet.mvc.method.annotation.ResponseEntityExcep
 @RequiredArgsConstructor
 public class ConsumerRestControllerAdvice extends ResponseEntityExceptionHandler {
 
-    private static final String METHOD_ARGUMENT_VALID_EXCEPTION_MESSAGE = "VALIDATION 오류";
+  private static final String METHOD_ARGUMENT_VALID_EXCEPTION_MESSAGE = "VALIDATION 오류";
 
-    @Override
-    protected ResponseEntity<Object> handleMethodArgumentNotValid(
-        MethodArgumentNotValidException e,
-        HttpHeaders headers,
-        HttpStatus status,
-        WebRequest request
-    ) {
-        ErrorFormat body = ErrorFormat.builder()
+  @Override
+  protected ResponseEntity<Object> handleMethodArgumentNotValid(
+      MethodArgumentNotValidException e,
+      HttpHeaders headers,
+      HttpStatus status,
+      WebRequest request) {
+    ErrorFormat body =
+        ErrorFormat.builder()
             .code(status.value())
             .message(status.name() + ": " + METHOD_ARGUMENT_VALID_EXCEPTION_MESSAGE)
-            .detail(e.getBindingResult().getFieldError() == null ? e.getMessage()
-                : e.getBindingResult().getFieldError().getDefaultMessage())
+            .detail(
+                e.getBindingResult().getFieldError() == null
+                    ? e.getMessage()
+                    : e.getBindingResult().getFieldError().getDefaultMessage())
             .build();
 
-        return ResponseEntity.status(status.value()).body(body);
-    }
-
+    return ResponseEntity.status(status.value()).body(body);
+  }
 }

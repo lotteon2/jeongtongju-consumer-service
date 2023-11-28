@@ -12,19 +12,18 @@ import static org.assertj.core.api.Assertions.assertThat;
 @SpringBootTest
 public class ConsumerServiceTests {
 
-    @Autowired
-    private ConsumerService consumerService;
+  @Autowired private ConsumerService consumerService;
 
-
-    @Test
-    @DisplayName("사용자는 회원가입을 할 수 있다.")
-    void test1() {
-        CreateConsumerRequestDto dto = CreateConsumerRequestDto.builder()
+  @Test
+  @DisplayName("사용자는 회원가입을 할 수 있다.")
+  void test1() {
+    CreateConsumerRequestDto dto =
+        CreateConsumerRequestDto.builder()
             .email("test1@naver.com")
             .password("1234")
             .name("이름1")
             .build();
-        Consumer savedConsumer = consumerService.signUp(dto);
-        assertThat(savedConsumer.getConsumerId()).isEqualTo(1L);
-    }
+    Consumer savedConsumer = consumerService.signUp(dto);
+    assertThat(savedConsumer.getConsumerId()).isEqualTo(1L);
+  }
 }

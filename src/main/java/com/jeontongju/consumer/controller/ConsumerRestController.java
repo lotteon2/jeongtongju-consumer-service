@@ -21,19 +21,18 @@ import org.springframework.web.bind.annotation.RequestMapping;
 @RequiredArgsConstructor
 public class ConsumerRestController {
 
-    private final ConsumerService consumerService;
+  private final ConsumerService consumerService;
 
-    @PostMapping("/sign-up")
-    public ResponseEntity<SuccessFormat> signUp(@Valid @RequestBody
-    CreateConsumerRequestDto createConsumerDto) {
-        consumerService.signUp(createConsumerDto);
-        return ResponseEntity.ok()
-            .body(
-                SuccessFormat.builder()
-                    .code(200)
-                    .message(HttpStatus.OK.name())
-                    .detail("사용자 일반 회원 가입 성공")
-                    .build());
-    }
-
+  @PostMapping("/sign-up")
+  public ResponseEntity<SuccessFormat> signUp(
+      @Valid @RequestBody CreateConsumerRequestDto createConsumerDto) {
+    consumerService.signUp(createConsumerDto);
+    return ResponseEntity.ok()
+        .body(
+            SuccessFormat.builder()
+                .code(200)
+                .message(HttpStatus.OK.name())
+                .detail("사용자 일반 회원 가입 성공")
+                .build());
+  }
 }

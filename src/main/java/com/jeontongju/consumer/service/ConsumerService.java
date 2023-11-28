@@ -10,10 +10,10 @@ import org.springframework.stereotype.Service;
 @RequiredArgsConstructor
 public class ConsumerService {
 
-    private final ConsumerRepository consumerRepository;
+  private final ConsumerRepository consumerRepository;
 
-    public Consumer signUp(CreateConsumerRequestDto createConsumerDto) {
-        Consumer consumer = Consumer.create(createConsumerDto);
-        return consumerRepository.save(consumer);
-    }
+  public Consumer signUp(CreateConsumerRequestDto createConsumerDto) {
+    Consumer consumer = Consumer.create(createConsumerDto);
+    return consumerRepository.save(consumer);
+  }
 }

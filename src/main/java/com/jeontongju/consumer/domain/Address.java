@@ -23,31 +23,31 @@ import lombok.NoArgsConstructor;
 @Getter
 public class Address extends BaseEntity {
 
-    @Id
-    @GeneratedValue(strategy = IDENTITY)
-    @Column(name = "address_id")
-    private Long addressId;
+  @Id
+  @GeneratedValue(strategy = IDENTITY)
+  @Column(name = "address_id")
+  private Long addressId;
 
-    @Column(name = "basic_address", nullable = false)
-    private String basicAddress;
+  @Column(name = "basic_address", nullable = false)
+  private String basicAddress;
 
-    @Column(name = "address_detail")
-    private String addressDetail;
+  @Column(name = "address_detail")
+  private String addressDetail;
 
-    @Column(name = "zone_code", nullable = false)
-    private String zoneCode;
+  @Column(name = "zone_code", nullable = false)
+  private String zoneCode;
 
-    @Column(name = "recipient_name", nullable = false)
-    private String recipientName;
+  @Column(name = "recipient_name", nullable = false)
+  private String recipientName;
 
-    @Column(name = "recipient_phone_number", nullable = false)
-    private String recipientPhoneNumber;
+  @Column(name = "recipient_phone_number", nullable = false)
+  private String recipientPhoneNumber;
 
-    @Column(name = "is_default", nullable = false)
-    @Builder.Default
-    private Boolean isDefault = false;
+  @Column(name = "is_default", nullable = false)
+  @Builder.Default
+  private Boolean isDefault = false;
 
-    @ManyToOne
-    @JoinColumn(name = "consumer_id")
-    private Consumer consumer;
+  @ManyToOne
+  @JoinColumn(name = "consumer_id")
+  private Consumer consumer;
 }

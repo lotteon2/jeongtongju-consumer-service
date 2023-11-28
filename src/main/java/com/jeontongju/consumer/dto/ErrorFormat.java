@@ -12,10 +12,10 @@ import lombok.Getter;
 @Builder
 public class ErrorFormat {
 
-    private final Integer code;
-    private final String message;
-    private final String detail;
+  private final Integer code;
+  private final String message;
+  private final String detail;
 
-    @JsonInclude(Include.NON_NULL)
-    private final String failure;
+  @JsonInclude(Include.NON_NULL)
+  private final String failure;
 }
