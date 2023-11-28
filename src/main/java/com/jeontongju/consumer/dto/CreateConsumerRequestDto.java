@@ -17,18 +17,18 @@ import lombok.NoArgsConstructor;
 public class CreateConsumerRequestDto {
 
     @NotNull
-    @Email
+    @Email(message = "사용자 이메일/이름 또는 비밀번호 형식이 잘못되었습니다.")
     private String email;
 
     @NotNull
     @Pattern(
         regexp = "^(?=.*[A-Za-z])(?=.*\\d)(?=.*[~!@#$%^&*()+|=])[A-Za-z\\d~!@#$%^&*()+|=]{8,16}$",
-        message = "영문자, 숫자, 특수 문자 모두 포함하여 작성해 주세요."
+        message = "사용자 이메일/이름 또는 비밀번호 형식이 잘못되었습니다."
     )
-    @Size(min = 8, max = 16, message = "최소 8자 최대 16자 이하로 작성해 주세요.")
+    @Size(min = 8, max = 16, message = "사용자 이메일/이름 또는 비밀번호 형식이 잘못되었습니다.")
     private String password;
 
     @NotNull
-    @Size(max = 10)
+    @Size(max = 10, message = "사용자 이메일/이름 또는 비밀번호 형식이 잘못되었습니다.")
     private String name;
 }
