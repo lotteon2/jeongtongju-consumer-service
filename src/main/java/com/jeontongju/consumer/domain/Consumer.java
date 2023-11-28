@@ -3,6 +3,7 @@ package com.jeontongju.consumer.domain;
 import static javax.persistence.GenerationType.IDENTITY;
 
 import com.jeontongju.consumer.domain.common.BaseEntity;
+import com.jeontongju.consumer.dto.CreateConsumerRequestDto;
 import java.util.List;
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
@@ -15,6 +16,8 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+import org.springframework.security.crypto.password.PasswordEncoder;
 
 @Entity
 @Table(name = "consumer")
@@ -76,4 +79,13 @@ public class Consumer extends BaseEntity {
 
     @OneToMany(mappedBy = "consumer")
     private List<PointHistory> pointHistoryList;
+
+    public static Consumer create(CreateConsumerRequestDto createConsumerDto) {
+        PasswordEncoder passwordEncoder = new BCryptPasswordEncoder();
+        return Consumer.builder()
+            .email(createConsumerDto.getEmail())
+            .password(passwordEncoder.encode(createConsumerDto.getPassword()))
+            .name(createConsumerDto.getName())
+            .build();
+    }
 }
