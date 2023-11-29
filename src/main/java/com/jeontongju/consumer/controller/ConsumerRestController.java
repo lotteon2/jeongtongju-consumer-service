@@ -1,9 +1,12 @@
 package com.jeontongju.consumer.controller;
 
+import com.jeontongju.consumer.dto.CodeInfoForAuthRequestDto;
 import com.jeontongju.consumer.dto.CreateConsumerRequestDto;
 import com.jeontongju.consumer.dto.EmailInfoForAuthRequestDto;
+import com.jeontongju.consumer.dto.ErrorFormat;
 import com.jeontongju.consumer.dto.SuccessFormat;
 import com.jeontongju.consumer.service.ConsumerService;
+import com.jeontongju.consumer.utils.CustomErrMessage;
 import java.io.UnsupportedEncodingException;
 import javax.mail.MessagingException;
 import javax.validation.Valid;
@@ -14,6 +17,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.validation.BindingResult;
 import org.springframework.validation.ObjectError;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -39,6 +43,28 @@ public class ConsumerRestController {
                 .message(HttpStatus.OK.name())
                 .detail("사용자 이메일 유효코드 발송 성공")
                 .build());
+  }
+
+  @GetMapping("/sign-up/email/auth")
+  public ResponseEntity<?> verifyInputCode(@Valid @RequestBody CodeInfoForAuthRequestDto codeInfoDto) {
+    if (consumerService.verifyInputCode(codeInfoDto)) {
+      return ResponseEntity.ok()
+          .body(
+              SuccessFormat.builder()
+                  .code(HttpStatus.OK.value())
+                  .message(HttpStatus.OK.name())
+                  .detail("이메일 인증 성공")
+                  .build());
+    } else {
+      return ResponseEntity.badRequest()
+          .body(
+              ErrorFormat.builder()
+                  .code(HttpStatus.BAD_REQUEST.value())
+                  .message(HttpStatus.BAD_REQUEST.name())
+                  .detail(CustomErrMessage.NOT_VALID_AUTH_CODE)
+                  .failure("NOT_VALID_AUTH_CODE")
+                  .build());
+    }
   }
 
   @PostMapping("/sign-up")

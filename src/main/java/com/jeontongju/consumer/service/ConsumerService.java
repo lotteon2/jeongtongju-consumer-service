@@ -1,6 +1,7 @@
 package com.jeontongju.consumer.service;
 
 import com.jeontongju.consumer.domain.Consumer;
+import com.jeontongju.consumer.dto.CodeInfoForAuthRequestDto;
 import com.jeontongju.consumer.dto.CreateConsumerRequestDto;
 import com.jeontongju.consumer.dto.EmailInfoForAuthRequestDto;
 import com.jeontongju.consumer.exception.DuplicateEmailException;
@@ -10,7 +11,6 @@ import java.io.UnsupportedEncodingException;
 import javax.mail.MessagingException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.dao.DuplicateKeyException;
 import org.springframework.stereotype.Service;
 
 @Slf4j
@@ -38,5 +38,9 @@ public class ConsumerService {
   private Boolean isNotEmailDuplicated(String email) {
     Consumer foundConsumer = consumerRepository.findByEmail(email).orElse(null);
     return foundConsumer == null;
+  }
+
+  public Boolean verifyInputCode(CodeInfoForAuthRequestDto codeInfoDto) {
+    return mailService.compareToIssuedCode(codeInfoDto.getValidCode());
   }
 }

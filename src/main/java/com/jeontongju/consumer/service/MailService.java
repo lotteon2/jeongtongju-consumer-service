@@ -8,6 +8,8 @@ import javax.mail.internet.MimeMessage;
 import javax.mail.internet.MimeMessage.RecipientType;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.data.redis.core.RedisTemplate;
+import org.springframework.data.redis.core.SetOperations;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.stereotype.Service;
 
@@ -19,6 +21,9 @@ public class MailService {
 
   private final JavaMailSender mailSender;
   private final Integer VALID_CODE_LENGTH = 8;
+  private final String CODE_KEY = "validCode";
+
+  private final RedisTemplate<String, String> redisTemplate;
 
   public String createValidCode() {
     Random random = new Random();
@@ -58,11 +63,17 @@ public class MailService {
     return MailInfoDto.builder().mimeMessage(message).validCode(authNum).build();
   }
 
-  public String sendAuthEmail(String email)
-      throws MessagingException, UnsupportedEncodingException {
+  public void sendAuthEmail(String email) throws MessagingException, UnsupportedEncodingException {
+
+    SetOperations<String, String> setOperations = redisTemplate.opsForSet();
+
     MailInfoDto mailInfo = createEmailForm(email);
     MimeMessage emailForm = mailInfo.getMimeMessage();
     mailSender.send(emailForm);
-    return mailInfo.getValidCode();
+    setOperations.add(CODE_KEY, mailInfo.getValidCode());
+  }
+
+  public Boolean compareToIssuedCode(String validCode) {
+    return redisTemplate.opsForSet().isMember(CODE_KEY, validCode);
   }
 }
