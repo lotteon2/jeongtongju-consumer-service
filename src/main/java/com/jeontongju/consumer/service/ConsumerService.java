@@ -2,7 +2,7 @@ package com.jeontongju.consumer.service;
 
 import com.jeontongju.consumer.domain.Consumer;
 import com.jeontongju.consumer.dto.CodeInfoForAuthRequestDto;
-import com.jeontongju.consumer.dto.CreateConsumerRequestDto;
+import com.jeontongju.consumer.dto.ConsumerInfoForSignupRequestDto;
 import com.jeontongju.consumer.dto.EmailInfoForAuthRequestDto;
 import com.jeontongju.consumer.exception.DuplicateEmailException;
 import com.jeontongju.consumer.repository.ConsumerRepository;
@@ -21,8 +21,8 @@ public class ConsumerService {
   private final ConsumerRepository consumerRepository;
   private final MailService mailService;
 
-  public Consumer signUp(CreateConsumerRequestDto createConsumerDto) {
-    return consumerRepository.save(Consumer.create(createConsumerDto));
+  public Consumer signUp(ConsumerInfoForSignupRequestDto consumerInfoDto) {
+    return consumerRepository.save(Consumer.create(consumerInfoDto));
   }
 
   public void sendEmailAuthForSignUp(EmailInfoForAuthRequestDto emailInfoDto)

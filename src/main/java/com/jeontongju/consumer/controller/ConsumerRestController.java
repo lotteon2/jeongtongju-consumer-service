@@ -1,7 +1,7 @@
 package com.jeontongju.consumer.controller;
 
 import com.jeontongju.consumer.dto.CodeInfoForAuthRequestDto;
-import com.jeontongju.consumer.dto.CreateConsumerRequestDto;
+import com.jeontongju.consumer.dto.ConsumerInfoForSignupRequestDto;
 import com.jeontongju.consumer.dto.EmailInfoForAuthRequestDto;
 import com.jeontongju.consumer.dto.ErrorFormat;
 import com.jeontongju.consumer.dto.SuccessFormat;
@@ -66,8 +66,8 @@ public class ConsumerRestController {
 
   @PostMapping("/sign-up")
   public ResponseEntity<SuccessFormat> signUp(
-      @Valid @RequestBody CreateConsumerRequestDto createConsumerDto) {
-    consumerService.signUp(createConsumerDto);
+      @Valid @RequestBody ConsumerInfoForSignupRequestDto consumerInfoDto) {
+    consumerService.signUp(consumerInfoDto);
     return ResponseEntity.ok()
         .body(
             SuccessFormat.builder()

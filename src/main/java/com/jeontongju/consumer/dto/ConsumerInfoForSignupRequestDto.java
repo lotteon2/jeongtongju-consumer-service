@@ -14,7 +14,7 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor(access = AccessLevel.PROTECTED)
 @Builder
 @Getter
-public class CreateConsumerRequestDto {
+public class ConsumerInfoForSignupRequestDto {
 
   @NotNull
   @Email(message = "사용자 이메일/이름 또는 비밀번호 형식이 잘못되었습니다.")

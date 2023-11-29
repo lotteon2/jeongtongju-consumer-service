@@ -3,7 +3,7 @@ package com.jeontongju.consumer.domain;
 import static javax.persistence.GenerationType.IDENTITY;
 
 import com.jeontongju.consumer.domain.common.BaseEntity;
-import com.jeontongju.consumer.dto.CreateConsumerRequestDto;
+import com.jeontongju.consumer.dto.ConsumerInfoForSignupRequestDto;
 import java.util.List;
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -79,12 +79,12 @@ public class Consumer extends BaseEntity {
   @OneToMany(mappedBy = "consumer")
   private List<PointHistory> pointHistoryList;
 
-  public static Consumer create(CreateConsumerRequestDto createConsumerDto) {
+  public static Consumer create(ConsumerInfoForSignupRequestDto consumerInfoDto) {
     PasswordEncoder passwordEncoder = new BCryptPasswordEncoder();
     return Consumer.builder()
-        .email(createConsumerDto.getEmail())
-        .password(passwordEncoder.encode(createConsumerDto.getPassword()))
-        .name(createConsumerDto.getName())
+        .email(consumerInfoDto.getEmail())
+        .password(passwordEncoder.encode(consumerInfoDto.getPassword()))
+        .name(consumerInfoDto.getName())
         .build();
   }
 }

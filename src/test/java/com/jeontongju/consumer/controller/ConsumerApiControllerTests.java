@@ -3,7 +3,7 @@ package com.jeontongju.consumer.controller;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.jeontongju.consumer.dto.CreateConsumerRequestDto;
+import com.jeontongju.consumer.dto.ConsumerInfoForSignupRequestDto;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -30,8 +30,8 @@ public class ConsumerApiControllerTests {
   @DisplayName("회원가입 valid Test, 정상 동작")
   void t1() throws Exception {
 
-    CreateConsumerRequestDto dto =
-        CreateConsumerRequestDto.builder()
+    ConsumerInfoForSignupRequestDto dto =
+        ConsumerInfoForSignupRequestDto.builder()
             .email("jtjj@naver.com")
             .password("jtjj1234@")
             .name("전통주")
@@ -49,8 +49,8 @@ public class ConsumerApiControllerTests {
   @DisplayName("회원가입 valid Test, 비밀번호 형식 오류")
   void t2() throws Exception {
 
-    CreateConsumerRequestDto dto =
-        CreateConsumerRequestDto.builder()
+    ConsumerInfoForSignupRequestDto dto =
+        ConsumerInfoForSignupRequestDto.builder()
             .email("jtjj@naver.com")
             .password("jtjj1234")
             .name("전통주")
