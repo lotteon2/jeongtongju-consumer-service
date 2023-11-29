@@ -1,0 +1,59 @@
+server:
+  port: 0
+spring:
+  kafka:
+    bootstrap-servers: http://localhost:9092
+  cloud:
+    bus:
+      destination: busRefreshTopic
+    config:
+      enabled: false
+    discovery:
+      enabled: false
+  application:
+    name: consumer-service
+  zipkin:
+    base-url: http://localhost:9411
+    enabled: true
+  sleuth:
+    sampler:
+      probability: 1.0
+  h2:
+    console:
+      enabled: true
+      settings:
+        web-allow-others: true
+      path: /h2-console
+  jpa:
+    hibernate:
+      ddl-auto: create
+  mail:
+    host: smtp.gmail.com
+    port: 587
+    username: uyeop1114@gmail.com
+    password: lcwg xrfa dqrb eagf
+    properties:
+      mail:
+        smtp:
+          auth: true
+          starttls:
+            enable: true
+eureka:
+  instance:
+    instance-id: ${spring.application.name}:${spring.application.instance_id:${server.port}}
+  client:
+    register-with-eureka: true
+    fetch-registry: true
+    service-url:
+      defaultZone: http://127.0.0.1:8761/eureka
+management:
+  endpoints:
+    web:
+      exposure:
+        include: refresh,health, beans, httptrace, busrefresh
+
+custom:
+  my:
+    email:
+      from: jtjj@test.com
+      to: zjadlspun1114@naver.com

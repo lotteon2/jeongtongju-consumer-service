@@ -13,7 +13,6 @@ public class ConsumerService {
   private final ConsumerRepository consumerRepository;
 
   public Consumer signUp(CreateConsumerRequestDto createConsumerDto) {
-    Consumer consumer = Consumer.create(createConsumerDto);
-    return consumerRepository.save(consumer);
+    return consumerRepository.save(Consumer.create(createConsumerDto));
   }
 }
