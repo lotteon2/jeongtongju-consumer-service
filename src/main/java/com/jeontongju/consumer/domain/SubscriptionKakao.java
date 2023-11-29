@@ -23,15 +23,15 @@ import lombok.NoArgsConstructor;
 @Getter
 public class SubscriptionKakao extends BaseEntity {
 
-    @Id
-    @GeneratedValue(strategy = IDENTITY)
-    @Column(name = "kakao_subscription_id")
-    private Long kakaoSubscriptionId;
+  @Id
+  @GeneratedValue(strategy = IDENTITY)
+  @Column(name = "kakao_subscription_id")
+  private Long kakaoSubscriptionId;
 
-    @Column(name = "subscription_unique_key", nullable = false)
-    private String subscriptionUniqueKey;
+  @Column(name = "subscription_unique_key", nullable = false)
+  private String subscriptionUniqueKey;
 
-    @OneToOne
-    @JoinColumn(name = "subscription_id", nullable = false)
-    private Subscription subscription;
+  @OneToOne
+  @JoinColumn(name = "subscription_id", nullable = false)
+  private Subscription subscription;
 }
