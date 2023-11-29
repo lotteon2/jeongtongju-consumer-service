@@ -14,3 +14,7 @@ spring:
           auth: true
           starttls:
             enable: true
+custom:
+  my:
+    email:
+      from:
