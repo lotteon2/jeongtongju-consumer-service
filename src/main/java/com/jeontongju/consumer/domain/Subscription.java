@@ -25,26 +25,26 @@ import lombok.NoArgsConstructor;
 @Getter
 public class Subscription extends BaseEntity {
 
-    @Id
-    @GeneratedValue(strategy = IDENTITY)
-    @Column(name = "subscription_id")
-    private Long subscriptionId;
+  @Id
+  @GeneratedValue(strategy = IDENTITY)
+  @Column(name = "subscription_id")
+  private Long subscriptionId;
 
-    @Column(name = "subscription_type", nullable = false)
-    private String subscriptionType;
+  @Column(name = "subscription_type", nullable = false)
+  private String subscriptionType;
 
-    @Column(name = "payment_amount", nullable = false)
-    private Long paymentAmount;
+  @Column(name = "payment_amount", nullable = false)
+  private Long paymentAmount;
 
-    @Column(name = "start_date", nullable = false)
-    private Timestamp startDate;
+  @Column(name = "start_date", nullable = false)
+  private Timestamp startDate;
 
-    @Column(name = "end_date", nullable = false)
-    private String endDate;
+  @Column(name = "end_date", nullable = false)
+  private String endDate;
 
-    @Column(name = "payment_type", nullable = false)
-    private PaymentTypeEnum paymentType;
+  @Column(name = "payment_type", nullable = false)
+  private PaymentTypeEnum paymentType;
 
-    @OneToOne(mappedBy = "subscription")
-    private SubscriptionKakao subscriptionKakao;
+  @OneToOne(mappedBy = "subscription")
+  private SubscriptionKakao subscriptionKakao;
 }

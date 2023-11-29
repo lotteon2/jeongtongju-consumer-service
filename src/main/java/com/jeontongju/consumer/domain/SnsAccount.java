@@ -20,14 +20,14 @@ import lombok.NoArgsConstructor;
 @Getter
 public class SnsAccount extends BaseEntity {
 
-    @Id
-    @Column(name = "sns_unique_id")
-    private String snsUniqueId;
+  @Id
+  @Column(name = "sns_unique_id")
+  private String snsUniqueId;
 
-    @Column(name = "oauth_provider", nullable = false)
-    private String oauthProvider;
+  @Column(name = "oauth_provider", nullable = false)
+  private String oauthProvider;
 
-    @ManyToOne
-    @JoinColumn(name = "consumer_id")
-    private Consumer consumer;
+  @ManyToOne
+  @JoinColumn(name = "consumer_id")
+  private Consumer consumer;
 }

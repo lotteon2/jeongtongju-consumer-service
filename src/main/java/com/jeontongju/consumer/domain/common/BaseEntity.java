@@ -14,11 +14,11 @@ import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 @EntityListeners(AuditingEntityListener.class)
 public class BaseEntity {
 
-    @CreatedDate
-    @Column(name = "created_at")
-    private Timestamp createdAt;
+  @CreatedDate
+  @Column(name = "created_at")
+  private Timestamp createdAt;
 
-    @LastModifiedDate
-    @Column(name = "updated_at")
-    private Timestamp updatedAt;
+  @LastModifiedDate
+  @Column(name = "updated_at")
+  private Timestamp updatedAt;
 }
