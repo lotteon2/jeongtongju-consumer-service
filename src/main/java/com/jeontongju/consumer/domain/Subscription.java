@@ -5,7 +5,6 @@ import static javax.persistence.GenerationType.IDENTITY;
 import com.jeontongju.consumer.domain.common.BaseEntity;
 import com.jeontongju.consumer.enums.PaymentTypeEnum;
 import java.sql.Timestamp;
-import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;

@@ -4,7 +4,6 @@ import com.jeontongju.consumer.dto.ErrorFormat;
 import com.jeontongju.consumer.exception.DuplicateEmailException;
 import com.jeontongju.consumer.utils.CustomErrMessage;
 import lombok.RequiredArgsConstructor;
-import org.springframework.dao.DuplicateKeyException;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
