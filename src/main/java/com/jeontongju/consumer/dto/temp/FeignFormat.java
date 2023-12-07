@@ -1,17 +1,19 @@
-package com.jeontongju.consumer.dto;
+package com.jeontongju.consumer.dto.temp;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 
-@Builder
 @AllArgsConstructor
+@Builder
 @Getter
-public class SuccessFeignFormat<T> {
+@JsonInclude(JsonInclude.Include.NON_NULL)
+public class FeignFormat<T> {
 
   private final Integer code;
-
-  @JsonInclude(JsonInclude.Include.NON_NULL)
+  private final String message;
+  private final String detail;
+  private final String failure;
   private final T data;
 }
