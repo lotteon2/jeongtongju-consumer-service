@@ -1,6 +1,6 @@
 package com.jeontongju.consumer.controller.feign;
 
-import com.jeontongju.consumer.dto.ConsumerInfoForCreateByKakaoRequestDto;
+import com.jeontongju.consumer.dto.ConsumerInfoForCreateBySnsRequestDto;
 import com.jeontongju.consumer.dto.ConsumerInfoForCreateRequestDto;
 import com.jeontongju.consumer.dto.temp.FeignFormat;
 import com.jeontongju.consumer.service.ConsumerService;
@@ -25,11 +25,10 @@ public class ConsumerClientController {
   }
 
   @PostMapping("/consumers/oauth")
-  public FeignFormat<Object> createConsumerForCreateByKakao(@RequestBody ConsumerInfoForCreateByKakaoRequestDto createByKakaoRequestDto) {
+  public FeignFormat<Object> createConsumerForCreateBySns(
+      @RequestBody ConsumerInfoForCreateBySnsRequestDto createBySnsRequestDto) {
 
-    consumerService.createConsumerForCreateByKakao(createByKakaoRequestDto);
-    return FeignFormat.builder()
-            .code(HttpStatus.OK.value())
-            .build();
+    consumerService.createConsumerForCreateBySns(createBySnsRequestDto);
+    return FeignFormat.builder().code(HttpStatus.OK.value()).build();
   }
 }

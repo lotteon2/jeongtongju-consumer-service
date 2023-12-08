@@ -1,8 +1,7 @@
 package com.jeontongju.consumer.domain;
 
 import com.jeontongju.consumer.domain.common.BaseEntity;
-import com.jeontongju.consumer.dto.ConsumerInfoForCreateByKakaoRequestDto;
-import com.jeontongju.consumer.dto.ConsumerInfoForCreateRequestDto;
+
 import java.util.List;
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -68,21 +67,4 @@ public class Consumer extends BaseEntity {
   @OneToMany(mappedBy = "consumer")
   private List<PointHistory> pointHistoryList;
 
-  public static Consumer create(ConsumerInfoForCreateRequestDto createRequestDto) {
-    return Consumer.builder()
-        .consumerId(createRequestDto.getConsumerId())
-        .email(createRequestDto.getEmail())
-        .name(createRequestDto.getName())
-        .phoneNumber(createRequestDto.getPhoneNumber())
-        .build();
-  }
-
-  public static Consumer createByKakao(
-      ConsumerInfoForCreateByKakaoRequestDto createByKakaoRequestDto) {
-    return Consumer.builder()
-        .consumerId(createByKakaoRequestDto.getConsumerId())
-        .email(createByKakaoRequestDto.getEmail())
-        .profileImageUrl(createByKakaoRequestDto.getProfileImageUrl())
-        .build();
-  }
 }

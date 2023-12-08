@@ -9,7 +9,7 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @Builder
 @Getter
-public class ConsumerInfoForCreateByKakaoRequestDto {
+public class ConsumerInfoForCreateBySnsRequestDto {
 
   private Long consumerId;
   private String email;
