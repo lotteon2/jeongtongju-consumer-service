@@ -17,18 +17,18 @@ public class ConsumerClientController {
   private final ConsumerService consumerService;
 
   @PostMapping("/consumers")
-  public FeignFormat<Object> createConsumerForSignup(
+  public FeignFormat<Void> createConsumerForSignup(
       @RequestBody ConsumerInfoForCreateRequestDto createRequestDto) {
 
     consumerService.createConsumerForSignup(createRequestDto);
-    return FeignFormat.builder().code(HttpStatus.OK.value()).build();
+    return FeignFormat.<Void>builder().code(HttpStatus.OK.value()).build();
   }
 
   @PostMapping("/consumers/oauth")
-  public FeignFormat<Object> createConsumerForCreateBySns(
+  public FeignFormat<Void> createConsumerForCreateBySns(
       @RequestBody ConsumerInfoForCreateBySnsRequestDto createBySnsRequestDto) {
 
     consumerService.createConsumerForCreateBySns(createBySnsRequestDto);
-    return FeignFormat.builder().code(HttpStatus.OK.value()).build();
+    return FeignFormat.<Void>builder().code(HttpStatus.OK.value()).build();
   }
 }
