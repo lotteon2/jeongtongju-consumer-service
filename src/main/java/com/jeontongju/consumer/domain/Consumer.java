@@ -67,4 +67,7 @@ public class Consumer extends BaseEntity {
   @OneToMany(mappedBy = "consumer")
   private List<PointHistory> pointHistoryList;
 
+  public void assignAuctionCredit(Long auctionCredit) {
+    this.auctionCredit = auctionCredit;
+  }
 }
