@@ -1,7 +1,7 @@
 package com.jeontongju.consumer.controller.feign;
 
-import com.jeontongju.consumer.dto.ConsumerInfoForCreateBySnsRequestDto;
-import com.jeontongju.consumer.dto.ConsumerInfoForCreateRequestDto;
+import com.jeontongju.consumer.dto.temp.ConsumerInfoForCreateBySnsRequestDto;
+import com.jeontongju.consumer.dto.temp.ConsumerInfoForCreateRequestDto;
 import com.jeontongju.consumer.dto.temp.FeignFormat;
 import com.jeontongju.consumer.service.ConsumerService;
 import lombok.RequiredArgsConstructor;

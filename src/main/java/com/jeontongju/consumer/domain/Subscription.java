@@ -3,7 +3,7 @@ package com.jeontongju.consumer.domain;
 import static javax.persistence.GenerationType.IDENTITY;
 
 import com.jeontongju.consumer.domain.common.BaseEntity;
-import com.jeontongju.consumer.enums.PaymentTypeEnum;
+import com.jeontongju.consumer.dto.temp.PaymentTypeEnum;
 import java.sql.Timestamp;
 import javax.persistence.Column;
 import javax.persistence.Entity;

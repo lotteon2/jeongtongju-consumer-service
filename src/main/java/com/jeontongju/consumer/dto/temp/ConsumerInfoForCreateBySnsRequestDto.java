@@ -1,4 +1,4 @@
-package com.jeontongju.consumer.dto;
+package com.jeontongju.consumer.dto.temp;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;

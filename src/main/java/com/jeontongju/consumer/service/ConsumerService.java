@@ -1,8 +1,8 @@
 package com.jeontongju.consumer.service;
 
 import com.jeontongju.consumer.domain.Consumer;
-import com.jeontongju.consumer.dto.ConsumerInfoForCreateBySnsRequestDto;
-import com.jeontongju.consumer.dto.ConsumerInfoForCreateRequestDto;
+import com.jeontongju.consumer.dto.temp.ConsumerInfoForCreateBySnsRequestDto;
+import com.jeontongju.consumer.dto.temp.ConsumerInfoForCreateRequestDto;
 import com.jeontongju.consumer.exception.KafkaDuringOrderException;
 import com.jeontongju.consumer.kafka.ConsumerProducer;
 import com.jeontongju.consumer.mapper.ConsumerMapper;
