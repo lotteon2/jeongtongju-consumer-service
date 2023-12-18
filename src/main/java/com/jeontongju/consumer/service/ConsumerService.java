@@ -49,11 +49,7 @@ public class ConsumerService {
         consumerRepository.findByConsumerId(userPointUpdateDto.getConsumerId()).orElseThrow();
     foundConsumer.consumePoint(userPointUpdateDto.getPoint());
 
-    try {
-      consumerProducer.sendUpdateCoupon(KafkaTopicNameInfo.USE_COUPON, orderInfoDto);
-    } catch (KafkaException e) {
-      throw new KafkaDuringOrderException(CustomErrMessage.ERROR_KAFKA);
-    }
+    consumerProducer.sendUpdateCoupon(KafkaTopicNameInfo.USE_COUPON, orderInfoDto);
   }
 
   public Boolean checkConsumerPoint(UserPointUpdateDto userPointUpdateDto) {
