@@ -1,4 +1,4 @@
-package com.jeontongju.consumer.enums;
+package com.jeontongju.consumer.dto.temp;
 
 import lombok.Getter;
 

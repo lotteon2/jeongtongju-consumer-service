@@ -8,6 +8,9 @@ import javax.persistence.Entity;
 import javax.persistence.Id;
 import javax.persistence.OneToMany;
 import javax.persistence.Table;
+
+import com.jeontongju.consumer.exception.PointInsufficientException;
+import com.jeontongju.consumer.utils.CustomErrMessage;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
@@ -67,4 +70,13 @@ public class Consumer extends BaseEntity {
   @OneToMany(mappedBy = "consumer")
   private List<PointHistory> pointHistoryList;
 
+  public void consumePoint(Long point) {
+    if (this.point < point)
+      throw new PointInsufficientException(CustomErrMessage.INSUFFICIENT_POINT);
+    this.point -= point;
+  }
+  
+  public void assignAuctionCredit(Long auctionCredit) {
+    this.auctionCredit = auctionCredit;
+  }
 }
