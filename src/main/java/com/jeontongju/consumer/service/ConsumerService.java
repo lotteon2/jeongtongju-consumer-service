@@ -3,6 +3,7 @@ package com.jeontongju.consumer.service;
 import com.jeontongju.consumer.domain.Consumer;
 import com.jeontongju.consumer.dto.temp.ConsumerInfoForCreateBySnsRequestDto;
 import com.jeontongju.consumer.dto.temp.ConsumerInfoForCreateRequestDto;
+import com.jeontongju.consumer.exception.ConsumerNotFoundException;
 import com.jeontongju.consumer.exception.KafkaDuringOrderException;
 import com.jeontongju.consumer.kafka.ConsumerProducer;
 import com.jeontongju.consumer.mapper.ConsumerMapper;
@@ -16,6 +17,8 @@ import lombok.extern.slf4j.Slf4j;
 import org.apache.kafka.common.KafkaException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+
+import java.util.Optional;
 
 @Slf4j
 @Service
@@ -51,5 +54,15 @@ public class ConsumerService {
     } catch (KafkaException e) {
       throw new KafkaDuringOrderException(CustomErrMessage.ERROR_KAFKA);
     }
+  }
+
+  public Boolean checkConsumerPoint(UserPointUpdateDto userPointUpdateDto) {
+
+    Consumer foundConsumer =
+        consumerRepository
+            .findByConsumerId(userPointUpdateDto.getConsumerId())
+            .orElseThrow(() -> new ConsumerNotFoundException(CustomErrMessage.NOT_FOUND_CONSUMER));
+
+    return foundConsumer.getPoint() >= userPointUpdateDto.getPoint();
   }
 }
