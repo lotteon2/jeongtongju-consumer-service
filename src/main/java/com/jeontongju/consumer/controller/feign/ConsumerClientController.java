@@ -1,11 +1,10 @@
 package com.jeontongju.consumer.controller.feign;
 
-import com.jeontongju.consumer.dto.ConsumerInfoForCreateBySnsRequestDto;
-import com.jeontongju.consumer.dto.ConsumerInfoForCreateRequestDto;
 import com.jeontongju.consumer.dto.temp.ConsumerInfoForAuctionResponse;
+import com.jeontongju.consumer.dto.temp.ConsumerInfoForCreateBySnsRequestDto;
+import com.jeontongju.consumer.dto.temp.ConsumerInfoForCreateRequestDto;
 import com.jeontongju.consumer.dto.temp.FeignFormat;
 import com.jeontongju.consumer.service.ConsumerService;
-import io.github.bitbox.bitbox.dto.FeignFormat;
 import io.github.bitbox.bitbox.dto.UserPointUpdateDto;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -39,10 +38,10 @@ public class ConsumerClientController {
     Boolean hasPoint = consumerService.checkConsumerPoint(userPointUpdateDto);
 
     return FeignFormat.<Boolean>builder().code(HttpStatus.OK.value()).data(hasPoint).build();
+  }
 
   @GetMapping("/consumers/{consumerId}/auction")
-  public FeignFormat<ConsumerInfoForAuctionResponse> getConsumerInfoForAuction(
-      @PathVariable Long consumerId) {
+  public FeignFormat<ConsumerInfoForAuctionResponse> getConsumerInfoForAuction(@PathVariable Long consumerId) {
 
     ConsumerInfoForAuctionResponse consumerInfoForAuction =
         consumerService.getConsumerInfoForAuction(consumerId);
