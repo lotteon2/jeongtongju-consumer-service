@@ -2,7 +2,7 @@ package com.jeontongju.consumer.domain;
 
 import static javax.persistence.GenerationType.IDENTITY;
 
-import com.jeontongju.consumer.enums.TradePathEnum;
+import com.jeontongju.consumer.dto.temp.TradePathEnum;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;

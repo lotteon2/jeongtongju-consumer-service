@@ -1,9 +1,11 @@
 package com.jeontongju.consumer.controller.feign;
 
-import com.jeontongju.consumer.dto.ConsumerInfoForCreateBySnsRequestDto;
-import com.jeontongju.consumer.dto.ConsumerInfoForCreateRequestDto;
-import com.jeontongju.consumer.dto.temp.FeignFormat;
+import com.jeontongju.consumer.dto.temp.ConsumerInfoForCreateBySnsRequestDto;
+import com.jeontongju.consumer.dto.temp.ConsumerInfoForCreateRequestDto;
+
 import com.jeontongju.consumer.service.ConsumerService;
+import io.github.bitbox.bitbox.dto.FeignFormat;
+import io.github.bitbox.bitbox.dto.UserPointUpdateDto;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -30,5 +32,13 @@ public class ConsumerClientController {
 
     consumerService.createConsumerForCreateBySns(createBySnsRequestDto);
     return FeignFormat.<Void>builder().code(HttpStatus.OK.value()).build();
+  }
+
+  @PostMapping("/point")
+  public FeignFormat<Boolean> checkConsumerPoint(
+      @RequestBody UserPointUpdateDto userPointUpdateDto) {
+    Boolean hasPoint = consumerService.checkConsumerPoint(userPointUpdateDto);
+
+    return FeignFormat.<Boolean>builder().code(HttpStatus.OK.value()).data(hasPoint).build();
   }
 }
