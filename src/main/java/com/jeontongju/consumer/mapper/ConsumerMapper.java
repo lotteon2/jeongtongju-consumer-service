@@ -1,8 +1,8 @@
 package com.jeontongju.consumer.mapper;
 
 import com.jeontongju.consumer.domain.Consumer;
-import com.jeontongju.consumer.dto.ConsumerInfoForCreateBySnsRequestDto;
-import com.jeontongju.consumer.dto.ConsumerInfoForCreateRequestDto;
+import com.jeontongju.consumer.dto.temp.ConsumerInfoForCreateBySnsRequestDto;
+import com.jeontongju.consumer.dto.temp.ConsumerInfoForCreateRequestDto;
 import org.springframework.stereotype.Component;
 
 @Component
