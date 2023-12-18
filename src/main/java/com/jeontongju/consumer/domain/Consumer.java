@@ -75,4 +75,8 @@ public class Consumer extends BaseEntity {
       throw new PointInsufficientException(CustomErrMessage.INSUFFICIENT_POINT);
     this.point -= point;
   }
+  
+  public void assignAuctionCredit(Long auctionCredit) {
+    this.auctionCredit = auctionCredit;
+  }
 }
