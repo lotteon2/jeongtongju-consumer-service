@@ -35,13 +35,16 @@ public class ConsumerClientController {
   @PostMapping("/point")
   public FeignFormat<Boolean> checkConsumerPoint(
       @RequestBody UserPointUpdateDto userPointUpdateDto) {
-    Boolean hasPoint = consumerService.checkConsumerPoint(userPointUpdateDto);
 
-    return FeignFormat.<Boolean>builder().code(HttpStatus.OK.value()).data(hasPoint).build();
+    return FeignFormat.<Boolean>builder()
+        .code(HttpStatus.OK.value())
+        .data(consumerService.hasPoint(userPointUpdateDto))
+        .build();
   }
 
   @GetMapping("/consumers/{consumerId}/auction")
-  public FeignFormat<ConsumerInfoForAuctionResponse> getConsumerInfoForAuction(@PathVariable Long consumerId) {
+  public FeignFormat<ConsumerInfoForAuctionResponse> getConsumerInfoForAuction(
+      @PathVariable Long consumerId) {
 
     ConsumerInfoForAuctionResponse consumerInfoForAuction =
         consumerService.getConsumerInfoForAuction(consumerId);

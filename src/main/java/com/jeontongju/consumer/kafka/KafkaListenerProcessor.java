@@ -4,7 +4,6 @@ import com.jeontongju.consumer.exception.KafkaDuringOrderException;
 import com.jeontongju.consumer.service.ConsumerService;
 import com.jeontongju.consumer.utils.CustomErrMessage;
 import io.github.bitbox.bitbox.dto.OrderInfoDto;
-import io.github.bitbox.bitbox.dto.UserPointUpdateDto;
 import io.github.bitbox.bitbox.util.KafkaTopicNameInfo;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -24,6 +23,17 @@ public class KafkaListenerProcessor {
     try {
       log.info("KafkaListenerProcessor's consumePoint executes..");
       consumerService.consumePoint(orderInfoDto);
+    } catch (KafkaException e) {
+      throw new KafkaDuringOrderException(CustomErrMessage.ERROR_KAFKA);
+    }
+  }
+
+  @KafkaListener(topics = KafkaTopicNameInfo.CANCEL_ORDER_POINT)
+  public void rollbackPoint(OrderInfoDto orderInfoDto) {
+
+    try {
+      log.info("KafkaListenerProcessor's rollbackPoint executes..");
+      consumerService.rollbackPoint(orderInfoDto);
     } catch (KafkaException e) {
       throw new KafkaDuringOrderException(CustomErrMessage.ERROR_KAFKA);
     }

@@ -71,11 +71,13 @@ public class Consumer extends BaseEntity {
   private List<PointHistory> pointHistoryList;
 
   public void consumePoint(Long point) {
-    if (this.point < point)
-      throw new PointInsufficientException(CustomErrMessage.INSUFFICIENT_POINT);
     this.point -= point;
   }
-  
+
+  public void rollbackPoint(Long point) {
+    this.point += point;
+  }
+
   public void assignAuctionCredit(Long auctionCredit) {
     this.auctionCredit = auctionCredit;
   }
