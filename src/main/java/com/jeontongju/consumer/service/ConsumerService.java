@@ -47,11 +47,15 @@ public class ConsumerService {
   @Transactional
   public void consumePoint(OrderInfoDto orderInfoDto) {
 
+    log.info("ConsumerService's consumePoint executes..");
     UserPointUpdateDto userPointUpdateDto = orderInfoDto.getUserPointUpdateDto();
     Consumer foundConsumer =
-        consumerRepository.findByConsumerId(userPointUpdateDto.getConsumerId()).orElseThrow();
+        consumerRepository
+            .findByConsumerId(userPointUpdateDto.getConsumerId())
+            .orElseThrow(() -> new ConsumerNotFoundException(CustomErrMessage.NOT_FOUND_CONSUMER));
     foundConsumer.consumePoint(userPointUpdateDto.getPoint());
 
+    log.info("ConsumerService's consumePoint Successful executed!");
     consumerProducer.sendUpdateCoupon(KafkaTopicNameInfo.USE_COUPON, orderInfoDto);
   }
 
@@ -64,7 +68,7 @@ public class ConsumerService {
 
     return foundConsumer.getPoint() >= userPointUpdateDto.getPoint();
   }
-  
+
   public ConsumerInfoForAuctionResponse getConsumerInfoForAuction(Long consumerId) {
     Consumer foundConsumer =
         consumerRepository

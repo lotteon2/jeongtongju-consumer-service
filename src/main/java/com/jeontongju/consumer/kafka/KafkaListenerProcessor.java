@@ -7,10 +7,12 @@ import io.github.bitbox.bitbox.dto.OrderInfoDto;
 import io.github.bitbox.bitbox.dto.UserPointUpdateDto;
 import io.github.bitbox.bitbox.util.KafkaTopicNameInfo;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.apache.kafka.common.KafkaException;
 import org.springframework.kafka.annotation.KafkaListener;
 import org.springframework.stereotype.Component;
 
+@Slf4j
 @Component
 @RequiredArgsConstructor
 public class KafkaListenerProcessor {
@@ -20,6 +22,7 @@ public class KafkaListenerProcessor {
   public void consumePoint(OrderInfoDto orderInfoDto) {
 
     try {
+      log.info("KafkaListenerProcessor's consumePoint executes..");
       consumerService.consumePoint(orderInfoDto);
     } catch (KafkaException e) {
       throw new KafkaDuringOrderException(CustomErrMessage.ERROR_KAFKA);
