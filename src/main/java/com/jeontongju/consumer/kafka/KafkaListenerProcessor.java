@@ -28,7 +28,7 @@ public class KafkaListenerProcessor {
     }
   }
 
-  @KafkaListener(topics = KafkaTopicNameInfo.CANCEL_ORDER_POINT)
+  @KafkaListener(topics = "add-point")
   public void rollbackPoint(OrderInfoDto orderInfoDto) {
 
     try {
