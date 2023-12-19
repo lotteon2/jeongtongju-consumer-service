@@ -71,11 +71,11 @@ public class Consumer extends BaseEntity {
   private List<PointHistory> pointHistoryList;
 
   public void consumePoint(Long point) {
-    this.point -= point;
+    this.point = point;
   }
 
   public void rollbackPoint(Long point) {
-    this.point += point;
+    this.point = point;
   }
 
   public void assignAuctionCredit(Long auctionCredit) {

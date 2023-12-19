@@ -1,6 +1,7 @@
 package com.jeontongju.consumer.service;
 
 import com.jeontongju.consumer.domain.Consumer;
+import com.jeontongju.consumer.dto.response.ConsumerInfoForInquiryResponseDto;
 import com.jeontongju.consumer.dto.temp.ConsumerInfoForAuctionResponse;
 import com.jeontongju.consumer.dto.temp.ConsumerInfoForCreateBySnsRequestDto;
 import com.jeontongju.consumer.dto.temp.ConsumerInfoForCreateRequestDto;
@@ -50,11 +51,13 @@ public class ConsumerService {
     log.info("ConsumerService's consumePoint executes..");
     UserPointUpdateDto userPointUpdateDto = orderInfoDto.getUserPointUpdateDto();
 
-    Consumer foundConsumer = getConsumer(userPointUpdateDto.getConsumerId());
+    if (userPointUpdateDto.getPoint() != null) {
+      Consumer foundConsumer = getConsumer(userPointUpdateDto.getConsumerId());
 
-    checkPointPolicy(
-        foundConsumer, userPointUpdateDto.getPoint(), userPointUpdateDto.getTotalAmount());
-    foundConsumer.consumePoint(userPointUpdateDto.getPoint());
+      checkPointPolicy(
+          foundConsumer, userPointUpdateDto.getPoint(), userPointUpdateDto.getTotalAmount());
+      foundConsumer.consumePoint(foundConsumer.getPoint() - userPointUpdateDto.getPoint());
+    }
 
     log.info("ConsumerService's consumePoint Successful executed!");
     consumerProducer.sendUpdateCoupon(KafkaTopicNameInfo.USE_COUPON, orderInfoDto);
@@ -76,13 +79,13 @@ public class ConsumerService {
     }
 
     // 포인트 사용 정책 확인
-    if (currentPoint > totalAmount * 0.1) {
+    if (point > totalAmount * 0.1) {
       throw new PointUsageOver10PercetageException(CustomErrMessage.POINT_USAGE_OVER_10_PERCENTAGE);
     }
   }
 
   /**
-   * 주문 및 결제 로직에서 에러 발생 시, 롤백
+   * 주문 및 결제 로직에서 에러 발생 시, 포인트 롤백
    *
    * @param orderInfoDto
    */
@@ -90,14 +93,17 @@ public class ConsumerService {
   public void rollbackPoint(OrderInfoDto orderInfoDto) {
 
     UserPointUpdateDto userPointUpdateDto = orderInfoDto.getUserPointUpdateDto();
-    Consumer foundConsumer = getConsumer(userPointUpdateDto.getConsumerId());
-    foundConsumer.rollbackPoint(userPointUpdateDto.getPoint());
+    if (userPointUpdateDto.getPoint() != null) {
+      Consumer foundConsumer = getConsumer(userPointUpdateDto.getConsumerId());
+      foundConsumer.rollbackPoint(foundConsumer.getPoint() + userPointUpdateDto.getPoint());
+    }
   }
 
   public void hasPoint(UserPointUpdateDto userPointUpdateDto) {
 
     Consumer foundConsumer = getConsumer(userPointUpdateDto.getConsumerId());
-    checkPointPolicy(foundConsumer, userPointUpdateDto.getPoint(), userPointUpdateDto.getTotalAmount());
+    checkPointPolicy(
+        foundConsumer, userPointUpdateDto.getPoint(), userPointUpdateDto.getTotalAmount());
   }
 
   public ConsumerInfoForAuctionResponse getConsumerInfoForAuction(Long consumerId) {
@@ -115,6 +121,12 @@ public class ConsumerService {
     }
 
     consumer.assignAuctionCredit(consumer.getAuctionCredit() - deductionCredit);
+  }
+
+  public ConsumerInfoForInquiryResponseDto getMyInfo(Long memberId) {
+
+    Consumer foundConsumer = getConsumer(memberId);
+    return consumerMapper.toInquiryDto(foundConsumer);
   }
 
   /**
