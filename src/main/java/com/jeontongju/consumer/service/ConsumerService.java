@@ -51,11 +51,13 @@ public class ConsumerService {
     log.info("ConsumerService's consumePoint executes..");
     UserPointUpdateDto userPointUpdateDto = orderInfoDto.getUserPointUpdateDto();
 
-    Consumer foundConsumer = getConsumer(userPointUpdateDto.getConsumerId());
+    if (userPointUpdateDto.getPoint() != null) {
+      Consumer foundConsumer = getConsumer(userPointUpdateDto.getConsumerId());
 
-    checkPointPolicy(
-        foundConsumer, userPointUpdateDto.getPoint(), userPointUpdateDto.getTotalAmount());
-    foundConsumer.consumePoint(userPointUpdateDto.getPoint());
+      checkPointPolicy(
+          foundConsumer, userPointUpdateDto.getPoint(), userPointUpdateDto.getTotalAmount());
+      foundConsumer.consumePoint(userPointUpdateDto.getPoint());
+    }
 
     log.info("ConsumerService's consumePoint Successful executed!");
     consumerProducer.sendUpdateCoupon(KafkaTopicNameInfo.USE_COUPON, orderInfoDto);
@@ -83,7 +85,7 @@ public class ConsumerService {
   }
 
   /**
-   * 주문 및 결제 로직에서 에러 발생 시, 롤백
+   * 주문 및 결제 로직에서 에러 발생 시, 포인트 롤백
    *
    * @param orderInfoDto
    */
@@ -91,14 +93,17 @@ public class ConsumerService {
   public void rollbackPoint(OrderInfoDto orderInfoDto) {
 
     UserPointUpdateDto userPointUpdateDto = orderInfoDto.getUserPointUpdateDto();
-    Consumer foundConsumer = getConsumer(userPointUpdateDto.getConsumerId());
-    foundConsumer.rollbackPoint(userPointUpdateDto.getPoint());
+    if (userPointUpdateDto.getPoint() != null) {
+      Consumer foundConsumer = getConsumer(userPointUpdateDto.getConsumerId());
+      foundConsumer.rollbackPoint(userPointUpdateDto.getPoint());
+    }
   }
 
   public void hasPoint(UserPointUpdateDto userPointUpdateDto) {
 
     Consumer foundConsumer = getConsumer(userPointUpdateDto.getConsumerId());
-    checkPointPolicy(foundConsumer, userPointUpdateDto.getPoint(), userPointUpdateDto.getTotalAmount());
+    checkPointPolicy(
+        foundConsumer, userPointUpdateDto.getPoint(), userPointUpdateDto.getTotalAmount());
   }
 
   public ConsumerInfoForAuctionResponse getConsumerInfoForAuction(Long consumerId) {
