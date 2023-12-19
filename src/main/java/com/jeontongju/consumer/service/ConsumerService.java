@@ -56,7 +56,7 @@ public class ConsumerService {
 
       checkPointPolicy(
           foundConsumer, userPointUpdateDto.getPoint(), userPointUpdateDto.getTotalAmount());
-      foundConsumer.consumePoint(userPointUpdateDto.getPoint());
+      foundConsumer.consumePoint(foundConsumer.getPoint() - userPointUpdateDto.getPoint());
     }
 
     log.info("ConsumerService's consumePoint Successful executed!");
@@ -95,7 +95,7 @@ public class ConsumerService {
     UserPointUpdateDto userPointUpdateDto = orderInfoDto.getUserPointUpdateDto();
     if (userPointUpdateDto.getPoint() != null) {
       Consumer foundConsumer = getConsumer(userPointUpdateDto.getConsumerId());
-      foundConsumer.rollbackPoint(userPointUpdateDto.getPoint());
+      foundConsumer.rollbackPoint(foundConsumer.getPoint() + userPointUpdateDto.getPoint());
     }
   }
 
