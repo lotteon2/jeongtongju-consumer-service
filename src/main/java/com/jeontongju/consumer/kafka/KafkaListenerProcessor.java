@@ -23,7 +23,7 @@ public class KafkaListenerProcessor {
     try {
       log.info("KafkaListenerProcessor's consumePoint executes..");
       consumerService.consumePoint(orderInfoDto);
-    } catch (KafkaException e) {
+    } catch (Exception e) {
       throw new KafkaDuringOrderException(CustomErrMessage.ERROR_KAFKA);
     }
   }
@@ -34,7 +34,7 @@ public class KafkaListenerProcessor {
     try {
       log.info("KafkaListenerProcessor's rollbackPoint executes..");
       consumerService.rollbackPoint(orderInfoDto);
-    } catch (KafkaException e) {
+    } catch (Exception e) {
       throw new KafkaDuringOrderException(CustomErrMessage.ERROR_KAFKA);
     }
   }
