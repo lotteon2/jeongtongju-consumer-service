@@ -2,9 +2,9 @@ package com.jeontongju.consumer.service;
 
 import com.jeontongju.consumer.domain.Consumer;
 import com.jeontongju.consumer.dto.response.ConsumerInfoForInquiryResponseDto;
+import com.jeontongju.consumer.dto.temp.ConsumerInfoForAuctionResponse;
 import com.jeontongju.consumer.dto.temp.ConsumerInfoForCreateBySnsRequestDto;
 import com.jeontongju.consumer.dto.temp.ConsumerInfoForCreateRequestDto;
-import com.jeontongju.consumer.dto.temp.ConsumerInfoForAuctionResponse;
 import com.jeontongju.consumer.exception.*;
 import com.jeontongju.consumer.kafka.ConsumerProducer;
 import com.jeontongju.consumer.mapper.ConsumerMapper;
@@ -95,10 +95,10 @@ public class ConsumerService {
     foundConsumer.rollbackPoint(userPointUpdateDto.getPoint());
   }
 
-  public Boolean hasPoint(UserPointUpdateDto userPointUpdateDto) {
+  public void hasPoint(UserPointUpdateDto userPointUpdateDto) {
 
     Consumer foundConsumer = getConsumer(userPointUpdateDto.getConsumerId());
-    return foundConsumer.getPoint() >= userPointUpdateDto.getPoint();
+    checkPointPolicy(foundConsumer, userPointUpdateDto.getPoint(), userPointUpdateDto.getTotalAmount());
   }
 
   public ConsumerInfoForAuctionResponse getConsumerInfoForAuction(Long consumerId) {

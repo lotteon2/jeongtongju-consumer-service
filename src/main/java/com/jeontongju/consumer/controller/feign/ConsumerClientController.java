@@ -36,10 +36,8 @@ public class ConsumerClientController {
   public FeignFormat<Boolean> checkConsumerPoint(
       @RequestBody UserPointUpdateDto userPointUpdateDto) {
 
-    return FeignFormat.<Boolean>builder()
-        .code(HttpStatus.OK.value())
-        .data(consumerService.hasPoint(userPointUpdateDto))
-        .build();
+    consumerService.hasPoint(userPointUpdateDto);
+    return FeignFormat.<Boolean>builder().code(HttpStatus.OK.value()).build();
   }
 
   @GetMapping("/consumers/{consumerId}/auction")
