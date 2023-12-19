@@ -79,7 +79,7 @@ public class ConsumerService {
     }
 
     // 포인트 사용 정책 확인
-    if (currentPoint > totalAmount * 0.1) {
+    if (point > totalAmount * 0.1) {
       throw new PointUsageOver10PercetageException(CustomErrMessage.POINT_USAGE_OVER_10_PERCENTAGE);
     }
   }
