@@ -52,7 +52,8 @@ public class ConsumerService {
 
     Consumer foundConsumer = getConsumer(userPointUpdateDto.getConsumerId());
 
-    checkPointPolicy(foundConsumer, userPointUpdateDto.getPoint(), null);
+    checkPointPolicy(
+        foundConsumer, userPointUpdateDto.getPoint(), userPointUpdateDto.getTotalAmount());
     foundConsumer.consumePoint(userPointUpdateDto.getPoint());
 
     log.info("ConsumerService's consumePoint Successful executed!");
