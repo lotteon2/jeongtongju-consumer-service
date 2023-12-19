@@ -1,6 +1,7 @@
 package com.jeontongju.consumer.mapper;
 
 import com.jeontongju.consumer.domain.Consumer;
+import com.jeontongju.consumer.dto.response.ConsumerInfoForInquiryResponseDto;
 import com.jeontongju.consumer.dto.temp.ConsumerInfoForCreateBySnsRequestDto;
 import com.jeontongju.consumer.dto.temp.ConsumerInfoForCreateRequestDto;
 import org.springframework.stereotype.Component;
@@ -9,6 +10,7 @@ import org.springframework.stereotype.Component;
 public class ConsumerMapper {
 
   public Consumer toEntity(ConsumerInfoForCreateRequestDto createRequestDto) {
+
     return Consumer.builder()
         .consumerId(createRequestDto.getConsumerId())
         .email(createRequestDto.getEmail())
@@ -18,10 +20,21 @@ public class ConsumerMapper {
   }
 
   public Consumer toEntity(ConsumerInfoForCreateBySnsRequestDto createByKakaoRequestDto) {
+
     return Consumer.builder()
         .consumerId(createByKakaoRequestDto.getConsumerId())
         .email(createByKakaoRequestDto.getEmail())
         .profileImageUrl(createByKakaoRequestDto.getProfileImageUrl())
+        .build();
+  }
+
+  public ConsumerInfoForInquiryResponseDto toInquiryDto(Consumer consumer) {
+
+    return ConsumerInfoForInquiryResponseDto.builder()
+        .email(consumer.getEmail())
+        .name(consumer.getName())
+        .phoneNumber(consumer.getPhoneNumber())
+        .profileImageUrl(consumer.getProfileImageUrl())
         .build();
   }
 }

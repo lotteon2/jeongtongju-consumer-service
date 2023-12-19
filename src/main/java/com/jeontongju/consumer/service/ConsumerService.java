@@ -1,6 +1,7 @@
 package com.jeontongju.consumer.service;
 
 import com.jeontongju.consumer.domain.Consumer;
+import com.jeontongju.consumer.dto.response.ConsumerInfoForInquiryResponseDto;
 import com.jeontongju.consumer.dto.temp.ConsumerInfoForAuctionResponse;
 import com.jeontongju.consumer.dto.temp.ConsumerInfoForCreateBySnsRequestDto;
 import com.jeontongju.consumer.dto.temp.ConsumerInfoForCreateRequestDto;
@@ -115,6 +116,12 @@ public class ConsumerService {
     }
 
     consumer.assignAuctionCredit(consumer.getAuctionCredit() - deductionCredit);
+  }
+
+  public ConsumerInfoForInquiryResponseDto getMyInfo(Long memberId) {
+
+    Consumer foundConsumer = getConsumer(memberId);
+    return consumerMapper.toInquiryDto(foundConsumer);
   }
 
   /**
