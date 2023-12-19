@@ -6,4 +6,5 @@ public interface CustomErrMessage {
   String ERROR_KAFKA = "카프카 예외 발생";
   String INSUFFICIENT_POINT = "부족한 포인트";
   String INSUFFICIENT_CREDIT = "부족한 크레딧";
+  String POINT_USAGE_OVER_10_PERCENTAGE = "포인트 사용액 10% 초과";
 }

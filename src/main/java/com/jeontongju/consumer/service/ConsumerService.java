@@ -4,13 +4,11 @@ import com.jeontongju.consumer.domain.Consumer;
 import com.jeontongju.consumer.dto.temp.ConsumerInfoForCreateBySnsRequestDto;
 import com.jeontongju.consumer.dto.temp.ConsumerInfoForCreateRequestDto;
 import com.jeontongju.consumer.dto.temp.ConsumerInfoForAuctionResponse;
-import com.jeontongju.consumer.exception.ConsumerNotFoundException;
-import com.jeontongju.consumer.exception.KafkaDuringOrderException;
+import com.jeontongju.consumer.exception.*;
 import com.jeontongju.consumer.kafka.ConsumerProducer;
 import com.jeontongju.consumer.mapper.ConsumerMapper;
 import com.jeontongju.consumer.repository.ConsumerRepository;
 import com.jeontongju.consumer.utils.CustomErrMessage;
-import com.jeontongju.consumer.exception.InsufficientCreditException;
 import io.github.bitbox.bitbox.dto.OrderInfoDto;
 import io.github.bitbox.bitbox.dto.UserPointUpdateDto;
 import io.github.bitbox.bitbox.util.KafkaTopicNameInfo;
@@ -19,9 +17,6 @@ import lombok.extern.slf4j.Slf4j;
 import org.apache.kafka.common.KafkaException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-
-import java.util.Optional;
-import javax.persistence.EntityNotFoundException;
 
 @Slf4j
 @Service
@@ -44,50 +39,94 @@ public class ConsumerService {
     consumerRepository.save(consumerMapper.toEntity(createBySnsRequestDto));
   }
 
+  /**
+   * 주문 및 결제 확정을 위한 포인트 차감
+   *
+   * @param orderInfoDto
+   */
   @Transactional
-  public void consumePoint(OrderInfoDto orderInfoDto) {
+  public void consumePoint(OrderInfoDto orderInfoDto) throws KafkaException {
 
     log.info("ConsumerService's consumePoint executes..");
     UserPointUpdateDto userPointUpdateDto = orderInfoDto.getUserPointUpdateDto();
-    Consumer foundConsumer =
-        consumerRepository
-            .findByConsumerId(userPointUpdateDto.getConsumerId())
-            .orElseThrow(() -> new ConsumerNotFoundException(CustomErrMessage.NOT_FOUND_CONSUMER));
+
+    Consumer foundConsumer = getConsumer(userPointUpdateDto.getConsumerId());
+
+    checkPointPolicy(
+        foundConsumer, userPointUpdateDto.getPoint(), userPointUpdateDto.getTotalAmount());
     foundConsumer.consumePoint(userPointUpdateDto.getPoint());
 
     log.info("ConsumerService's consumePoint Successful executed!");
     consumerProducer.sendUpdateCoupon(KafkaTopicNameInfo.USE_COUPON, orderInfoDto);
   }
 
-  public Boolean checkConsumerPoint(UserPointUpdateDto userPointUpdateDto) {
+  /**
+   * 포인트 사용 정책 만족 여부 확인
+   *
+   * @param foundConsumer
+   * @param point
+   * @param totalAmount
+   */
+  public void checkPointPolicy(Consumer foundConsumer, Long point, Long totalAmount)
+      throws PointInsufficientException, PointUsageOver10PercetageException {
 
-    Consumer foundConsumer =
-        consumerRepository
-            .findByConsumerId(userPointUpdateDto.getConsumerId())
-            .orElseThrow(() -> new ConsumerNotFoundException(CustomErrMessage.NOT_FOUND_CONSUMER));
+    Long currentPoint = foundConsumer.getPoint();
+    if (currentPoint < point) { // 포인트 확인
+      throw new PointInsufficientException(CustomErrMessage.INSUFFICIENT_POINT);
+    }
 
+    // 포인트 사용 정책 확인
+    if (currentPoint > totalAmount * 0.1) {
+      throw new PointUsageOver10PercetageException(CustomErrMessage.POINT_USAGE_OVER_10_PERCENTAGE);
+    }
+  }
+
+  /**
+   * 주문 및 결제 로직에서 에러 발생 시, 롤백
+   *
+   * @param orderInfoDto
+   */
+  @Transactional
+  public void rollbackPoint(OrderInfoDto orderInfoDto) {
+
+    UserPointUpdateDto userPointUpdateDto = orderInfoDto.getUserPointUpdateDto();
+    Consumer foundConsumer = getConsumer(userPointUpdateDto.getConsumerId());
+    foundConsumer.rollbackPoint(userPointUpdateDto.getPoint());
+  }
+
+  public Boolean hasPoint(UserPointUpdateDto userPointUpdateDto) {
+
+    Consumer foundConsumer = getConsumer(userPointUpdateDto.getConsumerId());
     return foundConsumer.getPoint() >= userPointUpdateDto.getPoint();
   }
 
   public ConsumerInfoForAuctionResponse getConsumerInfoForAuction(Long consumerId) {
-    Consumer foundConsumer =
-        consumerRepository
-            .findByConsumerId(consumerId)
-            .orElseThrow(() -> new EntityNotFoundException(""));
 
+    Consumer foundConsumer = getConsumer(consumerId);
     return ConsumerInfoForAuctionResponse.toDto(foundConsumer);
   }
 
   @Transactional
   public void consumeCreditByBidding(Long consumerId, Long deductionCredit) {
-    Consumer consumer =
-        consumerRepository
-            .findByConsumerId(consumerId)
-            .orElseThrow(() -> new EntityNotFoundException(CustomErrMessage.NOT_FOUND_CONSUMER));
+
+    Consumer consumer = getConsumer(consumerId);
     if (consumer.getAuctionCredit() < deductionCredit) {
       throw new InsufficientCreditException(CustomErrMessage.INSUFFICIENT_CREDIT);
     }
 
     consumer.assignAuctionCredit(consumer.getAuctionCredit() - deductionCredit);
+  }
+
+  /**
+   * consumerId로 Consumer 찾기 (공통화)
+   *
+   * @param consumerId
+   * @return Consumer
+   */
+  private Consumer getConsumer(Long consumerId) {
+
+    return consumerRepository
+        .findByConsumerId(consumerId)
+        .orElseThrow(() -> new ConsumerNotFoundException(CustomErrMessage.NOT_FOUND_CONSUMER));
   }
 }
