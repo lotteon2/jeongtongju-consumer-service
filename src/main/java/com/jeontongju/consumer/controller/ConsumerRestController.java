@@ -1,6 +1,7 @@
 package com.jeontongju.consumer.controller;
 
 import com.jeontongju.consumer.dto.response.ConsumerInfoForInquiryResponseDto;
+import com.jeontongju.consumer.dto.response.PointCreditForInquiryResponseDto;
 import com.jeontongju.consumer.dto.response.PointTradeInfoForSummaryNDetailsResponseDto;
 import com.jeontongju.consumer.service.ConsumerService;
 import io.github.bitbox.bitbox.dto.ResponseFormat;
@@ -45,9 +46,8 @@ public class ConsumerRestController {
     if ("acc".equals(search)) {
       myPointSummaryNDetails =
           consumerService.getMyPointSummaryNSavingDetails(memberId, page, size);
-    } else if("use".equals(search)){
-      myPointSummaryNDetails =
-              consumerService.getMyPointSummaryNUseDetails(memberId, page, size);
+    } else if ("use".equals(search)) {
+      myPointSummaryNDetails = consumerService.getMyPointSummaryNUseDetails(memberId, page, size);
     } else {
       myPointSummaryNDetails = consumerService.getMyPointSummaryNDetails(memberId, page, size);
     }
@@ -58,6 +58,20 @@ public class ConsumerRestController {
                 .message(HttpStatus.OK.name())
                 .detail("포인트 거래내역 조회 성공")
                 .data(myPointSummaryNDetails)
+                .build());
+  }
+
+  @GetMapping("/consumers/point-credit")
+  public ResponseEntity<ResponseFormat<PointCreditForInquiryResponseDto>> getMyPointNCredit(
+      @RequestHeader Long memberId) {
+
+    return ResponseEntity.ok()
+        .body(
+            ResponseFormat.<PointCreditForInquiryResponseDto>builder()
+                .code(HttpStatus.OK.value())
+                .message(HttpStatus.OK.name())
+                .detail("포인트 + 크레딧 조회 성공")
+                .data(consumerService.getPointNCredit(memberId))
                 .build());
   }
 }

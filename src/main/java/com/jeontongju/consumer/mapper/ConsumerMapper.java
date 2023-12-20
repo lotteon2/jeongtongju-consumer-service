@@ -2,6 +2,7 @@ package com.jeontongju.consumer.mapper;
 
 import com.jeontongju.consumer.domain.Consumer;
 import com.jeontongju.consumer.dto.response.ConsumerInfoForInquiryResponseDto;
+import com.jeontongju.consumer.dto.response.PointCreditForInquiryResponseDto;
 import com.jeontongju.consumer.dto.temp.ConsumerInfoForCreateBySnsRequestDto;
 import com.jeontongju.consumer.dto.temp.ConsumerInfoForCreateRequestDto;
 import org.springframework.stereotype.Component;
@@ -35,6 +36,14 @@ public class ConsumerMapper {
         .name(consumer.getName())
         .phoneNumber(consumer.getPhoneNumber())
         .profileImageUrl(consumer.getProfileImageUrl())
+        .build();
+  }
+
+  public PointCreditForInquiryResponseDto toPointCreditInquiryDto(Consumer consumer) {
+
+    return PointCreditForInquiryResponseDto.builder()
+        .point(consumer.getPoint())
+        .credit(consumer.getAuctionCredit())
         .build();
   }
 }

@@ -3,8 +3,9 @@ package com.jeontongju.consumer.service;
 import com.jeontongju.consumer.domain.Consumer;
 import com.jeontongju.consumer.domain.PointHistory;
 import com.jeontongju.consumer.dto.response.ConsumerInfoForInquiryResponseDto;
-import com.jeontongju.consumer.dto.response.PointTradeInfoForSummaryNDetailsResponseDto;
+import com.jeontongju.consumer.dto.response.PointCreditForInquiryResponseDto;
 import com.jeontongju.consumer.dto.response.PointTradeInfoForSingleInquiryResponseDto;
+import com.jeontongju.consumer.dto.response.PointTradeInfoForSummaryNDetailsResponseDto;
 import com.jeontongju.consumer.dto.temp.ConsumerInfoForAuctionResponse;
 import com.jeontongju.consumer.dto.temp.ConsumerInfoForCreateBySnsRequestDto;
 import com.jeontongju.consumer.dto.temp.ConsumerInfoForCreateRequestDto;
@@ -17,15 +18,13 @@ import com.jeontongju.consumer.utils.CustomErrMessage;
 import io.github.bitbox.bitbox.dto.OrderInfoDto;
 import io.github.bitbox.bitbox.dto.UserPointUpdateDto;
 import io.github.bitbox.bitbox.util.KafkaTopicNameInfo;
+import java.util.List;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.kafka.common.KafkaException;
 import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageImpl;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-
-import java.util.List;
 
 @Slf4j
 @Service
@@ -163,12 +162,13 @@ public class ConsumerService {
     return calcPointSummary(foundConsumer, pointSavingHistoriesPaged);
   }
 
-  public PointTradeInfoForSummaryNDetailsResponseDto getMyPointSummaryNUseDetails(Long consumerId, int page, int size) {
+  public PointTradeInfoForSummaryNDetailsResponseDto getMyPointSummaryNUseDetails(
+      Long consumerId, int page, int size) {
 
     Consumer foundConsumer = getConsumer(consumerId);
 
     Page<PointTradeInfoForSingleInquiryResponseDto> pointSavingHistoriesPaged =
-            historyService.getPointUseHistoriesPaged(foundConsumer, page, size);
+        historyService.getPointUseHistoriesPaged(foundConsumer, page, size);
 
     return calcPointSummary(foundConsumer, pointSavingHistoriesPaged);
   }
@@ -183,6 +183,12 @@ public class ConsumerService {
         consumer.getPoint(), summary[0], summary[1], pointHistoriesPaged);
   }
 
+  public PointCreditForInquiryResponseDto getPointNCredit(Long consumerId) {
+
+    Consumer foundConsumer = getConsumer(consumerId);
+    return consumerMapper.toPointCreditInquiryDto(foundConsumer);
+  }
+
   /**
    * consumerId로 Consumer 찾기 (공통화)
    *
@@ -195,6 +201,4 @@ public class ConsumerService {
         .findByConsumerId(consumerId)
         .orElseThrow(() -> new ConsumerNotFoundException(CustomErrMessage.NOT_FOUND_CONSUMER));
   }
-
-
 }
