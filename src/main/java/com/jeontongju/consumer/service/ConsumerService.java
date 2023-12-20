@@ -10,12 +10,15 @@ import com.jeontongju.consumer.kafka.ConsumerProducer;
 import com.jeontongju.consumer.mapper.ConsumerMapper;
 import com.jeontongju.consumer.repository.ConsumerRepository;
 import com.jeontongju.consumer.utils.CustomErrMessage;
+import io.github.bitbox.bitbox.dto.ConsumerRegularPaymentsCouponDto;
 import io.github.bitbox.bitbox.dto.OrderInfoDto;
+import io.github.bitbox.bitbox.dto.SubscriptionDto;
 import io.github.bitbox.bitbox.dto.UserPointUpdateDto;
 import io.github.bitbox.bitbox.util.KafkaTopicNameInfo;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.kafka.common.KafkaException;
+import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -24,10 +27,11 @@ import org.springframework.transaction.annotation.Transactional;
 @RequiredArgsConstructor
 @Transactional(readOnly = true)
 public class ConsumerService {
-
+  private final SubscriptionService subscriptionService;
   private final ConsumerRepository consumerRepository;
   private final ConsumerMapper consumerMapper;
   private final ConsumerProducer consumerProducer;
+  private final KafkaTemplate<String, ConsumerRegularPaymentsCouponDto> kafkaTemplate;
 
   @Transactional
   public void createConsumerForSignup(ConsumerInfoForCreateRequestDto createRequestDto) {
@@ -99,6 +103,24 @@ public class ConsumerService {
     }
   }
 
+  @Transactional
+  public void updateConsumerCredit(Long consumerId, Long credit) {
+    Consumer foundConsumer = getConsumer(consumerId);
+    foundConsumer.assignAuctionCredit(foundConsumer.getAuctionCredit() + credit);
+  }
+
+  @Transactional
+  public void createSubscription(SubscriptionDto subscriptionDto){
+    Consumer foundConsumer = getConsumer(subscriptionDto.getConsumerId());
+    foundConsumer.addSubscriptionInfo();
+
+    subscriptionService.createSubscription(subscriptionDto);
+    kafkaTemplate.send(KafkaTopicNameInfo.ISSUE_REGULAR_PAYMENTS_COUPON, ConsumerRegularPaymentsCouponDto.builder().consumerId(subscriptionDto.getConsumerId())
+            .successedAt(subscriptionDto.getStartDate()).build());
+
+  }
+
+
   public void hasPoint(UserPointUpdateDto userPointUpdateDto) {
 
     Consumer foundConsumer = getConsumer(userPointUpdateDto.getConsumerId());
@@ -110,6 +132,11 @@ public class ConsumerService {
 
     Consumer foundConsumer = getConsumer(consumerId);
     return ConsumerInfoForAuctionResponse.toDto(foundConsumer);
+  }
+
+  public boolean getConsumerRegularPaymentInfo(Long consumerId){
+      Consumer foundConsumer = getConsumer(consumerId);
+      return foundConsumer.getIsRegularPayment();
   }
 
   @Transactional

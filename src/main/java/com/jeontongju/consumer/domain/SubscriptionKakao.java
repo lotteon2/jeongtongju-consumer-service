@@ -5,11 +5,14 @@ import static javax.persistence.GenerationType.IDENTITY;
 import com.jeontongju.consumer.domain.common.BaseEntity;
 import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.OneToOne;
 import javax.persistence.Table;
+import javax.validation.constraints.NotNull;
+
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
@@ -28,10 +31,20 @@ public class SubscriptionKakao extends BaseEntity {
   @Column(name = "kakao_subscription_id")
   private Long kakaoSubscriptionId;
 
-  @Column(name = "subscription_unique_key", nullable = false)
-  private String subscriptionUniqueKey;
+  @Column(name = "kakao_sid", nullable = false)
+  @NotNull
+  private String kakaoSid;
 
-  @OneToOne
-  @JoinColumn(name = "subscription_id", nullable = false)
+  @Column(name = "kakao_store_code", nullable = false)
+  @NotNull
+  private String kakaoStoreCode;
+
+  @Column(name = "kakao_order_id", nullable = false)
+  @NotNull
+  private String kakaoOrderId;
+
+  @OneToOne(fetch = FetchType.LAZY)
+  @JoinColumn(name = "subscription_id")
+  @NotNull
   private Subscription subscription;
 }
