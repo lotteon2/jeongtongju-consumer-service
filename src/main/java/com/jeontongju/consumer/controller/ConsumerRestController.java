@@ -40,17 +40,18 @@ public class ConsumerRestController {
                 .build());
   }
 
-  @GetMapping("/consumers/addresses")
-  public ResponseEntity<ResponseFormat<List<AddressInfoForSingleInquiryResponseDto>>>
-      getAddressesForListLookup(@RequestHeader Long memberId) {
-
-    return ResponseEntity.ok()
-        .body(
-            ResponseFormat.<List<AddressInfoForSingleInquiryResponseDto>>builder()
-                .code(HttpStatus.OK.value())
-                .message(HttpStatus.OK.name())
-                .detail("주소지 목록 조회 성공")
-                .data(addressService.getAddressesForListLookup(memberId))
+//  @GetMapping("/consumers/addresses")
+//  public ResponseEntity<ResponseFormat<List<AddressInfoForSingleInquiryResponseDto>>>
+//      getAddressesForListLookup(@RequestHeader Long memberId) {
+//
+//    return ResponseEntity.ok()
+//        .body(
+//            ResponseFormat.<List<AddressInfoForSingleInquiryResponseDto>>builder()
+//                .code(HttpStatus.OK.value())
+//                .message(HttpStatus.OK.name())
+//                .detail("주소지 목록 조회 성공")
+//                .data(addressService.getAddressesForListLookup(memberId)));
+//  }
 
   @GetMapping("/consumers")
   public ResponseEntity<ResponseFormat<ConsumerInfoForInquiryResponseDto>> getMyInfo(
