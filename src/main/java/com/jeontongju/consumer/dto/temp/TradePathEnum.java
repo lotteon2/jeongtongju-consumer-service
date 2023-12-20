@@ -4,9 +4,12 @@ import lombok.Getter;
 
 @Getter
 public enum TradePathEnum {
-  TEXT_REVIEW("리뷰"),
+  TEXT_REVIEW("글리뷰"),
+  PHOTO_REVIEW("포토리뷰"),
   PURCHASE_USE("구매사용"),
-  ORDER_CONFIRMED("주문확정");
+  PURCHASE_CANCEL("구매취소"),
+  GENERAL_CONFIRMED("일반 구매확정"),
+  YANGBAN_CONFIRMED("양반 구매확정");
 
   private final String value;
 
