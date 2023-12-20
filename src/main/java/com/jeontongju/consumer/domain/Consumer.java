@@ -74,6 +74,10 @@ public class Consumer extends BaseEntity {
     this.point = point;
   }
 
+  public void addSubscriptionInfo(){
+    this.isRegularPayment = true;
+  }
+
   public void assignAuctionCredit(Long auctionCredit) {
     this.auctionCredit = auctionCredit;
   }
