@@ -1,16 +1,12 @@
 package com.jeontongju.consumer.domain;
 
 import com.jeontongju.consumer.domain.common.BaseEntity;
-
 import java.util.List;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.Id;
 import javax.persistence.OneToMany;
 import javax.persistence.Table;
-
-import com.jeontongju.consumer.exception.PointInsufficientException;
-import com.jeontongju.consumer.utils.CustomErrMessage;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
