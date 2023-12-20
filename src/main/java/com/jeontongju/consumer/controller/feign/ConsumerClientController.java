@@ -53,6 +53,16 @@ public class ConsumerClientController {
         .build();
   }
 
+  @GetMapping("/consumers/{consumerId}/subscription")
+  public FeignFormat<Boolean> getConsumerSubscription(
+          @PathVariable Long consumerId) {
+
+    return FeignFormat.<Boolean>builder()
+            .code(HttpStatus.OK.value())
+            .data(consumerService.getConsumerRegularPaymentInfo(consumerId))
+    .build();
+  }
+
   @PatchMapping("/consumers/{consumerId}/credit/{deductionCredit}")
   public FeignFormat<Boolean> consumeCreditByBidding(
       @PathVariable Long consumerId, @PathVariable Long deductionCredit) {
