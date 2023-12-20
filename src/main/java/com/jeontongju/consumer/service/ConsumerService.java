@@ -1,13 +1,17 @@
 package com.jeontongju.consumer.service;
 
 import com.jeontongju.consumer.domain.Consumer;
+import com.jeontongju.consumer.domain.PointHistory;
 import com.jeontongju.consumer.dto.response.ConsumerInfoForInquiryResponseDto;
+import com.jeontongju.consumer.dto.response.PointTradeInfoForSummaryNDetailsResponseDto;
+import com.jeontongju.consumer.dto.response.PointTradeInfoForSingleInquiryResponseDto;
 import com.jeontongju.consumer.dto.temp.ConsumerInfoForAuctionResponse;
 import com.jeontongju.consumer.dto.temp.ConsumerInfoForCreateBySnsRequestDto;
 import com.jeontongju.consumer.dto.temp.ConsumerInfoForCreateRequestDto;
 import com.jeontongju.consumer.exception.*;
 import com.jeontongju.consumer.kafka.ConsumerProducer;
 import com.jeontongju.consumer.mapper.ConsumerMapper;
+import com.jeontongju.consumer.mapper.HistoryMapper;
 import com.jeontongju.consumer.repository.ConsumerRepository;
 import com.jeontongju.consumer.utils.CustomErrMessage;
 import io.github.bitbox.bitbox.dto.OrderInfoDto;
@@ -16,8 +20,12 @@ import io.github.bitbox.bitbox.util.KafkaTopicNameInfo;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.kafka.common.KafkaException;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+
+import java.util.List;
 
 @Slf4j
 @Service
@@ -26,7 +34,9 @@ import org.springframework.transaction.annotation.Transactional;
 public class ConsumerService {
 
   private final ConsumerRepository consumerRepository;
+  private final HistoryService historyService;
   private final ConsumerMapper consumerMapper;
+  private final HistoryMapper historyMapper;
   private final ConsumerProducer consumerProducer;
 
   @Transactional
@@ -127,6 +137,23 @@ public class ConsumerService {
 
     Consumer foundConsumer = getConsumer(memberId);
     return consumerMapper.toInquiryDto(foundConsumer);
+  }
+
+  public PointTradeInfoForSummaryNDetailsResponseDto getMyPointSummaryNDetails(
+      Long consumerId, int page, int size) {
+
+    Consumer foundConsumer = getConsumer(consumerId);
+
+    // 포인트 거래내역 가져오기 (한 페이지 만큼)
+    Page<PointTradeInfoForSingleInquiryResponseDto> pointHistoriesPaged =
+        historyService.getPointHistoriesPaged(foundConsumer, page, size);
+
+    // 포인트 요약 정보 계산하기
+    List<PointHistory> allPointHistories = historyService.getAllPointHistories(foundConsumer);
+    long[] summary = historyService.calcTotalPointSummary(allPointHistories);
+
+    return historyMapper.toPointSummaryNDetailsResponseDto(
+        foundConsumer.getPoint(), summary[0], summary[1], pointHistoriesPaged);
   }
 
   /**
