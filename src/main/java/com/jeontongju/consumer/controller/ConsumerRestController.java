@@ -37,12 +37,20 @@ public class ConsumerRestController {
   public ResponseEntity<ResponseFormat<PointTradeInfoForSummaryNDetailsResponseDto>>
       getMyPointHistories(
           @RequestHeader Long memberId,
+          @RequestParam(value = "search", required = false) String search,
           @RequestParam(value = "page", defaultValue = "0") int page,
           @RequestParam(value = "size", defaultValue = "10") int size) {
 
-    PointTradeInfoForSummaryNDetailsResponseDto myPointSummaryNDetails =
-        consumerService.getMyPointSummaryNDetails(memberId, page, size);
-
+    PointTradeInfoForSummaryNDetailsResponseDto myPointSummaryNDetails = null;
+    if ("acc".equals(search)) {
+      myPointSummaryNDetails =
+          consumerService.getMyPointSummaryNSavingDetails(memberId, page, size);
+    } else if("use".equals(search)){
+      myPointSummaryNDetails =
+              consumerService.getMyPointSummaryNUseDetails(memberId, page, size);
+    } else {
+      myPointSummaryNDetails = consumerService.getMyPointSummaryNDetails(memberId, page, size);
+    }
     return ResponseEntity.ok()
         .body(
             ResponseFormat.<PointTradeInfoForSummaryNDetailsResponseDto>builder()

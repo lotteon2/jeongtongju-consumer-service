@@ -149,11 +149,38 @@ public class ConsumerService {
         historyService.getPointHistoriesPaged(foundConsumer, page, size);
 
     // 포인트 요약 정보 계산하기
-    List<PointHistory> allPointHistories = historyService.getAllPointHistories(foundConsumer);
+    return calcPointSummary(foundConsumer, pointHistoriesPaged);
+  }
+
+  public PointTradeInfoForSummaryNDetailsResponseDto getMyPointSummaryNSavingDetails(
+      Long consumerId, int page, int size) {
+
+    Consumer foundConsumer = getConsumer(consumerId);
+
+    Page<PointTradeInfoForSingleInquiryResponseDto> pointSavingHistoriesPaged =
+        historyService.getPointSavingHistoriesPaged(foundConsumer, page, size);
+
+    return calcPointSummary(foundConsumer, pointSavingHistoriesPaged);
+  }
+
+  public PointTradeInfoForSummaryNDetailsResponseDto getMyPointSummaryNUseDetails(Long consumerId, int page, int size) {
+
+    Consumer foundConsumer = getConsumer(consumerId);
+
+    Page<PointTradeInfoForSingleInquiryResponseDto> pointSavingHistoriesPaged =
+            historyService.getPointUseHistoriesPaged(foundConsumer, page, size);
+
+    return calcPointSummary(foundConsumer, pointSavingHistoriesPaged);
+  }
+
+  private PointTradeInfoForSummaryNDetailsResponseDto calcPointSummary(
+      Consumer consumer, Page<PointTradeInfoForSingleInquiryResponseDto> pointHistoriesPaged) {
+
+    List<PointHistory> allPointHistories = historyService.getAllPointHistories(consumer);
     long[] summary = historyService.calcTotalPointSummary(allPointHistories);
 
     return historyMapper.toPointSummaryNDetailsResponseDto(
-        foundConsumer.getPoint(), summary[0], summary[1], pointHistoriesPaged);
+        consumer.getPoint(), summary[0], summary[1], pointHistoriesPaged);
   }
 
   /**
@@ -168,4 +195,6 @@ public class ConsumerService {
         .findByConsumerId(consumerId)
         .orElseThrow(() -> new ConsumerNotFoundException(CustomErrMessage.NOT_FOUND_CONSUMER));
   }
+
+
 }

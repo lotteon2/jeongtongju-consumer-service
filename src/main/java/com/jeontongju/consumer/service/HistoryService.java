@@ -25,8 +25,43 @@ public class HistoryService {
     Pageable pageable = getPageableByCreatedAt(page, size);
     Page<PointHistory> pagedHistories = pointHistoryRepository.findByConsumer(consumer, pageable);
 
-    List<PointTradeInfoForSingleInquiryResponseDto> pointHistoriesPagedResponseDto = historyMapper.toPointHistoriesPagedResponseDto(pagedHistories);
-    return new PageImpl<>(pointHistoriesPagedResponseDto, getPageableByCreatedAt(page, size), getPointHistoriesTotalSize(consumer));
+    List<PointTradeInfoForSingleInquiryResponseDto> pointHistoriesPagedResponseDto =
+        historyMapper.toPointHistoriesPagedResponseDto(pagedHistories);
+    return new PageImpl<>(
+        pointHistoriesPagedResponseDto,
+        getPageableByCreatedAt(page, size),
+        getPointHistoriesTotalSize(consumer));
+  }
+
+  public Page<PointTradeInfoForSingleInquiryResponseDto> getPointSavingHistoriesPaged(
+      Consumer consumer, int page, int size) {
+
+    Pageable pageable = getPageableByCreatedAt(page, size);
+    Page<PointHistory> pagedSavingHistories =
+        pointHistoryRepository.findByConsumerAndTradePointGreaterThan(consumer, 0L, pageable);
+
+    List<PointTradeInfoForSingleInquiryResponseDto> pointHistoriesPagedResponseDto =
+        historyMapper.toPointHistoriesPagedResponseDto(pagedSavingHistories);
+    return new PageImpl<>(
+        pointHistoriesPagedResponseDto,
+        getPageableByCreatedAt(page, size),
+        getPointHistoriesTotalSize(consumer));
+  }
+
+  public Page<PointTradeInfoForSingleInquiryResponseDto> getPointUseHistoriesPaged(
+      Consumer consumer, int page, int size) {
+
+    Pageable pageable = getPageableByCreatedAt(page, size);
+    Page<PointHistory> pagedSavingHistories =
+        pointHistoryRepository.findByConsumerAndTradePointLessThan(consumer, 0L, pageable);
+
+    List<PointTradeInfoForSingleInquiryResponseDto> pointHistoriesPagedResponseDto =
+        historyMapper.toPointHistoriesPagedResponseDto(pagedSavingHistories);
+
+    return new PageImpl<>(
+        pointHistoriesPagedResponseDto,
+        getPageableByCreatedAt(page, size),
+        getPointHistoriesTotalSize(consumer));
   }
 
   public Pageable getPageableByCreatedAt(int page, int size) {
