@@ -4,10 +4,7 @@ import com.jeontongju.consumer.domain.Consumer;
 import com.jeontongju.consumer.domain.CreditHistory;
 import com.jeontongju.consumer.domain.PointHistory;
 import com.jeontongju.consumer.domain.Subscription;
-import com.jeontongju.consumer.dto.response.ConsumerInfoForInquiryResponseDto;
-import com.jeontongju.consumer.dto.response.PointCreditForInquiryResponseDto;
-import com.jeontongju.consumer.dto.response.PointTradeInfoForSingleInquiryResponseDto;
-import com.jeontongju.consumer.dto.response.PointTradeInfoForSummaryNDetailsResponseDto;
+import com.jeontongju.consumer.dto.response.*;
 import com.jeontongju.consumer.dto.temp.ConsumerInfoForAuctionResponse;
 import com.jeontongju.consumer.dto.temp.ConsumerInfoForCreateBySnsRequestDto;
 import com.jeontongju.consumer.dto.temp.ConsumerInfoForCreateRequestDto;
@@ -44,9 +41,10 @@ import java.util.Optional;
 @RequiredArgsConstructor
 @Transactional(readOnly = true)
 public class ConsumerService {
-  private final SubscriptionService subscriptionService;
+
   private final ConsumerRepository consumerRepository;
   private final HistoryService historyService;
+  private final SubscriptionService subscriptionService;
   private final ConsumerMapper consumerMapper;
   private final HistoryMapper historyMapper;
   private final ConsumerProducer consumerProducer;
@@ -126,24 +124,27 @@ public class ConsumerService {
   public void updateConsumerCredit(Long consumerId, Long credit) {
     Consumer foundConsumer = getConsumer(consumerId);
     foundConsumer.assignAuctionCredit(foundConsumer.getAuctionCredit() + credit);
-    historyService.insertCreditChargeHistory(CreditHistory.builder()
-                    .consumer(foundConsumer)
-                    .tradePoint(credit)
-                    .tradePath(TradePathEnum.CHARGE_CREDIT)
-    .build());
+    historyService.insertCreditChargeHistory(
+        CreditHistory.builder()
+            .consumer(foundConsumer)
+            .tradePoint(credit)
+            .tradePath(TradePathEnum.CHARGE_CREDIT)
+            .build());
   }
 
   @Transactional
-  public void createSubscription(SubscriptionDto subscriptionDto){
+  public void createSubscription(SubscriptionDto subscriptionDto) {
     Consumer foundConsumer = getConsumer(subscriptionDto.getConsumerId());
     foundConsumer.addSubscriptionInfo();
 
     subscriptionService.createSubscription(subscriptionDto, foundConsumer);
-    kafkaTemplate.send(KafkaTopicNameInfo.ISSUE_REGULAR_PAYMENTS_COUPON, ConsumerRegularPaymentsCouponDto.builder().consumerId(subscriptionDto.getConsumerId())
-            .successedAt(subscriptionDto.getStartDate()).build());
-
+    kafkaTemplate.send(
+        KafkaTopicNameInfo.ISSUE_REGULAR_PAYMENTS_COUPON,
+        ConsumerRegularPaymentsCouponDto.builder()
+            .consumerId(subscriptionDto.getConsumerId())
+            .successedAt(subscriptionDto.getStartDate())
+            .build());
   }
-
 
   public void hasPoint(UserPointUpdateDto userPointUpdateDto) {
 
@@ -158,15 +159,18 @@ public class ConsumerService {
     return ConsumerInfoForAuctionResponse.toDto(foundConsumer);
   }
 
-  public boolean getConsumerRegularPaymentInfo(Long consumerId){
+  public boolean getConsumerRegularPaymentInfo(Long consumerId) {
     Consumer foundConsumer = getConsumer(consumerId);
     boolean isRegularInfo = foundConsumer.getIsRegularPayment();
     boolean isExpired = false;
 
-    Optional<Subscription> latestSubscription = foundConsumer.getSubscriptionList().stream().max(Comparator.comparing(Subscription::getEndDate));
+    Optional<Subscription> latestSubscription =
+        foundConsumer.getSubscriptionList().stream()
+            .max(Comparator.comparing(Subscription::getEndDate));
 
-    if (latestSubscription.isPresent() && latestSubscription.get().getEndDate().isAfter(LocalDateTime.now())) {
-        isExpired = true;
+    if (latestSubscription.isPresent()
+        && latestSubscription.get().getEndDate().isAfter(LocalDateTime.now())) {
+      isExpired = true;
     }
 
     return isRegularInfo || isExpired;
@@ -238,6 +242,13 @@ public class ConsumerService {
 
     Consumer foundConsumer = getConsumer(consumerId);
     return consumerMapper.toPointCreditInquiryDto(foundConsumer);
+  }
+
+  public Page<SubscriptionPaymentsInfoForInquiryResponseDto> getMySubscriptionHistories(
+      Long consumerId, int page, int size) {
+
+    Consumer foundConsumer = getConsumer(consumerId);
+    return subscriptionService.getSubscriptionHistories(foundConsumer, page, size);
   }
 
   /**
