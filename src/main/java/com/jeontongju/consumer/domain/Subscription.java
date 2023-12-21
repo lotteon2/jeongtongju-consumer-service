@@ -1,13 +1,11 @@
 package com.jeontongju.consumer.domain;
 
+import static javax.persistence.GenerationType.IDENTITY;
+
 import com.jeontongju.consumer.domain.common.BaseEntity;
 import io.github.bitbox.bitbox.enums.PaymentMethodEnum;
 import io.github.bitbox.bitbox.enums.SubscriptionTypeEnum;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-
+import java.time.LocalDateTime;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.EnumType;
@@ -18,9 +16,10 @@ import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.Table;
 import javax.validation.constraints.NotNull;
-import java.time.LocalDateTime;
-
-import static javax.persistence.GenerationType.IDENTITY;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
 
 @Entity
 @Table(name = "subscription")
@@ -38,7 +37,6 @@ public class Subscription extends BaseEntity {
   @ManyToOne
   @JoinColumn(name = "consumer_id", nullable = false)
   private Consumer consumer;
-
 
   @Column(name = "subscription_type", nullable = false)
   @Enumerated(EnumType.STRING)
