@@ -37,6 +37,9 @@ public class ConsumerMapper {
         .name(consumer.getName())
         .phoneNumber(consumer.getPhoneNumber())
         .profileImageUrl(consumer.getProfileImageUrl())
+        .point(consumer.getPoint())
+        .credit(consumer.getAuctionCredit())
+        .isRegularPayments(consumer.getIsRegularPayment())
         .build();
   }
 

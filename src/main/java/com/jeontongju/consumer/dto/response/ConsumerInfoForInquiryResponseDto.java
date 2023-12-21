@@ -15,4 +15,7 @@ public class ConsumerInfoForInquiryResponseDto {
   private String name;
   private String phoneNumber;
   private String profileImageUrl;
+  private Long point;
+  private Long credit;
+  private Boolean isRegularPayments;
 }
