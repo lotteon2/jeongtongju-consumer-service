@@ -66,6 +66,12 @@ public class Consumer extends BaseEntity {
   @OneToMany(mappedBy = "consumer")
   private List<PointHistory> pointHistoryList;
 
+  @OneToMany(mappedBy = "consumer")
+  private List<CreditHistory> creditHistoryList;
+
+  @OneToMany(mappedBy = "consumer")
+  private List<Subscription> subscriptionList;
+
   public void consumePoint(Long point) {
     this.point = point;
   }

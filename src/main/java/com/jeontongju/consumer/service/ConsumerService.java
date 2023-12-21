@@ -1,7 +1,9 @@
 package com.jeontongju.consumer.service;
 
 import com.jeontongju.consumer.domain.Consumer;
+import com.jeontongju.consumer.domain.CreditHistory;
 import com.jeontongju.consumer.domain.PointHistory;
+import com.jeontongju.consumer.domain.Subscription;
 import com.jeontongju.consumer.dto.response.ConsumerInfoForInquiryResponseDto;
 import com.jeontongju.consumer.dto.response.PointCreditForInquiryResponseDto;
 import com.jeontongju.consumer.dto.response.PointTradeInfoForSingleInquiryResponseDto;
@@ -9,7 +11,11 @@ import com.jeontongju.consumer.dto.response.PointTradeInfoForSummaryNDetailsResp
 import com.jeontongju.consumer.dto.temp.ConsumerInfoForAuctionResponse;
 import com.jeontongju.consumer.dto.temp.ConsumerInfoForCreateBySnsRequestDto;
 import com.jeontongju.consumer.dto.temp.ConsumerInfoForCreateRequestDto;
-import com.jeontongju.consumer.exception.*;
+import com.jeontongju.consumer.dto.temp.TradePathEnum;
+import com.jeontongju.consumer.exception.ConsumerNotFoundException;
+import com.jeontongju.consumer.exception.InsufficientCreditException;
+import com.jeontongju.consumer.exception.PointInsufficientException;
+import com.jeontongju.consumer.exception.PointUsageOver10PercetageException;
 import com.jeontongju.consumer.kafka.ConsumerProducer;
 import com.jeontongju.consumer.mapper.ConsumerMapper;
 import com.jeontongju.consumer.mapper.HistoryMapper;
@@ -20,7 +26,6 @@ import io.github.bitbox.bitbox.dto.OrderInfoDto;
 import io.github.bitbox.bitbox.dto.SubscriptionDto;
 import io.github.bitbox.bitbox.dto.UserPointUpdateDto;
 import io.github.bitbox.bitbox.util.KafkaTopicNameInfo;
-import java.util.List;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.kafka.common.KafkaException;
@@ -28,6 +33,11 @@ import org.springframework.data.domain.Page;
 import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+
+import java.time.LocalDateTime;
+import java.util.Comparator;
+import java.util.List;
+import java.util.Optional;
 
 @Slf4j
 @Service
@@ -116,6 +126,11 @@ public class ConsumerService {
   public void updateConsumerCredit(Long consumerId, Long credit) {
     Consumer foundConsumer = getConsumer(consumerId);
     foundConsumer.assignAuctionCredit(foundConsumer.getAuctionCredit() + credit);
+    historyService.insertCreditChargeHistory(CreditHistory.builder()
+                    .consumer(foundConsumer)
+                    .tradePoint(credit)
+                    .tradePath(TradePathEnum.CHARGE_CREDIT)
+    .build());
   }
 
   @Transactional
@@ -123,7 +138,7 @@ public class ConsumerService {
     Consumer foundConsumer = getConsumer(subscriptionDto.getConsumerId());
     foundConsumer.addSubscriptionInfo();
 
-    subscriptionService.createSubscription(subscriptionDto);
+    subscriptionService.createSubscription(subscriptionDto, foundConsumer);
     kafkaTemplate.send(KafkaTopicNameInfo.ISSUE_REGULAR_PAYMENTS_COUPON, ConsumerRegularPaymentsCouponDto.builder().consumerId(subscriptionDto.getConsumerId())
             .successedAt(subscriptionDto.getStartDate()).build());
 
@@ -144,8 +159,17 @@ public class ConsumerService {
   }
 
   public boolean getConsumerRegularPaymentInfo(Long consumerId){
-      Consumer foundConsumer = getConsumer(consumerId);
-      return foundConsumer.getIsRegularPayment();
+    Consumer foundConsumer = getConsumer(consumerId);
+    boolean isRegularInfo = foundConsumer.getIsRegularPayment();
+    boolean isExpired = false;
+
+    Optional<Subscription> latestSubscription = foundConsumer.getSubscriptionList().stream().max(Comparator.comparing(Subscription::getEndDate));
+
+    if (latestSubscription.isPresent() && latestSubscription.get().getEndDate().isAfter(LocalDateTime.now())) {
+        isExpired = true;
+    }
+
+    return isRegularInfo || isExpired;
   }
 
   @Transactional

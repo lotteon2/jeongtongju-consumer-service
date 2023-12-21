@@ -1,5 +1,6 @@
 package com.jeontongju.consumer.service;
 
+import com.jeontongju.consumer.domain.Consumer;
 import com.jeontongju.consumer.domain.Subscription;
 import com.jeontongju.consumer.domain.SubscriptionKakao;
 import com.jeontongju.consumer.repository.SubscriptionKakaoRespository;
@@ -18,10 +19,10 @@ public class SubscriptionService {
     private final SubscriptionRespository subscriptionRespository;
     private final SubscriptionKakaoRespository subscriptionKakaoRespository;
 
-    public void createSubscription(SubscriptionDto subscriptionDto){
+    public void createSubscription(SubscriptionDto subscriptionDto, Consumer consumer){
         Subscription subscription = subscriptionRespository.save(
                 Subscription.builder()
-                        .consumerId(subscriptionDto.getConsumerId())
+                        .consumer(consumer)
                         .subscriptionType(subscriptionDto.getSubscriptionType())
                         .paymentAmount(subscriptionDto.getPaymentAmount())
                         .startDate(subscriptionDto.getStartDate())

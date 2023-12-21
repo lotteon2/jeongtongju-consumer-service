@@ -14,6 +14,8 @@ import javax.persistence.EnumType;
 import javax.persistence.Enumerated;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
+import javax.persistence.JoinColumn;
+import javax.persistence.ManyToOne;
 import javax.persistence.Table;
 import javax.validation.constraints.NotNull;
 import java.time.LocalDateTime;
@@ -33,9 +35,10 @@ public class Subscription extends BaseEntity {
   @Column(name = "subscription_id")
   private Long subscriptionId;
 
-  @Column(name = "consumer_id", nullable = false)
-  @NotNull
-  private Long consumerId;
+  @ManyToOne
+  @JoinColumn(name = "consumer_id", nullable = false)
+  private Consumer consumer;
+
 
   @Column(name = "subscription_type", nullable = false)
   @Enumerated(EnumType.STRING)
