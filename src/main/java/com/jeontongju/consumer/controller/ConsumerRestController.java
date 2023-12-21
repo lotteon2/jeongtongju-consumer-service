@@ -123,4 +123,18 @@ public class ConsumerRestController {
                 .data(consumerService.getMySubscriptionHistories(memberId, page, size))
                 .build());
   }
+
+  @GetMapping("/consumers/my-info")
+  public ResponseEntity<ResponseFormat<MyInfoAfterSignInForResponseDto>> getMyInfoAfterSignIn(
+      @RequestHeader Long memberId) {
+
+    return ResponseEntity.ok()
+        .body(
+            ResponseFormat.<MyInfoAfterSignInForResponseDto>builder()
+                .code(HttpStatus.OK.value())
+                .message(HttpStatus.OK.name())
+                .detail("로그인 직후, 내 정보 조회 성공")
+                .data(consumerService.getMyInfoAfterSignIn(memberId))
+                .build());
+  }
 }

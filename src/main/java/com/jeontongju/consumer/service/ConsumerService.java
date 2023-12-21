@@ -263,4 +263,9 @@ public class ConsumerService {
         .findByConsumerId(consumerId)
         .orElseThrow(() -> new ConsumerNotFoundException(CustomErrMessage.NOT_FOUND_CONSUMER));
   }
+
+  public MyInfoAfterSignInForResponseDto getMyInfoAfterSignIn(Long consumerId) {
+
+    return consumerMapper.toMyInfoDto(getConsumer(consumerId));
+  }
 }

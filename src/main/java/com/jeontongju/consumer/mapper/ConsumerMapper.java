@@ -2,6 +2,7 @@ package com.jeontongju.consumer.mapper;
 
 import com.jeontongju.consumer.domain.Consumer;
 import com.jeontongju.consumer.dto.response.ConsumerInfoForInquiryResponseDto;
+import com.jeontongju.consumer.dto.response.MyInfoAfterSignInForResponseDto;
 import com.jeontongju.consumer.dto.response.PointCreditForInquiryResponseDto;
 import com.jeontongju.consumer.dto.temp.ConsumerInfoForCreateBySnsRequestDto;
 import com.jeontongju.consumer.dto.temp.ConsumerInfoForCreateRequestDto;
@@ -44,6 +45,21 @@ public class ConsumerMapper {
     return PointCreditForInquiryResponseDto.builder()
         .point(consumer.getPoint())
         .credit(consumer.getAuctionCredit())
+        .build();
+  }
+
+  public MyInfoAfterSignInForResponseDto toMyInfoDto(Consumer consumer) {
+
+    return MyInfoAfterSignInForResponseDto.builder()
+        .email(consumer.getEmail())
+        .profileImageUrl(consumer.getProfileImageUrl())
+        .name(consumer.getName())
+        .isAdult(consumer.getIsAdult())
+        .isRegularPayment(consumer.getIsRegularPayment())
+        .point(consumer.getPoint())
+        .credit(consumer.getAuctionCredit())
+        .phoneNumber(consumer.getPhoneNumber())
+        .isAddressDefault(!consumer.getAddressList().isEmpty())
         .build();
   }
 }
