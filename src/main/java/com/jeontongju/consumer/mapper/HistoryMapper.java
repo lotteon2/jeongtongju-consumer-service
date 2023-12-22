@@ -1,6 +1,9 @@
 package com.jeontongju.consumer.mapper;
 
+import com.jeontongju.consumer.domain.CreditHistory;
 import com.jeontongju.consumer.domain.PointHistory;
+import com.jeontongju.consumer.dto.response.CreditTradeInfoForSingleInquiryResponseDto;
+import com.jeontongju.consumer.dto.response.CreditTradeInfoForSummaryNDetailsResponseDto;
 import com.jeontongju.consumer.dto.response.PointTradeInfoForSingleInquiryResponseDto;
 import com.jeontongju.consumer.dto.response.PointTradeInfoForSummaryNDetailsResponseDto;
 import java.util.ArrayList;
@@ -37,6 +40,39 @@ public class HistoryMapper {
 
     return PointTradeInfoForSummaryNDetailsResponseDto.builder()
         .point(curPoint)
+        .totalAcc(totalAcc)
+        .totalUse(totalUse)
+        .histories(histories)
+        .build();
+  }
+
+  public List<CreditTradeInfoForSingleInquiryResponseDto> toCreditHistoriesPagedResponseDto(
+      Page<CreditHistory> creditHistoriesPaged) {
+
+    List<CreditTradeInfoForSingleInquiryResponseDto> creditHistoriesPagedList = new ArrayList<>();
+
+    for (CreditHistory creditHistory : creditHistoriesPaged) {
+
+      CreditTradeInfoForSingleInquiryResponseDto build =
+          CreditTradeInfoForSingleInquiryResponseDto.builder()
+              .tradeId(creditHistory.getTradeId())
+              .tradeCredit(creditHistory.getTradeCredit())
+              .tradePath(creditHistory.getTradePath())
+              .tradeDate(creditHistory.getCreatedAt())
+              .build();
+      creditHistoriesPagedList.add(build);
+    }
+    return creditHistoriesPagedList;
+  }
+
+  public CreditTradeInfoForSummaryNDetailsResponseDto toCreditSummaryNDetailsResponseDto(
+      Long curCredit,
+      Long totalAcc,
+      Long totalUse,
+      Page<CreditTradeInfoForSingleInquiryResponseDto> histories) {
+
+    return CreditTradeInfoForSummaryNDetailsResponseDto.builder()
+        .credit(curCredit)
         .totalAcc(totalAcc)
         .totalUse(totalUse)
         .histories(histories)
