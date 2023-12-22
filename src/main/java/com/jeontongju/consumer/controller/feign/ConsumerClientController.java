@@ -2,6 +2,7 @@ package com.jeontongju.consumer.controller.feign;
 
 import com.jeontongju.consumer.dto.temp.*;
 import com.jeontongju.consumer.service.ConsumerService;
+import io.github.bitbox.bitbox.dto.OrderConfirmDto;
 import io.github.bitbox.bitbox.dto.UserPointUpdateDto;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -75,5 +76,15 @@ public class ConsumerClientController {
 
     consumerService.consumeCreditByBidding(consumerId, deductionCredit);
     return FeignFormat.<Boolean>builder().code(HttpStatus.OK.value()).build();
+  }
+
+  @PostMapping("/orders-confirm")
+  public FeignFormat<Long> setAsidePointByOrderConfirm(
+      @RequestBody OrderConfirmDto orderConfirmDto) {
+
+    return FeignFormat.<Long>builder()
+        .code(HttpStatus.OK.value())
+        .data(consumerService.setAsidePointByOrderConfirm(orderConfirmDto))
+        .build();
   }
 }
