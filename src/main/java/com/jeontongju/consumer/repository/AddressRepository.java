@@ -9,4 +9,6 @@ public interface AddressRepository extends JpaRepository<Address, Long> {
     Optional<Address> findByAddressId(Long addressId);
 
     Optional<Address> findByConsumerAndIsDefault(Consumer consumer, boolean isDefault);
+
+    void deleteByConsumerAndAddressId(Consumer foundConsumer, Long addressId);
 }

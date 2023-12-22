@@ -161,4 +161,11 @@ public class AddressService {
             .orElseThrow(() -> new AddressNotFoundException(CustomErrMessage.NOT_FOUND_ADDRESS));
     foundAddress.assignIsDefault(true);
   }
+
+  @Transactional
+  public void deleteAddress(Long consumerId, Long addressId) {
+
+    Consumer foundConsumer = consumerService.getConsumer(consumerId);
+    addressRepository.deleteByConsumerAndAddressId(foundConsumer, addressId);
+  }
 }
