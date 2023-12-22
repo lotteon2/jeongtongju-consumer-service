@@ -11,10 +11,8 @@ import com.jeontongju.consumer.dto.temp.TradePathEnum;
 import com.jeontongju.consumer.mapper.HistoryMapper;
 import com.jeontongju.consumer.repository.CreditHistoryRepository;
 import com.jeontongju.consumer.repository.PointHistoryRepository;
-
-import java.util.List;
-
 import com.jeontongju.consumer.utils.PaginationManager;
+import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.*;
 import org.springframework.stereotype.Service;
