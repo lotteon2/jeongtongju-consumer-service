@@ -2,10 +2,10 @@ package com.jeontongju.consumer.mapper;
 
 import com.jeontongju.consumer.domain.Address;
 import com.jeontongju.consumer.dto.response.AddressInfoForSingleInquiryResponseDto;
-import org.springframework.stereotype.Component;
-
+import io.github.bitbox.bitbox.dto.AddressDto;
 import java.util.ArrayList;
 import java.util.List;
+import org.springframework.stereotype.Component;
 
 @Component
 public class AddressMapper {
@@ -32,5 +32,16 @@ public class AddressMapper {
       addressesResponseDto.add(toSingleInquiryResponseDto(address));
     }
     return addressesResponseDto;
+  }
+
+  public AddressDto toDefaultAddressDto(Address address) {
+
+    return AddressDto.builder()
+        .basicAddress(address.getBasicAddress())
+        .addressDetail(address.getAddressDetail())
+        .recipientName(address.getRecipientName())
+        .recipientPhoneNumber(address.getRecipientPhoneNumber())
+        .zonecode(address.getZoneCode())
+        .build();
   }
 }

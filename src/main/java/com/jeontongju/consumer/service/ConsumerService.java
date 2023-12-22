@@ -256,7 +256,7 @@ public class ConsumerService {
    * @param consumerId
    * @return Consumer
    */
-  private Consumer getConsumer(Long consumerId) {
+  public Consumer getConsumer(Long consumerId) {
 
     return consumerRepository
         .findByConsumerId(consumerId)

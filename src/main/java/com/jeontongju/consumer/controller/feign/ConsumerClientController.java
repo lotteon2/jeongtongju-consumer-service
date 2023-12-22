@@ -1,7 +1,9 @@
 package com.jeontongju.consumer.controller.feign;
 
 import com.jeontongju.consumer.dto.temp.*;
+import com.jeontongju.consumer.service.AddressService;
 import com.jeontongju.consumer.service.ConsumerService;
+import io.github.bitbox.bitbox.dto.AddressDto;
 import io.github.bitbox.bitbox.dto.OrderConfirmDto;
 import io.github.bitbox.bitbox.dto.UserPointUpdateDto;
 import lombok.RequiredArgsConstructor;
@@ -13,6 +15,7 @@ import org.springframework.web.bind.annotation.*;
 public class ConsumerClientController {
 
   private final ConsumerService consumerService;
+  private final AddressService addressService;
 
   @PostMapping("/consumers")
   public FeignFormat<Void> createConsumerForSignup(
@@ -29,6 +32,15 @@ public class ConsumerClientController {
     return FeignFormat.<NameImageForInquiryResponseDto>builder()
         .code(HttpStatus.OK.value())
         .data(consumerService.getNameNImageUrl(consumerId))
+        .build();
+  }
+
+  @GetMapping("/consumers/{consumerId}/address")
+  public FeignFormat<AddressDto> getConsumerAddress(@PathVariable("consumerId") Long consumerId) {
+
+    return FeignFormat.<AddressDto>builder()
+        .code(HttpStatus.OK.value())
+        .data(addressService.getConsumerAddress(consumerId))
         .build();
   }
 
