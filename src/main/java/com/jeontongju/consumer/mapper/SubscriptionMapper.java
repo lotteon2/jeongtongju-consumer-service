@@ -4,7 +4,6 @@ import com.jeontongju.consumer.domain.Subscription;
 import com.jeontongju.consumer.dto.response.SubscriptionPaymentsInfoForInquiryResponseDto;
 import java.util.ArrayList;
 import java.util.List;
-
 import org.springframework.data.domain.Page;
 import org.springframework.stereotype.Component;
 
