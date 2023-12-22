@@ -1,13 +1,12 @@
 package com.jeontongju.consumer.mapper;
 
 import com.jeontongju.consumer.domain.PointHistory;
-import com.jeontongju.consumer.dto.response.PointTradeInfoForSummaryNDetailsResponseDto;
 import com.jeontongju.consumer.dto.response.PointTradeInfoForSingleInquiryResponseDto;
-import org.springframework.data.domain.Page;
-import org.springframework.stereotype.Component;
-
+import com.jeontongju.consumer.dto.response.PointTradeInfoForSummaryNDetailsResponseDto;
 import java.util.ArrayList;
 import java.util.List;
+import org.springframework.data.domain.Page;
+import org.springframework.stereotype.Component;
 
 @Component
 public class HistoryMapper {

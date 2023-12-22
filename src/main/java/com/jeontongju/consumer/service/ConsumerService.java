@@ -23,6 +23,10 @@ import io.github.bitbox.bitbox.dto.OrderInfoDto;
 import io.github.bitbox.bitbox.dto.SubscriptionDto;
 import io.github.bitbox.bitbox.dto.UserPointUpdateDto;
 import io.github.bitbox.bitbox.util.KafkaTopicNameInfo;
+import java.time.LocalDateTime;
+import java.util.Comparator;
+import java.util.List;
+import java.util.Optional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.kafka.common.KafkaException;
@@ -30,11 +34,6 @@ import org.springframework.data.domain.Page;
 import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-
-import java.time.LocalDateTime;
-import java.util.Comparator;
-import java.util.List;
-import java.util.Optional;
 
 @Slf4j
 @Service
@@ -257,7 +256,7 @@ public class ConsumerService {
    * @param consumerId
    * @return Consumer
    */
-  private Consumer getConsumer(Long consumerId) {
+  public Consumer getConsumer(Long consumerId) {
 
     return consumerRepository
         .findByConsumerId(consumerId)
