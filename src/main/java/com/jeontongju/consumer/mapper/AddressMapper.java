@@ -5,10 +5,9 @@ import com.jeontongju.consumer.domain.Consumer;
 import com.jeontongju.consumer.dto.request.AddressInfoForModifyRequestDto;
 import com.jeontongju.consumer.dto.request.AddressInfoForRegisterRequestDto;
 import com.jeontongju.consumer.dto.response.AddressInfoForSingleInquiryResponseDto;
-import org.springframework.stereotype.Component;
-
 import java.util.ArrayList;
 import java.util.List;
+import org.springframework.stereotype.Component;
 
 @Component
 public class AddressMapper {
