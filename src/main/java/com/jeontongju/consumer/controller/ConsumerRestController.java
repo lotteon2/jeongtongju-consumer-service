@@ -1,5 +1,6 @@
 package com.jeontongju.consumer.controller;
 
+import com.jeontongju.consumer.dto.request.AddressInfoForRegisterRequestDto;
 import com.jeontongju.consumer.dto.response.*;
 import com.jeontongju.consumer.service.AddressService;
 import com.jeontongju.consumer.service.ConsumerService;
@@ -15,6 +16,7 @@ import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import javax.validation.Valid;
 import java.util.List;
 
 @Slf4j
@@ -51,6 +53,21 @@ public class ConsumerRestController {
                 .message(HttpStatus.OK.name())
                 .detail("주소지 목록 조회 성공")
                 .data(addressService.getAddressesForListLookup(memberId))
+                .build());
+  }
+
+  @PostMapping("/consumers/addresses")
+  public ResponseEntity<ResponseFormat<Void>> registerAddress(
+      @RequestHeader Long memberId,
+      @Valid @RequestBody AddressInfoForRegisterRequestDto registerRequestDto) {
+
+    addressService.registerAddress(memberId, registerRequestDto);
+    return ResponseEntity.ok()
+        .body(
+            ResponseFormat.<Void>builder()
+                .code(HttpStatus.OK.value())
+                .message(HttpStatus.OK.name())
+                .detail("주소지 추가 성공")
                 .build());
   }
 

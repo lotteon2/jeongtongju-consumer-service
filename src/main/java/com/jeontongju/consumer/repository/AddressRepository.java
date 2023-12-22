@@ -7,4 +7,6 @@ import java.util.Optional;
 
 public interface AddressRepository extends JpaRepository<Address, Long> {
     Optional<Address> findByAddressId(Long addressId);
+
+    Optional<Address> findByIsDefault(boolean isDefault);
 }

@@ -50,4 +50,8 @@ public class Address extends BaseEntity {
   @ManyToOne
   @JoinColumn(name = "consumer_id")
   private Consumer consumer;
+
+  public void assignIsDefault(boolean isDefault) {
+    this.isDefault = isDefault;
+  }
 }
