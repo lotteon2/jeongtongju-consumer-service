@@ -14,7 +14,6 @@ import com.jeontongju.consumer.utils.CustomErrMessage;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
-
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -148,5 +147,18 @@ public class AddressService {
             .orElseThrow(
                 () -> new AddressNotFoundException(CustomErrMessage.NOT_FOUND_DEFAULT_ADDRESS));
     foundAddress.assignIsDefault(false);
+  }
+
+  @Transactional
+  public void changeDefaultAddress(Long consumerId, Long addressId) {
+
+    Consumer foundConsumer = consumerService.getConsumer(consumerId);
+    cancelOriginDefaultAddress(foundConsumer);
+
+    Address foundAddress =
+        addressRepository
+            .findByAddressId(addressId)
+            .orElseThrow(() -> new AddressNotFoundException(CustomErrMessage.NOT_FOUND_ADDRESS));
+    foundAddress.assignIsDefault(true);
   }
 }

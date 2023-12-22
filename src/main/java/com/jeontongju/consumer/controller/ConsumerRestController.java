@@ -88,6 +88,20 @@ public class ConsumerRestController {
                 .build());
   }
 
+  @PatchMapping("/consumers/addresses/{addressId}/default")
+  public ResponseEntity<ResponseFormat<Void>> changeDefaultAddress(
+      @RequestHeader Long memberId, @PathVariable("addressId") Long addressId) {
+
+    addressService.changeDefaultAddress(memberId, addressId);
+    return ResponseEntity.ok()
+        .body(
+            ResponseFormat.<Void>builder()
+                .code(HttpStatus.OK.value())
+                .message(HttpStatus.OK.name())
+                .detail("기본 주소지 변경 성공")
+                .build());
+  }
+
   @GetMapping("/consumers")
   public ResponseEntity<ResponseFormat<ConsumerInfoForInquiryResponseDto>> getMyInfo(
       @RequestHeader Long memberId) {
