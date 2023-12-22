@@ -4,6 +4,7 @@ import com.jeontongju.consumer.domain.Address;
 import com.jeontongju.consumer.dto.response.AddressInfoForSingleInquiryResponseDto;
 import org.springframework.stereotype.Component;
 
+import java.util.ArrayList;
 import java.util.List;
 
 @Component
@@ -25,7 +26,7 @@ public class AddressMapper {
   public List<AddressInfoForSingleInquiryResponseDto> toListLookupResponseDto(
       List<Address> addresses) {
 
-    List<AddressInfoForSingleInquiryResponseDto> addressesResponseDto = null;
+    List<AddressInfoForSingleInquiryResponseDto> addressesResponseDto = new ArrayList<>();
 
     for (Address address : addresses) {
       addressesResponseDto.add(toSingleInquiryResponseDto(address));
