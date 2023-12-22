@@ -12,17 +12,23 @@ import lombok.NoArgsConstructor;
 @Getter
 public class AddressInfoForRegisterRequestDto {
 
-  @NotNull private String addressType;
+  @NotNull(message = "필수 주소지 정보 미입력")
+  private String addressType;
 
-  @NotNull private String basicAddress;
+  @NotNull(message = "필수 주소지 정보 미입력")
+  private String basicAddress;
 
   private String addressDetail;
 
-  @NotNull private String zonecode;
+  @NotNull(message = "필수 주소지 정보 미입력")
+  private String zonecode;
 
-  @NotNull private String recipientName;
+  @NotNull(message = "필수 주소지 정보 미입력")
+  private String recipientName;
 
-  @NotNull private String recipientPhoneNumber;
+  @NotNull(message = "필수 주소지 정보 미입력")
+  private String recipientPhoneNumber;
 
-  @NotNull private Boolean isDefault;
+  @NotNull(message = "필수 주소지 정보 미입력")
+  private Boolean isDefault;
 }
