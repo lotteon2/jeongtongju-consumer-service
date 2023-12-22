@@ -1,5 +1,6 @@
 package com.jeontongju.consumer.controller;
 
+import com.jeontongju.consumer.dto.request.AddressInfoForModifyRequestDto;
 import com.jeontongju.consumer.dto.request.AddressInfoForRegisterRequestDto;
 import com.jeontongju.consumer.dto.response.*;
 import com.jeontongju.consumer.service.AddressService;
@@ -68,6 +69,22 @@ public class ConsumerRestController {
                 .code(HttpStatus.OK.value())
                 .message(HttpStatus.OK.name())
                 .detail("주소지 추가 성공")
+                .build());
+  }
+
+  @PutMapping("/consumers/addresses/{addressId}")
+  public ResponseEntity<ResponseFormat<Void>> modifyAddress(
+      @RequestHeader Long memberId,
+      @PathVariable("addressId") Long addressId,
+      @Valid @RequestBody AddressInfoForModifyRequestDto modifyRequestDto) {
+
+    addressService.modifyAddress(memberId, addressId, modifyRequestDto);
+    return ResponseEntity.ok()
+        .body(
+            ResponseFormat.<Void>builder()
+                .code(HttpStatus.OK.value())
+                .message(HttpStatus.OK.name())
+                .detail("주소지 수정 성공")
                 .build());
   }
 

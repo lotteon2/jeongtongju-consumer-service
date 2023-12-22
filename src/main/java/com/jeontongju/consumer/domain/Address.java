@@ -54,4 +54,24 @@ public class Address extends BaseEntity {
   public void assignIsDefault(boolean isDefault) {
     this.isDefault = isDefault;
   }
+
+  public void assignBasicAddress(String basicAddress) {
+    this.basicAddress = basicAddress;
+  }
+
+  public void assignAddressDetail(String addressDetail) {
+    this.addressDetail = addressDetail;
+  }
+
+  public void assignZonecone(String zonecode) {
+    this.zoneCode = zonecode;
+  }
+
+  public void assignRecipientName(String recipientName) {
+    this.recipientName = recipientName;
+  }
+
+  public void assignRecipientPhoneNumber(String recipientPhoneNumber) {
+    this.recipientPhoneNumber = recipientPhoneNumber;
+  }
 }

@@ -2,6 +2,7 @@ package com.jeontongju.consumer.service;
 
 import com.jeontongju.consumer.domain.Address;
 import com.jeontongju.consumer.domain.Consumer;
+import com.jeontongju.consumer.dto.request.AddressInfoForModifyRequestDto;
 import com.jeontongju.consumer.dto.request.AddressInfoForRegisterRequestDto;
 import com.jeontongju.consumer.dto.response.AddressInfoForSingleInquiryResponseDto;
 import com.jeontongju.consumer.exception.AddressNotFoundException;
@@ -13,6 +14,7 @@ import com.jeontongju.consumer.utils.CustomErrMessage;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
+
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -80,7 +82,7 @@ public class AddressService {
     if (registerRequestDto.getIsDefault() && !registerdAddresses.isEmpty()) {
       Address defaultAddress =
           addressRepository
-              .findByIsDefault(true)
+              .findByConsumerAndIsDefault(foundConsumer, true)
               .orElseThrow(
                   () -> new AddressNotFoundException(CustomErrMessage.NOT_FOUND_DEFAULT_ADDRESS));
       defaultAddress.assignIsDefault(false);
@@ -90,7 +92,7 @@ public class AddressService {
   }
 
   /**
-   * 기본주소지가 아닌 가장 오래된 주소지 삭제
+   * 기본 주소지가 아닌 가장 오래된 주소지 삭제
    *
    * @param consumer
    */
@@ -106,5 +108,45 @@ public class AddressService {
             ? addressList.get(1).getAddressId()
             : oldestAddress.getAddressId();
     addressRepository.deleteById(deleteId);
+  }
+
+  /**
+   * 주소지 수정
+   *
+   * @param consumerId
+   * @param addressId
+   * @param modifyRequestDto
+   */
+  @Transactional
+  public void modifyAddress(
+      Long consumerId, Long addressId, AddressInfoForModifyRequestDto modifyRequestDto) {
+
+    Consumer foundConsumer = consumerService.getConsumer(consumerId);
+    Address foundAddress =
+        addressRepository
+            .findByAddressId(addressId)
+            .orElseThrow(() -> new AddressNotFoundException(CustomErrMessage.NOT_FOUND_ADDRESS));
+
+    if (modifyRequestDto.getIsDefault() && !foundConsumer.getAddressList().isEmpty()) {
+      cancelOriginDefaultAddress(foundConsumer);
+    }
+
+    addressMapper.toRenewed(foundConsumer, foundAddress, modifyRequestDto);
+  }
+
+  /**
+   * 기존 주소지를 일반 주소지로 해제
+   *
+   * @param consumer
+   */
+  @Transactional
+  public void cancelOriginDefaultAddress(Consumer consumer) {
+
+    Address foundAddress =
+        addressRepository
+            .findByConsumerAndIsDefault(consumer, true)
+            .orElseThrow(
+                () -> new AddressNotFoundException(CustomErrMessage.NOT_FOUND_DEFAULT_ADDRESS));
+    foundAddress.assignIsDefault(false);
   }
 }

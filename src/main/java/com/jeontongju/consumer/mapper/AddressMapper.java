@@ -2,6 +2,7 @@ package com.jeontongju.consumer.mapper;
 
 import com.jeontongju.consumer.domain.Address;
 import com.jeontongju.consumer.domain.Consumer;
+import com.jeontongju.consumer.dto.request.AddressInfoForModifyRequestDto;
 import com.jeontongju.consumer.dto.request.AddressInfoForRegisterRequestDto;
 import com.jeontongju.consumer.dto.response.AddressInfoForSingleInquiryResponseDto;
 import org.springframework.stereotype.Component;
@@ -49,5 +50,15 @@ public class AddressMapper {
         .isDefault(isDefault)
         .consumer(consumer)
         .build();
+  }
+
+  public void toRenewed(Consumer consumer, Address address, AddressInfoForModifyRequestDto modifyRequestDto) {
+
+    address.assignBasicAddress(modifyRequestDto.getBasicAddress());
+    address.assignAddressDetail(modifyRequestDto.getAddressDetail());
+    address.assignZonecone(modifyRequestDto.getZonecode());
+    address.assignRecipientName(modifyRequestDto.getRecipientName());
+    address.assignRecipientPhoneNumber(modifyRequestDto.getRecipientPhoneNumber());
+    address.assignIsDefault(modifyRequestDto.getIsDefault());
   }
 }
