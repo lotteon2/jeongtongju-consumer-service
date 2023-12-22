@@ -5,10 +5,7 @@ import com.jeontongju.consumer.domain.CreditHistory;
 import com.jeontongju.consumer.domain.PointHistory;
 import com.jeontongju.consumer.domain.Subscription;
 import com.jeontongju.consumer.dto.response.*;
-import com.jeontongju.consumer.dto.temp.ConsumerInfoForAuctionResponse;
-import com.jeontongju.consumer.dto.temp.ConsumerInfoForCreateBySnsRequestDto;
-import com.jeontongju.consumer.dto.temp.ConsumerInfoForCreateRequestDto;
-import com.jeontongju.consumer.dto.temp.TradePathEnum;
+import com.jeontongju.consumer.dto.temp.*;
 import com.jeontongju.consumer.exception.ConsumerNotFoundException;
 import com.jeontongju.consumer.exception.InsufficientCreditException;
 import com.jeontongju.consumer.exception.PointInsufficientException;
@@ -267,5 +264,11 @@ public class ConsumerService {
   public MyInfoAfterSignInForResponseDto getMyInfoAfterSignIn(Long consumerId) {
 
     return consumerMapper.toMyInfoDto(getConsumer(consumerId));
+  }
+
+  public NameImageForInquiryResponseDto getNameNImageUrl(Long consumerId) {
+
+    Consumer foundConsumer = getConsumer(consumerId);
+    return consumerMapper.toNameImageDto(foundConsumer);
   }
 }

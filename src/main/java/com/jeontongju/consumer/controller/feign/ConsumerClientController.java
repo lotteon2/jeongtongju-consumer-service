@@ -1,9 +1,6 @@
 package com.jeontongju.consumer.controller.feign;
 
-import com.jeontongju.consumer.dto.temp.ConsumerInfoForAuctionResponse;
-import com.jeontongju.consumer.dto.temp.ConsumerInfoForCreateBySnsRequestDto;
-import com.jeontongju.consumer.dto.temp.ConsumerInfoForCreateRequestDto;
-import com.jeontongju.consumer.dto.temp.FeignFormat;
+import com.jeontongju.consumer.dto.temp.*;
 import com.jeontongju.consumer.service.ConsumerService;
 import io.github.bitbox.bitbox.dto.UserPointUpdateDto;
 import lombok.RequiredArgsConstructor;
@@ -22,6 +19,16 @@ public class ConsumerClientController {
 
     consumerService.createConsumerForSignup(createRequestDto);
     return FeignFormat.<Void>builder().code(HttpStatus.OK.value()).build();
+  }
+
+  @GetMapping("/consumers/{consumerId}/name-image")
+  public FeignFormat<NameImageForInquiryResponseDto> getNameNImageUrl(
+      @PathVariable("consumerId") Long consumerId) {
+
+    return FeignFormat.<NameImageForInquiryResponseDto>builder()
+        .code(HttpStatus.OK.value())
+        .data(consumerService.getNameNImageUrl(consumerId))
+        .build();
   }
 
   @PostMapping("/consumers/oauth")
@@ -54,13 +61,12 @@ public class ConsumerClientController {
   }
 
   @GetMapping("/consumers/{consumerId}/subscription")
-  public FeignFormat<Boolean> getConsumerSubscription(
-          @PathVariable Long consumerId) {
+  public FeignFormat<Boolean> getConsumerSubscription(@PathVariable Long consumerId) {
 
     return FeignFormat.<Boolean>builder()
-            .code(HttpStatus.OK.value())
-            .data(consumerService.getConsumerRegularPaymentInfo(consumerId))
-    .build();
+        .code(HttpStatus.OK.value())
+        .data(consumerService.getConsumerRegularPaymentInfo(consumerId))
+        .build();
   }
 
   @PatchMapping("/consumers/{consumerId}/credit/{deductionCredit}")
