@@ -6,6 +6,7 @@ import com.jeontongju.consumer.dto.response.MyInfoAfterSignInForResponseDto;
 import com.jeontongju.consumer.dto.response.PointCreditForInquiryResponseDto;
 import com.jeontongju.consumer.dto.temp.ConsumerInfoForCreateBySnsRequestDto;
 import com.jeontongju.consumer.dto.temp.ConsumerInfoForCreateRequestDto;
+import com.jeontongju.consumer.dto.temp.NameImageForInquiryResponseDto;
 import org.springframework.stereotype.Component;
 
 @Component
@@ -63,6 +64,14 @@ public class ConsumerMapper {
         .credit(consumer.getAuctionCredit())
         .phoneNumber(consumer.getPhoneNumber())
         .isAddressDefault(!consumer.getAddressList().isEmpty())
+        .build();
+  }
+
+  public NameImageForInquiryResponseDto toNameImageDto(Consumer consumer) {
+
+    return NameImageForInquiryResponseDto.builder()
+        .name(consumer.getName())
+        .imageUrl(consumer.getProfileImageUrl())
         .build();
   }
 }

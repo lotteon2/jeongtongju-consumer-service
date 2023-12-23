@@ -1,10 +1,10 @@
 package com.jeontongju.consumer.controller.feign;
 
-import com.jeontongju.consumer.dto.temp.ConsumerInfoForAuctionResponse;
-import com.jeontongju.consumer.dto.temp.ConsumerInfoForCreateBySnsRequestDto;
-import com.jeontongju.consumer.dto.temp.ConsumerInfoForCreateRequestDto;
-import com.jeontongju.consumer.dto.temp.FeignFormat;
+import com.jeontongju.consumer.dto.temp.*;
+import com.jeontongju.consumer.service.AddressService;
 import com.jeontongju.consumer.service.ConsumerService;
+import io.github.bitbox.bitbox.dto.AddressDto;
+import io.github.bitbox.bitbox.dto.OrderConfirmDto;
 import io.github.bitbox.bitbox.dto.UserPointUpdateDto;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -15,6 +15,7 @@ import org.springframework.web.bind.annotation.*;
 public class ConsumerClientController {
 
   private final ConsumerService consumerService;
+  private final AddressService addressService;
 
   @PostMapping("/consumers")
   public FeignFormat<Void> createConsumerForSignup(
@@ -22,6 +23,25 @@ public class ConsumerClientController {
 
     consumerService.createConsumerForSignup(createRequestDto);
     return FeignFormat.<Void>builder().code(HttpStatus.OK.value()).build();
+  }
+
+  @GetMapping("/consumers/{consumerId}/name-image")
+  public FeignFormat<NameImageForInquiryResponseDto> getNameNImageUrl(
+      @PathVariable("consumerId") Long consumerId) {
+
+    return FeignFormat.<NameImageForInquiryResponseDto>builder()
+        .code(HttpStatus.OK.value())
+        .data(consumerService.getNameNImageUrl(consumerId))
+        .build();
+  }
+
+  @GetMapping("/consumers/{consumerId}/address")
+  public FeignFormat<AddressDto> getConsumerAddress(@PathVariable("consumerId") Long consumerId) {
+
+    return FeignFormat.<AddressDto>builder()
+        .code(HttpStatus.OK.value())
+        .data(addressService.getConsumerAddress(consumerId))
+        .build();
   }
 
   @PostMapping("/consumers/oauth")
@@ -54,13 +74,12 @@ public class ConsumerClientController {
   }
 
   @GetMapping("/consumers/{consumerId}/subscription")
-  public FeignFormat<Boolean> getConsumerSubscription(
-          @PathVariable Long consumerId) {
+  public FeignFormat<Boolean> getConsumerSubscription(@PathVariable Long consumerId) {
 
     return FeignFormat.<Boolean>builder()
-            .code(HttpStatus.OK.value())
-            .data(consumerService.getConsumerRegularPaymentInfo(consumerId))
-    .build();
+        .code(HttpStatus.OK.value())
+        .data(consumerService.getConsumerRegularPaymentInfo(consumerId))
+        .build();
   }
 
   @PatchMapping("/consumers/{consumerId}/credit/{deductionCredit}")
@@ -69,5 +88,15 @@ public class ConsumerClientController {
 
     consumerService.consumeCreditByBidding(consumerId, deductionCredit);
     return FeignFormat.<Boolean>builder().code(HttpStatus.OK.value()).build();
+  }
+
+  @PostMapping("/orders-confirm")
+  public FeignFormat<Long> setAsidePointByOrderConfirm(
+      @RequestBody OrderConfirmDto orderConfirmDto) {
+
+    return FeignFormat.<Long>builder()
+        .code(HttpStatus.OK.value())
+        .data(consumerService.setAsidePointByOrderConfirm(orderConfirmDto))
+        .build();
   }
 }
