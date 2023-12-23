@@ -164,9 +164,20 @@ public class HistoryService {
 
     List<CreditTradeInfoForSingleInquiryResponseDto> histories =
         historyMapper.toCreditHistoriesPagedResponseDto(creditHistoriesPaged);
-
+    
     int totalSize = creditHistoryRepository.findByConsumer(consumer).size();
     return creditPaginationManager.wrapByPage(histories, pageable, totalSize);
+  }
+
+  @Transactional
+  public void updateConsumerCredit(Long consumerId, Long credit) {
+
+    Consumer foundConsumer = consumerService.getConsumer(consumerId);
+
+    foundConsumer.assignAuctionCredit(foundConsumer.getAuctionCredit() + credit);
+
+    creditHistoryRepository.save(
+        historyMapper.toCreditHistoryEntityByCharge(foundConsumer, credit));
   }
 
   /**
@@ -189,17 +200,5 @@ public class HistoryService {
       }
     }
     return new long[] {totalAcc, totalUse};
-  }
-
-  @Transactional
-  public void updateConsumerCredit(Long consumerId, Long credit) {
-    Consumer foundConsumer = consumerService.getConsumer(consumerId);
-    foundConsumer.assignAuctionCredit(foundConsumer.getAuctionCredit() + credit);
-    creditHistoryRepository.save(
-        CreditHistory.builder()
-            .consumer(foundConsumer)
-            .tradeCredit(credit)
-            .tradePath(TradePathEnum.CHARGE_CREDIT)
-            .build());
   }
 }
