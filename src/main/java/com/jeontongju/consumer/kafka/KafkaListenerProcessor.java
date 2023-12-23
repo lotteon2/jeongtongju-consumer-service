@@ -2,6 +2,7 @@ package com.jeontongju.consumer.kafka;
 
 import com.jeontongju.consumer.exception.KafkaDuringOrderException;
 import com.jeontongju.consumer.service.ConsumerService;
+import com.jeontongju.consumer.service.HistoryService;
 import com.jeontongju.consumer.utils.CustomErrMessage;
 import io.github.bitbox.bitbox.dto.CreditUpdateDto;
 import io.github.bitbox.bitbox.dto.KakaoPayCancelDto;
@@ -18,7 +19,9 @@ import org.springframework.stereotype.Component;
 @Component
 @RequiredArgsConstructor
 public class KafkaListenerProcessor {
+
   private final ConsumerService consumerService;
+  private final HistoryService historyService;
   private final KafkaTemplate<String, KakaoPayCancelDto> kafkaTemplate;
 
   @KafkaListener(topics = KafkaTopicNameInfo.REDUCE_POINT)
@@ -45,7 +48,7 @@ public class KafkaListenerProcessor {
   @KafkaListener(topics = KafkaTopicNameInfo.UPDATE_CREDIT)
   public void updateCredit(CreditUpdateDto creditUpdateDto){
     try{
-      consumerService.updateConsumerCredit(creditUpdateDto.getConsumerId(), creditUpdateDto.getCredit());
+      historyService.updateConsumerCredit(creditUpdateDto.getConsumerId(), creditUpdateDto.getCredit());
     }catch(Exception e){
       kafkaTemplate.send(KafkaTopicNameInfo.CANCEL_KAKAOPAY, KakaoPayCancelDto.builder().tid(creditUpdateDto.getTid())
                       .cancelAmount(creditUpdateDto.getCancelAmount()).cancelTaxFreeAmount(creditUpdateDto.getCancelTaxFreeAmount()).build());

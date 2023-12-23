@@ -1,21 +1,17 @@
 package com.jeontongju.consumer.service;
 
 import com.jeontongju.consumer.domain.Consumer;
-import com.jeontongju.consumer.domain.CreditHistory;
-import com.jeontongju.consumer.domain.PointHistory;
 import com.jeontongju.consumer.domain.Subscription;
 import com.jeontongju.consumer.dto.response.*;
 import com.jeontongju.consumer.dto.temp.ConsumerInfoForAuctionResponse;
 import com.jeontongju.consumer.dto.temp.ConsumerInfoForCreateBySnsRequestDto;
 import com.jeontongju.consumer.dto.temp.ConsumerInfoForCreateRequestDto;
-import com.jeontongju.consumer.dto.temp.TradePathEnum;
 import com.jeontongju.consumer.exception.ConsumerNotFoundException;
 import com.jeontongju.consumer.exception.InsufficientCreditException;
 import com.jeontongju.consumer.exception.PointInsufficientException;
 import com.jeontongju.consumer.exception.PointUsageOver10PercetageException;
 import com.jeontongju.consumer.kafka.ConsumerProducer;
 import com.jeontongju.consumer.mapper.ConsumerMapper;
-import com.jeontongju.consumer.mapper.HistoryMapper;
 import com.jeontongju.consumer.repository.ConsumerRepository;
 import com.jeontongju.consumer.utils.CustomErrMessage;
 import io.github.bitbox.bitbox.dto.ConsumerRegularPaymentsCouponDto;
@@ -25,7 +21,6 @@ import io.github.bitbox.bitbox.dto.UserPointUpdateDto;
 import io.github.bitbox.bitbox.util.KafkaTopicNameInfo;
 import java.time.LocalDateTime;
 import java.util.Comparator;
-import java.util.List;
 import java.util.Optional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -42,10 +37,8 @@ import org.springframework.transaction.annotation.Transactional;
 public class ConsumerService {
 
   private final ConsumerRepository consumerRepository;
-  private final HistoryService historyService;
   private final SubscriptionService subscriptionService;
   private final ConsumerMapper consumerMapper;
-  private final HistoryMapper historyMapper;
   private final ConsumerProducer consumerProducer;
   private final KafkaTemplate<String, ConsumerRegularPaymentsCouponDto> kafkaTemplate;
 
@@ -120,18 +113,6 @@ public class ConsumerService {
   }
 
   @Transactional
-  public void updateConsumerCredit(Long consumerId, Long credit) {
-    Consumer foundConsumer = getConsumer(consumerId);
-    foundConsumer.assignAuctionCredit(foundConsumer.getAuctionCredit() + credit);
-    historyService.insertCreditChargeHistory(
-        CreditHistory.builder()
-            .consumer(foundConsumer)
-            .tradePoint(credit)
-            .tradePath(TradePathEnum.CHARGE_CREDIT)
-            .build());
-  }
-
-  @Transactional
   public void createSubscription(SubscriptionDto subscriptionDto) {
     Consumer foundConsumer = getConsumer(subscriptionDto.getConsumerId());
     foundConsumer.addSubscriptionInfo();
@@ -190,51 +171,6 @@ public class ConsumerService {
 
     Consumer foundConsumer = getConsumer(memberId);
     return consumerMapper.toInquiryDto(foundConsumer);
-  }
-
-  public PointTradeInfoForSummaryNDetailsResponseDto getMyPointSummaryNDetails(
-      Long consumerId, int page, int size) {
-
-    Consumer foundConsumer = getConsumer(consumerId);
-
-    // 포인트 거래내역 가져오기 (한 페이지 만큼)
-    Page<PointTradeInfoForSingleInquiryResponseDto> pointHistoriesPaged =
-        historyService.getPointHistoriesPaged(foundConsumer, page, size);
-
-    // 포인트 요약 정보 계산하기
-    return calcPointSummary(foundConsumer, pointHistoriesPaged);
-  }
-
-  public PointTradeInfoForSummaryNDetailsResponseDto getMyPointSummaryNSavingDetails(
-      Long consumerId, int page, int size) {
-
-    Consumer foundConsumer = getConsumer(consumerId);
-
-    Page<PointTradeInfoForSingleInquiryResponseDto> pointSavingHistoriesPaged =
-        historyService.getPointSavingHistoriesPaged(foundConsumer, page, size);
-
-    return calcPointSummary(foundConsumer, pointSavingHistoriesPaged);
-  }
-
-  public PointTradeInfoForSummaryNDetailsResponseDto getMyPointSummaryNUseDetails(
-      Long consumerId, int page, int size) {
-
-    Consumer foundConsumer = getConsumer(consumerId);
-
-    Page<PointTradeInfoForSingleInquiryResponseDto> pointSavingHistoriesPaged =
-        historyService.getPointUseHistoriesPaged(foundConsumer, page, size);
-
-    return calcPointSummary(foundConsumer, pointSavingHistoriesPaged);
-  }
-
-  private PointTradeInfoForSummaryNDetailsResponseDto calcPointSummary(
-      Consumer consumer, Page<PointTradeInfoForSingleInquiryResponseDto> pointHistoriesPaged) {
-
-    List<PointHistory> allPointHistories = historyService.getAllPointHistories(consumer);
-    long[] summary = historyService.calcTotalPointSummary(allPointHistories);
-
-    return historyMapper.toPointSummaryNDetailsResponseDto(
-        consumer.getPoint(), summary[0], summary[1], pointHistoriesPaged);
   }
 
   public PointCreditForInquiryResponseDto getPointNCredit(Long consumerId) {

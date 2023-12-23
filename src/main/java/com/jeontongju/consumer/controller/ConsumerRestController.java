@@ -37,32 +37,9 @@ public class ConsumerRestController {
                 .build());
   }
 
-  @GetMapping("/consumers/point-history")
-  public ResponseEntity<ResponseFormat<PointTradeInfoForSummaryNDetailsResponseDto>>
-      getMyPointHistories(
-          @RequestHeader Long memberId,
-          @RequestParam(value = "search", required = false) String search,
-          @RequestParam(value = "page", defaultValue = "0") int page,
-          @RequestParam(value = "size", defaultValue = "10") int size) {
 
-    PointTradeInfoForSummaryNDetailsResponseDto myPointSummaryNDetails = null;
-    if ("acc".equals(search)) {
-      myPointSummaryNDetails =
-          consumerService.getMyPointSummaryNSavingDetails(memberId, page, size);
-    } else if ("use".equals(search)) {
-      myPointSummaryNDetails = consumerService.getMyPointSummaryNUseDetails(memberId, page, size);
-    } else {
-      myPointSummaryNDetails = consumerService.getMyPointSummaryNDetails(memberId, page, size);
-    }
-    return ResponseEntity.ok()
-        .body(
-            ResponseFormat.<PointTradeInfoForSummaryNDetailsResponseDto>builder()
-                .code(HttpStatus.OK.value())
-                .message(HttpStatus.OK.name())
-                .detail("포인트 거래내역 조회 성공")
-                .data(myPointSummaryNDetails)
-                .build());
-  }
+
+
 
   @GetMapping("/consumers/point-credit")
   public ResponseEntity<ResponseFormat<PointCreditForInquiryResponseDto>> getMyPointNCredit(
