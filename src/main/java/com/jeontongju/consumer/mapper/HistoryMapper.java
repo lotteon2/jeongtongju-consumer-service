@@ -1,10 +1,14 @@
 package com.jeontongju.consumer.mapper;
 
+import com.jeontongju.consumer.domain.Consumer;
+import com.jeontongju.consumer.domain.CreditHistory;
 import com.jeontongju.consumer.domain.PointHistory;
 import com.jeontongju.consumer.dto.response.PointTradeInfoForSingleInquiryResponseDto;
 import com.jeontongju.consumer.dto.response.PointTradeInfoForSummaryNDetailsResponseDto;
 import java.util.ArrayList;
 import java.util.List;
+
+import com.jeontongju.consumer.dto.temp.TradePathEnum;
 import org.springframework.data.domain.Page;
 import org.springframework.stereotype.Component;
 
@@ -40,6 +44,15 @@ public class HistoryMapper {
         .totalAcc(totalAcc)
         .totalUse(totalUse)
         .histories(histories)
+        .build();
+  }
+
+  public CreditHistory toCreditHistoryEntityByCharge(Consumer consumer, Long credit) {
+
+    return CreditHistory.builder()
+        .tradeCredit(credit)
+        .tradePath(TradePathEnum.CHARGE_CREDIT)
+        .consumer(consumer)
         .build();
   }
 }

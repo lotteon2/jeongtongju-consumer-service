@@ -28,15 +28,15 @@ public class CreditHistory extends BaseEntity {
 
   @Id
   @GeneratedValue(strategy = IDENTITY)
-  @Column(name = "trade_credit_id")
-  private Long tradeCreditId;
+  @Column(name = "trade_id")
+  private Long tradeId;
 
   @ManyToOne
   @JoinColumn(name = "consumer_id")
   private Consumer consumer;
 
-  @Column(name = "trade_point", nullable = false)
-  private Long tradePoint;
+  @Column(name = "trade_credit", nullable = false)
+  private Long tradeCredit;
 
   @Enumerated(EnumType.STRING)
   @Column(name = "trade_path", nullable = false)

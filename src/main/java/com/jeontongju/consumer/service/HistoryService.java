@@ -4,6 +4,7 @@ import com.jeontongju.consumer.domain.Consumer;
 import com.jeontongju.consumer.domain.CreditHistory;
 import com.jeontongju.consumer.domain.PointHistory;
 import com.jeontongju.consumer.dto.response.PointTradeInfoForSingleInquiryResponseDto;
+import com.jeontongju.consumer.dto.temp.TradePathEnum;
 import com.jeontongju.consumer.mapper.HistoryMapper;
 import com.jeontongju.consumer.repository.CreditHistoryRepository;
 import com.jeontongju.consumer.repository.PointHistoryRepository;
@@ -12,12 +13,15 @@ import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.*;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 @Service
 @RequiredArgsConstructor
 public class HistoryService {
+
   private final CreditHistoryRepository creditHistoryRepository;
   private final PointHistoryRepository pointHistoryRepository;
+  private final ConsumerService consumerService;
   private final HistoryMapper historyMapper;
 
   public Page<PointTradeInfoForSingleInquiryResponseDto> getPointHistoriesPaged(
@@ -82,8 +86,15 @@ public class HistoryService {
     return pointHistoryRepository.findByConsumer(consumer);
   }
 
-  public void insertCreditChargeHistory(CreditHistory creditHistory){
-    creditHistoryRepository.save(creditHistory);
+  @Transactional
+  public void updateConsumerCredit(Long consumerId, Long credit) {
+
+    Consumer foundConsumer = consumerService.getConsumer(consumerId);
+
+    foundConsumer.assignAuctionCredit(foundConsumer.getAuctionCredit() + credit);
+
+    creditHistoryRepository.save(
+        historyMapper.toCreditHistoryEntityByCharge(foundConsumer, credit));
   }
 
   public long[] calcTotalPointSummary(List<PointHistory> pointHistories) {

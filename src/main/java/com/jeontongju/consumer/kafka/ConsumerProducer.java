@@ -10,7 +10,7 @@ public class ConsumerProducer<T> {
 
   private final KafkaTemplate<String, T> kafkaTemplate;
 
-  public void sendUpdateCoupon(String topicName, T data) {
+  public void send(String topicName, T data) {
     kafkaTemplate.send(topicName, data);
   }
 }

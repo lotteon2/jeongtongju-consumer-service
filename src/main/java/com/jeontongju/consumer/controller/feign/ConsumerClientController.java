@@ -36,7 +36,7 @@ public class ConsumerClientController {
   public FeignFormat<Boolean> checkConsumerPoint(
       @RequestBody UserPointUpdateDto userPointUpdateDto) {
 
-    consumerService.hasPoint(userPointUpdateDto);
+    consumerService.checkPoint(userPointUpdateDto);
     return FeignFormat.<Boolean>builder().code(HttpStatus.OK.value()).build();
   }
 
@@ -44,23 +44,19 @@ public class ConsumerClientController {
   public FeignFormat<ConsumerInfoForAuctionResponse> getConsumerInfoForAuction(
       @PathVariable Long consumerId) {
 
-    ConsumerInfoForAuctionResponse consumerInfoForAuction =
-        consumerService.getConsumerInfoForAuction(consumerId);
-
     return FeignFormat.<ConsumerInfoForAuctionResponse>builder()
         .code(HttpStatus.OK.value())
-        .data(consumerInfoForAuction)
+        .data(consumerService.getConsumerInfoForAuction(consumerId))
         .build();
   }
 
   @GetMapping("/consumers/{consumerId}/subscription")
-  public FeignFormat<Boolean> getConsumerSubscription(
-          @PathVariable Long consumerId) {
+  public FeignFormat<Boolean> getConsumerSubscription(@PathVariable Long consumerId) {
 
     return FeignFormat.<Boolean>builder()
-            .code(HttpStatus.OK.value())
-            .data(consumerService.getConsumerRegularPaymentInfo(consumerId))
-    .build();
+        .code(HttpStatus.OK.value())
+        .data(consumerService.getConsumerRegularPaymentInfo(consumerId))
+        .build();
   }
 
   @PatchMapping("/consumers/{consumerId}/credit/{deductionCredit}")
