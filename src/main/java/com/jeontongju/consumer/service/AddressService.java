@@ -23,7 +23,6 @@ public class AddressService {
 
   private final AddressRepository addressRepository;
   private final ConsumerService consumerService;
-  private final ConsumerRepository consumerRepository;
   private final AddressMapper addressMapper;
 
   /**
