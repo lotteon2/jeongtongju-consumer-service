@@ -201,16 +201,4 @@ public class HistoryService {
     }
     return new long[] {totalAcc, totalUse};
   }
-
-  @Transactional
-  public void updateConsumerCredit(Long consumerId, Long credit) {
-    Consumer foundConsumer = consumerService.getConsumer(consumerId);
-    foundConsumer.assignAuctionCredit(foundConsumer.getAuctionCredit() + credit);
-    creditHistoryRepository.save(
-        CreditHistory.builder()
-            .consumer(foundConsumer)
-            .tradeCredit(credit)
-            .tradePath(TradePathEnum.CHARGE_CREDIT)
-            .build());
-  }
 }
