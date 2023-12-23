@@ -80,7 +80,7 @@ public class Consumer extends BaseEntity {
     this.point = point;
   }
 
-  public void addSubscriptionInfo(){
+  public void addSubscriptionInfo() {
     this.isRegularPayment = true;
   }
 

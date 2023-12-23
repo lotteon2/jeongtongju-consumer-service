@@ -1,6 +1,7 @@
 package com.jeontongju.consumer.service;
 
 import com.jeontongju.consumer.domain.Consumer;
+import com.jeontongju.consumer.domain.PointHistory;
 import com.jeontongju.consumer.domain.Subscription;
 import com.jeontongju.consumer.dto.response.*;
 import com.jeontongju.consumer.dto.temp.*;
@@ -12,6 +13,8 @@ import com.jeontongju.consumer.exception.PointInsufficientException;
 import com.jeontongju.consumer.exception.PointUsageOver10PercetageException;
 import com.jeontongju.consumer.kafka.ConsumerProducer;
 import com.jeontongju.consumer.mapper.ConsumerMapper;
+import com.jeontongju.consumer.mapper.CouponMapper;
+import com.jeontongju.consumer.mapper.HistoryMapper;
 import com.jeontongju.consumer.repository.ConsumerRepository;
 import com.jeontongju.consumer.utils.CustomErrMessage;
 import io.github.bitbox.bitbox.dto.*;
@@ -36,6 +39,9 @@ public class ConsumerService {
   private final ConsumerRepository consumerRepository;
   private final SubscriptionService subscriptionService;
   private final ConsumerMapper consumerMapper;
+  private final HistoryMapper historyMapper;
+  private final CouponMapper couponMapper;
+
   private final ConsumerProducer consumerProducer;
   private final KafkaTemplate<String, ConsumerRegularPaymentsCouponDto> kafkaTemplate;
 
@@ -73,7 +79,7 @@ public class ConsumerService {
     }
 
     log.info("ConsumerService's consumePoint Successful executed!");
-    consumerProducer.sendUpdateCoupon(KafkaTopicNameInfo.USE_COUPON, orderInfoDto);
+    consumerProducer.send(KafkaTopicNameInfo.USE_COUPON, orderInfoDto);
   }
 
   /**
@@ -112,6 +118,24 @@ public class ConsumerService {
     }
   }
 
+  /**
+   * 주문 취소 시, 포인트 환불 처리
+   *
+   * @param orderCancelDto
+   */
+  @Transactional
+  public void refundPointByCancelOrder(OrderCancelDto orderCancelDto) throws KafkaException {
+
+    Consumer foundConsumer = getConsumer(orderCancelDto.getConsumerId());
+    foundConsumer.assignPoint(foundConsumer.getPoint() + orderCancelDto.getPoint());
+    consumerProducer.send(KafkaTopicNameInfo.CANCEL_ORDER_COUPON, orderCancelDto);
+  }
+
+  /**
+   * 구독 결제 완료 후, 구독권 생성
+   *
+   * @param subscriptionDto
+   */
   @Transactional
   public void createSubscription(SubscriptionDto subscriptionDto) {
     Consumer foundConsumer = getConsumer(subscriptionDto.getConsumerId());
@@ -120,25 +144,39 @@ public class ConsumerService {
     subscriptionService.createSubscription(subscriptionDto, foundConsumer);
     kafkaTemplate.send(
         KafkaTopicNameInfo.ISSUE_REGULAR_PAYMENTS_COUPON,
-        ConsumerRegularPaymentsCouponDto.builder()
-            .consumerId(subscriptionDto.getConsumerId())
-            .successedAt(subscriptionDto.getStartDate())
-            .build());
+        couponMapper.toConsumerRegularPaymentsCouponDto(subscriptionDto));
   }
 
-  public void hasPoint(UserPointUpdateDto userPointUpdateDto) {
+  /**
+   * 주문에 들어가기 전, 주문에 필요한 포인트 소유 여부 확인
+   *
+   * @param userPointUpdateDto
+   */
+  public void checkPoint(UserPointUpdateDto userPointUpdateDto) {
 
     Consumer foundConsumer = getConsumer(userPointUpdateDto.getConsumerId());
     checkPointPolicy(
         foundConsumer, userPointUpdateDto.getPoint(), userPointUpdateDto.getTotalAmount());
   }
 
+  /**
+   * 경매 입장 시, 소비자 개인 정보 확인 (이름, 프로필 이미지, 경매크레딧)
+   *
+   * @param consumerId
+   * @return ConsumerInfoForAuctionResponse
+   */
   public ConsumerInfoForAuctionResponse getConsumerInfoForAuction(Long consumerId) {
 
     Consumer foundConsumer = getConsumer(consumerId);
     return ConsumerInfoForAuctionResponse.toDto(foundConsumer);
   }
 
+  /**
+   * 해당 소비자 구독 결제 여부 확인 및 유효성 체크
+   *
+   * @param consumerId
+   * @return boolean
+   */
   public boolean getConsumerRegularPaymentInfo(Long consumerId) {
     Consumer foundConsumer = getConsumer(consumerId);
     boolean isRegularInfo = foundConsumer.getIsRegularPayment();
@@ -156,6 +194,12 @@ public class ConsumerService {
     return isRegularInfo || isExpired;
   }
 
+  /**
+   * 경매 낙찰로 인한 크레딧 차감
+   *
+   * @param consumerId
+   * @param deductionCredit
+   */
   @Transactional
   public void consumeCreditByBidding(Long consumerId, Long deductionCredit) {
 
@@ -167,9 +211,15 @@ public class ConsumerService {
     consumer.assignAuctionCredit(consumer.getAuctionCredit() - deductionCredit);
   }
 
-  public ConsumerInfoForInquiryResponseDto getMyInfo(Long memberId) {
+  /**
+   * 내 정보 조회
+   *
+   * @param consumerId
+   * @return ConsumerInfoForInquiryResponseDto
+   */
+  public ConsumerInfoForInquiryResponseDto getMyInfo(Long consumerId) {
 
-    Consumer foundConsumer = getConsumer(memberId);
+    Consumer foundConsumer = getConsumer(consumerId);
     return consumerMapper.toInquiryDto(foundConsumer);
   }
 
