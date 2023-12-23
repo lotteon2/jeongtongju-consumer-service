@@ -3,7 +3,7 @@ package com.jeontongju.consumer.service;
 import com.jeontongju.consumer.domain.Consumer;
 import com.jeontongju.consumer.domain.Subscription;
 import com.jeontongju.consumer.dto.response.*;
-import com.jeontongju.consumer.dto.temp.ConsumerInfoForAuctionResponse;
+import com.jeontongju.consumer.dto.temp.*;
 import com.jeontongju.consumer.dto.temp.ConsumerInfoForCreateBySnsRequestDto;
 import com.jeontongju.consumer.dto.temp.ConsumerInfoForCreateRequestDto;
 import com.jeontongju.consumer.exception.ConsumerNotFoundException;
@@ -14,10 +14,7 @@ import com.jeontongju.consumer.kafka.ConsumerProducer;
 import com.jeontongju.consumer.mapper.ConsumerMapper;
 import com.jeontongju.consumer.repository.ConsumerRepository;
 import com.jeontongju.consumer.utils.CustomErrMessage;
-import io.github.bitbox.bitbox.dto.ConsumerRegularPaymentsCouponDto;
-import io.github.bitbox.bitbox.dto.OrderInfoDto;
-import io.github.bitbox.bitbox.dto.SubscriptionDto;
-import io.github.bitbox.bitbox.dto.UserPointUpdateDto;
+import io.github.bitbox.bitbox.dto.*;
 import io.github.bitbox.bitbox.util.KafkaTopicNameInfo;
 import java.time.LocalDateTime;
 import java.util.Comparator;
@@ -41,6 +38,9 @@ public class ConsumerService {
   private final ConsumerMapper consumerMapper;
   private final ConsumerProducer consumerProducer;
   private final KafkaTemplate<String, ConsumerRegularPaymentsCouponDto> kafkaTemplate;
+
+  private static final Double POINT_ACC_RATE_NORMAL = 0.1;
+  private static final Double POINT_ACC_RATE_YANGBAN = 0.3;
 
   @Transactional
   public void createConsumerForSignup(ConsumerInfoForCreateRequestDto createRequestDto) {
@@ -202,5 +202,24 @@ public class ConsumerService {
   public MyInfoAfterSignInForResponseDto getMyInfoAfterSignIn(Long consumerId) {
 
     return consumerMapper.toMyInfoDto(getConsumer(consumerId));
+  }
+
+  public NameImageForInquiryResponseDto getNameNImageUrl(Long consumerId) {
+
+    Consumer foundConsumer = getConsumer(consumerId);
+    return consumerMapper.toNameImageDto(foundConsumer);
+  }
+
+  @Transactional
+  public Long setAsidePointByOrderConfirm(OrderConfirmDto orderConfirmDto) {
+
+    Consumer foundConsumer = getConsumer(orderConfirmDto.getConsumerId());
+
+    double pointAccRate =
+        foundConsumer.getIsRegularPayment() ? POINT_ACC_RATE_YANGBAN : POINT_ACC_RATE_NORMAL;
+    long accPoint = (long) Math.floor(orderConfirmDto.getProductAmount() * pointAccRate);
+
+    foundConsumer.assignPoint(foundConsumer.getPoint() + accPoint);
+    return accPoint;
   }
 }

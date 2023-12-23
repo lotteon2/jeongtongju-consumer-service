@@ -87,4 +87,8 @@ public class Consumer extends BaseEntity {
   public void assignAuctionCredit(Long auctionCredit) {
     this.auctionCredit = auctionCredit;
   }
+
+  public void assignPoint(Long point) {
+    this.point = point;
+  }
 }

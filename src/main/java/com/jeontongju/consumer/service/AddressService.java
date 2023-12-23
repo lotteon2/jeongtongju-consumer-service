@@ -6,11 +6,10 @@ import com.jeontongju.consumer.dto.request.AddressInfoForModifyRequestDto;
 import com.jeontongju.consumer.dto.request.AddressInfoForRegisterRequestDto;
 import com.jeontongju.consumer.dto.response.AddressInfoForSingleInquiryResponseDto;
 import com.jeontongju.consumer.exception.AddressNotFoundException;
-import com.jeontongju.consumer.exception.ConsumerNotFoundException;
 import com.jeontongju.consumer.mapper.AddressMapper;
 import com.jeontongju.consumer.repository.AddressRepository;
-import com.jeontongju.consumer.repository.ConsumerRepository;
 import com.jeontongju.consumer.utils.CustomErrMessage;
+import io.github.bitbox.bitbox.dto.AddressDto;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
@@ -50,15 +49,23 @@ public class AddressService {
    */
   public List<AddressInfoForSingleInquiryResponseDto> getAddressesForListLookup(Long consumerId) {
 
-    Consumer foundConsumer =
-        consumerRepository
-            .findByConsumerId(consumerId)
-            .orElseThrow(() -> new ConsumerNotFoundException(CustomErrMessage.NOT_FOUND_CONSUMER));
+    Consumer foundConsumer = consumerService.getConsumer(consumerId);
 
     List<Address> addresses = foundConsumer.getAddressList();
     return addressMapper.toListLookupResponseDto(addresses);
   }
 
+  public AddressDto getConsumerAddress(Long consumerId) {
+
+    Consumer foundConsumer = consumerService.getConsumer(consumerId);
+    Address foundDefaultAddress =
+        addressRepository
+            .findByConsumerAndIsDefault(foundConsumer, true)
+            .orElseThrow(() -> new AddressNotFoundException(CustomErrMessage.NOT_FOUND_ADDRESS));
+
+    return addressMapper.toDefaultAddressDto(foundDefaultAddress);
+  }
+  
   /**
    * 주소지 추가
    *
