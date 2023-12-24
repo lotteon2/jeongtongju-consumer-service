@@ -7,4 +7,6 @@ public interface CustomErrMessage {
   String INSUFFICIENT_POINT = "부족한 포인트";
   String INSUFFICIENT_CREDIT = "부족한 크레딧";
   String POINT_USAGE_OVER_10_PERCENTAGE = "포인트 사용액 10% 초과";
+  String NOT_FOUND_ADDRESS = "찾을 수 없는 주소지";
+  String NOT_FOUND_DEFAULT_ADDRESS = "찾을 수 없는 기본 주소지";
 }

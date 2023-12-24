@@ -3,14 +3,19 @@ package com.jeontongju.consumer.domain;
 import static javax.persistence.GenerationType.IDENTITY;
 
 import com.jeontongju.consumer.domain.common.BaseEntity;
-import com.jeontongju.consumer.dto.temp.PaymentTypeEnum;
-import java.sql.Timestamp;
+import io.github.bitbox.bitbox.enums.PaymentMethodEnum;
+import io.github.bitbox.bitbox.enums.SubscriptionTypeEnum;
+import java.time.LocalDateTime;
 import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.EnumType;
+import javax.persistence.Enumerated;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
-import javax.persistence.OneToOne;
+import javax.persistence.JoinColumn;
+import javax.persistence.ManyToOne;
 import javax.persistence.Table;
+import javax.validation.constraints.NotNull;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
@@ -29,21 +34,29 @@ public class Subscription extends BaseEntity {
   @Column(name = "subscription_id")
   private Long subscriptionId;
 
+  @ManyToOne
+  @JoinColumn(name = "consumer_id", nullable = false)
+  private Consumer consumer;
+
   @Column(name = "subscription_type", nullable = false)
-  private String subscriptionType;
+  @Enumerated(EnumType.STRING)
+  @NotNull
+  private SubscriptionTypeEnum subscriptionType;
 
   @Column(name = "payment_amount", nullable = false)
+  @NotNull
   private Long paymentAmount;
 
   @Column(name = "start_date", nullable = false)
-  private Timestamp startDate;
+  @NotNull
+  private LocalDateTime startDate;
 
   @Column(name = "end_date", nullable = false)
-  private String endDate;
+  @NotNull
+  private LocalDateTime endDate;
 
   @Column(name = "payment_type", nullable = false)
-  private PaymentTypeEnum paymentType;
-
-  @OneToOne(mappedBy = "subscription")
-  private SubscriptionKakao subscriptionKakao;
+  @Enumerated(EnumType.STRING)
+  @NotNull
+  private PaymentMethodEnum paymentMethod;
 }

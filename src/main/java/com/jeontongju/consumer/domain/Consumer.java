@@ -1,16 +1,12 @@
 package com.jeontongju.consumer.domain;
 
 import com.jeontongju.consumer.domain.common.BaseEntity;
-
 import java.util.List;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.Id;
 import javax.persistence.OneToMany;
 import javax.persistence.Table;
-
-import com.jeontongju.consumer.exception.PointInsufficientException;
-import com.jeontongju.consumer.utils.CustomErrMessage;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
@@ -70,6 +66,12 @@ public class Consumer extends BaseEntity {
   @OneToMany(mappedBy = "consumer")
   private List<PointHistory> pointHistoryList;
 
+  @OneToMany(mappedBy = "consumer")
+  private List<CreditHistory> creditHistoryList;
+
+  @OneToMany(mappedBy = "consumer")
+  private List<Subscription> subscriptionList;
+
   public void consumePoint(Long point) {
     this.point = point;
   }
@@ -78,11 +80,19 @@ public class Consumer extends BaseEntity {
     this.point = point;
   }
 
+  public void addSubscriptionInfo() {
+    this.isRegularPayment = true;
+  }
+
   public void assignAuctionCredit(Long auctionCredit) {
     this.auctionCredit = auctionCredit;
   }
 
   public void assignProfileImageUrl(String profileImageUrl) {
     this.profileImageUrl = profileImageUrl;
+  }
+  
+  public void assignPoint(Long point) {
+    this.point = point;
   }
 }

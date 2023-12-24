@@ -9,13 +9,8 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @Builder
 @Getter
-public class ConsumerInfoForInquiryResponseDto {
+public class PointCreditForInquiryResponseDto {
 
-  private String email;
-  private String name;
-  private String phoneNumber;
-  private String profileImageUrl;
   private Long point;
   private Long credit;
-  private Boolean isRegularPayments;
 }

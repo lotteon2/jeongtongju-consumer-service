@@ -9,13 +9,15 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @Builder
 @Getter
-public class ConsumerInfoForInquiryResponseDto {
+public class MyInfoAfterSignInForResponseDto {
 
   private String email;
-  private String name;
-  private String phoneNumber;
   private String profileImageUrl;
+  private String name;
+  private Boolean isAdult;
+  private Boolean isRegularPayment;
   private Long point;
   private Long credit;
-  private Boolean isRegularPayments;
+  private String phoneNumber;
+  private Boolean isAddressDefault;
 }

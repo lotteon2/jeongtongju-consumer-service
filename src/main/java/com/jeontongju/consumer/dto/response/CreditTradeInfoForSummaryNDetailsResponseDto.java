@@ -4,18 +4,16 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import org.springframework.data.domain.Page;
 
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
 @Getter
-public class ConsumerInfoForInquiryResponseDto {
+public class CreditTradeInfoForSummaryNDetailsResponseDto {
 
-  private String email;
-  private String name;
-  private String phoneNumber;
-  private String profileImageUrl;
-  private Long point;
   private Long credit;
-  private Boolean isRegularPayments;
+  private Long totalAcc;
+  private Long totalUse;
+  private Page<CreditTradeInfoForSingleInquiryResponseDto> histories;
 }

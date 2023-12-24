@@ -2,8 +2,11 @@ package com.jeontongju.consumer.mapper;
 
 import com.jeontongju.consumer.domain.Consumer;
 import com.jeontongju.consumer.dto.response.ConsumerInfoForInquiryResponseDto;
+import com.jeontongju.consumer.dto.response.MyInfoAfterSignInForResponseDto;
+import com.jeontongju.consumer.dto.response.PointCreditForInquiryResponseDto;
 import com.jeontongju.consumer.dto.temp.ConsumerInfoForCreateBySnsRequestDto;
 import com.jeontongju.consumer.dto.temp.ConsumerInfoForCreateRequestDto;
+import com.jeontongju.consumer.dto.temp.NameImageForInquiryResponseDto;
 import org.springframework.stereotype.Component;
 
 @Component
@@ -35,6 +38,40 @@ public class ConsumerMapper {
         .name(consumer.getName())
         .phoneNumber(consumer.getPhoneNumber())
         .profileImageUrl(consumer.getProfileImageUrl())
+        .point(consumer.getPoint())
+        .credit(consumer.getAuctionCredit())
+        .isRegularPayments(consumer.getIsRegularPayment())
+        .build();
+  }
+
+  public PointCreditForInquiryResponseDto toPointCreditInquiryDto(Consumer consumer) {
+
+    return PointCreditForInquiryResponseDto.builder()
+        .point(consumer.getPoint())
+        .credit(consumer.getAuctionCredit())
+        .build();
+  }
+
+  public MyInfoAfterSignInForResponseDto toMyInfoDto(Consumer consumer) {
+
+    return MyInfoAfterSignInForResponseDto.builder()
+        .email(consumer.getEmail())
+        .profileImageUrl(consumer.getProfileImageUrl())
+        .name(consumer.getName())
+        .isAdult(consumer.getIsAdult())
+        .isRegularPayment(consumer.getIsRegularPayment())
+        .point(consumer.getPoint())
+        .credit(consumer.getAuctionCredit())
+        .phoneNumber(consumer.getPhoneNumber())
+        .isAddressDefault(!consumer.getAddressList().isEmpty())
+        .build();
+  }
+
+  public NameImageForInquiryResponseDto toNameImageDto(Consumer consumer) {
+
+    return NameImageForInquiryResponseDto.builder()
+        .name(consumer.getName())
+        .imageUrl(consumer.getProfileImageUrl())
         .build();
   }
 }

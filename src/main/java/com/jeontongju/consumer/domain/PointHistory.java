@@ -2,14 +2,9 @@ package com.jeontongju.consumer.domain;
 
 import static javax.persistence.GenerationType.IDENTITY;
 
+import com.jeontongju.consumer.domain.common.BaseEntity;
 import com.jeontongju.consumer.dto.temp.TradePathEnum;
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.Id;
-import javax.persistence.JoinColumn;
-import javax.persistence.ManyToOne;
-import javax.persistence.Table;
+import javax.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
@@ -21,7 +16,7 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @Builder
 @Getter
-public class PointHistory {
+public class PointHistory extends BaseEntity {
 
   @Id
   @GeneratedValue(strategy = IDENTITY)
@@ -31,6 +26,7 @@ public class PointHistory {
   @Column(name = "trade_point", nullable = false)
   private Long tradePoint;
 
+  @Enumerated(EnumType.STRING)
   @Column(name = "trade_path", nullable = false)
   private TradePathEnum tradePathEnum;
 
