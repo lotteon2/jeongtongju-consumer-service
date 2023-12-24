@@ -81,4 +81,8 @@ public class Consumer extends BaseEntity {
   public void assignAuctionCredit(Long auctionCredit) {
     this.auctionCredit = auctionCredit;
   }
+
+  public void assignProfileImageUrl(String profileImageUrl) {
+    this.profileImageUrl = profileImageUrl;
+  }
 }
