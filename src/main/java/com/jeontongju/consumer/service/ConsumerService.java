@@ -1,6 +1,9 @@
 package com.jeontongju.consumer.service;
 
 import com.jeontongju.consumer.domain.Consumer;
+import com.jeontongju.consumer.dto.request.ProfileImageUrlForModifyRequestDto;
+import com.jeontongju.consumer.dto.response.ConsumerInfoForInquiryResponseDto;
+import com.jeontongju.consumer.dto.temp.ConsumerInfoForAuctionResponse;
 import com.jeontongju.consumer.domain.PointHistory;
 import com.jeontongju.consumer.domain.Subscription;
 import com.jeontongju.consumer.dto.response.*;
@@ -234,6 +237,19 @@ public class ConsumerService {
 
     Consumer foundConsumer = getConsumer(consumerId);
     return subscriptionService.getSubscriptionHistories(foundConsumer, page, size);
+  }
+
+  /**
+   * 내 정보 수정(프로필 이미지)
+   *
+   * @param consumerId
+   * @param modifyRequestDto
+   */
+  @Transactional
+  public void modifyMyInfo(Long consumerId, ProfileImageUrlForModifyRequestDto modifyRequestDto) {
+
+    Consumer foundConsumer = getConsumer(consumerId);
+    foundConsumer.assignProfileImageUrl(modifyRequestDto.getProfileImageUrl());
   }
 
   /**
