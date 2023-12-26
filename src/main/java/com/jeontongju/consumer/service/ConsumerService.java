@@ -19,6 +19,7 @@ import com.jeontongju.consumer.mapper.ConsumerMapper;
 import com.jeontongju.consumer.mapper.CouponMapper;
 import com.jeontongju.consumer.mapper.HistoryMapper;
 import com.jeontongju.consumer.repository.ConsumerRepository;
+import com.jeontongju.consumer.repository.PointHistoryRepository;
 import com.jeontongju.consumer.utils.CustomErrMessage;
 import io.github.bitbox.bitbox.dto.*;
 import io.github.bitbox.bitbox.util.KafkaTopicNameInfo;
@@ -40,6 +41,7 @@ import org.springframework.transaction.annotation.Transactional;
 public class ConsumerService {
 
   private final ConsumerRepository consumerRepository;
+  private final PointHistoryRepository pointHistoryRepository;
   private final SubscriptionService subscriptionService;
   private final ConsumerMapper consumerMapper;
   private final HistoryMapper historyMapper;
@@ -48,8 +50,8 @@ public class ConsumerService {
   private final ConsumerProducer consumerProducer;
   private final KafkaTemplate<String, ConsumerRegularPaymentsCouponDto> kafkaTemplate;
 
-  private static final Double POINT_ACC_RATE_NORMAL = 0.1;
-  private static final Double POINT_ACC_RATE_YANGBAN = 0.3;
+  private static final Double POINT_ACC_RATE_NORMAL = 0.01;
+  private static final Double POINT_ACC_RATE_YANGBAN = 0.03;
 
   @Transactional
   public void createConsumerForSignup(ConsumerInfoForCreateRequestDto createRequestDto) {
@@ -281,11 +283,15 @@ public class ConsumerService {
 
     Consumer foundConsumer = getConsumer(orderConfirmDto.getConsumerId());
 
+    Boolean isRegularPayment = foundConsumer.getIsRegularPayment();
     double pointAccRate =
-        foundConsumer.getIsRegularPayment() ? POINT_ACC_RATE_YANGBAN : POINT_ACC_RATE_NORMAL;
+        isRegularPayment ? POINT_ACC_RATE_YANGBAN : POINT_ACC_RATE_NORMAL;
     long accPoint = (long) Math.floor(orderConfirmDto.getProductAmount() * pointAccRate);
 
     foundConsumer.assignPoint(foundConsumer.getPoint() + accPoint);
+
+    TradePathEnum tradePath = isRegularPayment ? TradePathEnum.YANGBAN_CONFIRMED : TradePathEnum.GENERAL_CONFIRMED;
+    pointHistoryRepository.save(consumerMapper.toPointHistoryEntity(accPoint, tradePath, foundConsumer));
     return accPoint;
   }
 }
