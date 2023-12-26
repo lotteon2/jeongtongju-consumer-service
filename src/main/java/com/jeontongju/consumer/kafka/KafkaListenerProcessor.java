@@ -56,7 +56,11 @@ public class KafkaListenerProcessor {
 
     try {
       consumerService.refundPointByCancelOrder(orderCancelDto);
-      consumerProducer.send(KafkaTopicNameInfo.CANCEL_ORDER_COUPON, orderCancelDto);
+      if (orderCancelDto.getCouponCode() == null) {
+        consumerProducer.send(KafkaTopicNameInfo.CANCEL_ORDER_PAYMENT, orderCancelDto);
+      } else {
+        consumerProducer.send(KafkaTopicNameInfo.CANCEL_ORDER_COUPON, orderCancelDto);
+      }
     } catch (Exception e) {
       log.error("During Cancel Order: Error while refunding points={}", e.getMessage());
       throw new KafkaDuringOrderException(CustomErrMessage.ERROR_KAFKA);
