@@ -1,12 +1,14 @@
 package com.jeontongju.consumer.mapper;
 
 import com.jeontongju.consumer.domain.Consumer;
+import com.jeontongju.consumer.domain.PointHistory;
 import com.jeontongju.consumer.dto.response.ConsumerInfoForInquiryResponseDto;
 import com.jeontongju.consumer.dto.response.MyInfoAfterSignInForResponseDto;
 import com.jeontongju.consumer.dto.response.PointCreditForInquiryResponseDto;
 import com.jeontongju.consumer.dto.temp.ConsumerInfoForCreateBySnsRequestDto;
 import com.jeontongju.consumer.dto.temp.ConsumerInfoForCreateRequestDto;
 import com.jeontongju.consumer.dto.temp.NameImageForInquiryResponseDto;
+import com.jeontongju.consumer.dto.temp.TradePathEnum;
 import org.springframework.stereotype.Component;
 
 @Component
@@ -72,6 +74,16 @@ public class ConsumerMapper {
     return NameImageForInquiryResponseDto.builder()
         .name(consumer.getName())
         .imageUrl(consumer.getProfileImageUrl())
+        .build();
+  }
+
+  public PointHistory toPointHistoryEntity(
+      Long tradePoint, TradePathEnum tradePath, Consumer consumer) {
+
+    return PointHistory.builder()
+        .tradePoint(tradePoint)
+        .tradePathEnum(tradePath)
+        .consumer(consumer)
         .build();
   }
 }
