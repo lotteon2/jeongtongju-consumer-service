@@ -134,7 +134,7 @@ public class HistoryService {
     long[] summary = calcCreditSummary(creditHistories);
 
     return historyMapper.toCreditSummaryNDetailsResponseDto(
-        foundConsumer.getPoint(), summary[0], summary[1], creditHistoriesPaged);
+        foundConsumer.getAuctionCredit(), summary[0], summary[1], creditHistoriesPaged);
   }
 
   /**
@@ -154,17 +154,17 @@ public class HistoryService {
     Page<CreditHistory> creditHistoriesPaged = null;
     if ("charge".equals(search)) {
       creditHistoriesPaged =
-              creditHistoryRepository.findByConsumerAndTradeCreditGreaterThan(consumer, 0L, pageable);
+          creditHistoryRepository.findByConsumerAndTradeCreditGreaterThan(consumer, 0L, pageable);
     } else if ("bid".equals(search)) {
       creditHistoriesPaged =
-              creditHistoryRepository.findByConsumerAndTradeCreditLessThan(consumer, 0L, pageable);
+          creditHistoryRepository.findByConsumerAndTradeCreditLessThan(consumer, 0L, pageable);
     } else if (search == null) {
       creditHistoriesPaged = creditHistoryRepository.findByConsumer(consumer, pageable);
     }
 
     List<CreditTradeInfoForSingleInquiryResponseDto> histories =
         historyMapper.toCreditHistoriesPagedResponseDto(creditHistoriesPaged);
-    
+
     int totalSize = creditHistoryRepository.findByConsumer(consumer).size();
     return creditPaginationManager.wrapByPage(histories, pageable, totalSize);
   }
