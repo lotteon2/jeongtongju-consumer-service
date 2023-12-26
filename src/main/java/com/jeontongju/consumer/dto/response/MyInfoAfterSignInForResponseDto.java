@@ -11,6 +11,7 @@ import lombok.NoArgsConstructor;
 @Getter
 public class MyInfoAfterSignInForResponseDto {
 
+  private Long memberId;
   private String email;
   private String profileImageUrl;
   private String name;

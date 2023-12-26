@@ -57,6 +57,7 @@ public class ConsumerMapper {
   public MyInfoAfterSignInForResponseDto toMyInfoDto(Consumer consumer) {
 
     return MyInfoAfterSignInForResponseDto.builder()
+        .memberId(consumer.getConsumerId())
         .email(consumer.getEmail())
         .profileImageUrl(consumer.getProfileImageUrl())
         .name(consumer.getName())
