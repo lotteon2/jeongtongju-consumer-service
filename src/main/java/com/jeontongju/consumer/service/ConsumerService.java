@@ -47,7 +47,6 @@ public class ConsumerService {
   private final HistoryMapper historyMapper;
   private final CouponMapper couponMapper;
 
-  private final ConsumerProducer consumerProducer;
   private final KafkaTemplate<String, ConsumerRegularPaymentsCouponDto> kafkaTemplate;
 
   private static final Double POINT_ACC_RATE_NORMAL = 0.01;
@@ -84,7 +83,6 @@ public class ConsumerService {
     }
 
     log.info("ConsumerService's consumePoint Successful executed!");
-    consumerProducer.send(KafkaTopicNameInfo.USE_COUPON, orderInfoDto);
   }
 
   /**
@@ -133,7 +131,6 @@ public class ConsumerService {
 
     Consumer foundConsumer = getConsumer(orderCancelDto.getConsumerId());
     foundConsumer.assignPoint(foundConsumer.getPoint() + orderCancelDto.getPoint());
-    consumerProducer.send(KafkaTopicNameInfo.CANCEL_ORDER_COUPON, orderCancelDto);
   }
 
   /**
