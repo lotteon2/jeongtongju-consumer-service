@@ -48,8 +48,8 @@ public class ConsumerService {
   private final ConsumerProducer consumerProducer;
   private final KafkaTemplate<String, ConsumerRegularPaymentsCouponDto> kafkaTemplate;
 
-  private static final Double POINT_ACC_RATE_NORMAL = 0.1;
-  private static final Double POINT_ACC_RATE_YANGBAN = 0.3;
+  private static final Double POINT_ACC_RATE_NORMAL = 0.01;
+  private static final Double POINT_ACC_RATE_YANGBAN = 0.03;
 
   @Transactional
   public void createConsumerForSignup(ConsumerInfoForCreateRequestDto createRequestDto) {
