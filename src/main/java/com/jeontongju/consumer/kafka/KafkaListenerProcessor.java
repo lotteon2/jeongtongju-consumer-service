@@ -21,6 +21,7 @@ public class KafkaListenerProcessor {
   private final ConsumerService consumerService;
   private final HistoryService historyService;
   private final PaymentsMapper paymentsMapper;
+  private final ConsumerProducer consumerProducer;
   private final KafkaTemplate<String, KakaoPayCancelDto> kafkaTemplate;
 
   @KafkaListener(topics = KafkaTopicNameInfo.REDUCE_POINT)
@@ -28,6 +29,11 @@ public class KafkaListenerProcessor {
 
     try {
       consumerService.consumePoint(orderInfoDto);
+      if (orderInfoDto.getUserCouponUpdateDto().getCouponCode() == null) {
+        consumerProducer.send(KafkaTopicNameInfo.REDUCE_STOCK, orderInfoDto);
+      } else {
+        consumerProducer.send(KafkaTopicNameInfo.USE_COUPON, orderInfoDto);
+      }
     } catch (Exception e) {
       log.error("During Order Process: Error while consume points={}", e.getMessage());
       throw new KafkaDuringOrderException(CustomErrMessage.ERROR_KAFKA);
@@ -50,6 +56,7 @@ public class KafkaListenerProcessor {
 
     try {
       consumerService.refundPointByCancelOrder(orderCancelDto);
+      consumerProducer.send(KafkaTopicNameInfo.CANCEL_ORDER_COUPON, orderCancelDto);
     } catch (Exception e) {
       log.error("During Cancel Order: Error while refunding points={}", e.getMessage());
       throw new KafkaDuringOrderException(CustomErrMessage.ERROR_KAFKA);
