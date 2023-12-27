@@ -6,6 +6,8 @@ import com.jeontongju.consumer.service.ConsumerService;
 import com.jeontongju.consumer.service.HistoryService;
 import com.jeontongju.consumer.utils.CustomErrMessage;
 import io.github.bitbox.bitbox.dto.*;
+import io.github.bitbox.bitbox.enums.NotificationTypeEnum;
+import io.github.bitbox.bitbox.enums.RecipientTypeEnum;
 import io.github.bitbox.bitbox.util.KafkaTopicNameInfo;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -36,7 +38,16 @@ public class KafkaListenerProcessor {
       }
     } catch (Exception e) {
       log.error("During Order Process: Error while consume points={}", e.getMessage());
-      throw new KafkaDuringOrderException(CustomErrMessage.ERROR_KAFKA);
+
+      consumerProducer.send(
+          KafkaTopicNameInfo.SEND_ERROR_NOTIFICATION,
+          ServerErrorForNotificationDto.builder()
+              .recipientId(orderInfoDto.getUserPointUpdateDto().getConsumerId())
+              .recipientType(RecipientTypeEnum.ROLE_CONSUMER)
+              .notificationType(NotificationTypeEnum.INTERNAL_CONSUMER_SERVER_ERROR)
+              .error(orderInfoDto)
+              .build());
+      //      throw new KafkaDuringOrderException(CustomErrMessage.ERROR_KAFKA);
     }
   }
 
@@ -63,7 +74,7 @@ public class KafkaListenerProcessor {
       }
     } catch (Exception e) {
       log.error("During Cancel Order: Error while refunding points={}", e.getMessage());
-      throw new KafkaDuringOrderException(CustomErrMessage.ERROR_KAFKA);
+      //      throw new KafkaDuringOrderException(CustomErrMessage.ERROR_KAFKA);
     }
   }
 
