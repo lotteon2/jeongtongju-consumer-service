@@ -9,4 +9,5 @@ public interface CustomErrMessage {
   String POINT_USAGE_OVER_10_PERCENTAGE = "포인트 사용액 10% 초과";
   String NOT_FOUND_ADDRESS = "찾을 수 없는 주소지";
   String NOT_FOUND_DEFAULT_ADDRESS = "찾을 수 없는 기본 주소지";
+  String UNSUBSCRIBED_CONSUMER = "구독하지 않은 소비자";
 }

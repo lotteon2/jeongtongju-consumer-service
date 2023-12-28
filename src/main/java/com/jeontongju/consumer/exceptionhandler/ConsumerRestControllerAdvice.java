@@ -2,6 +2,7 @@ package com.jeontongju.consumer.exceptionhandler;
 
 import com.jeontongju.consumer.dto.ErrorFormat;
 import com.jeontongju.consumer.exception.KafkaDuringOrderException;
+import com.jeontongju.consumer.exception.UnsubscribedConsumerException;
 import com.jeontongju.consumer.utils.CustomErrMessage;
 import io.github.bitbox.bitbox.dto.ResponseFormat;
 import lombok.RequiredArgsConstructor;
@@ -24,6 +25,7 @@ public class ConsumerRestControllerAdvice extends ResponseEntityExceptionHandler
       HttpHeaders headers,
       HttpStatus status,
       WebRequest request) {
+
     ErrorFormat body =
         ErrorFormat.builder()
             .code(status.value())
@@ -35,6 +37,19 @@ public class ConsumerRestControllerAdvice extends ResponseEntityExceptionHandler
             .build();
 
     return ResponseEntity.status(status.value()).body(body);
+  }
+
+  @ExceptionHandler(UnsubscribedConsumerException.class)
+  public ResponseEntity<ResponseFormat<Void>> handleAlreadyUnsubscribed() {
+
+    HttpStatus status = HttpStatus.BAD_REQUEST;
+    return ResponseEntity.status(status)
+        .body(
+            ResponseFormat.<Void>builder()
+                .code(status.value())
+                .message(status.name())
+                .detail(CustomErrMessage.UNSUBSCRIBED_CONSUMER)
+                .build());
   }
 
   @ExceptionHandler(KafkaDuringOrderException.class)
