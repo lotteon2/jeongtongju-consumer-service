@@ -99,4 +99,17 @@ public class ConsumerRestController {
                 .data(consumerService.getMyInfoAfterSignIn(memberId))
                 .build());
   }
+
+  @DeleteMapping("/consumers/subscription")
+  public ResponseEntity<ResponseFormat<Void>> unsubscribe(@RequestHeader Long memberId) {
+
+    consumerService.unsubscribe(memberId);
+    return ResponseEntity.ok()
+        .body(
+            ResponseFormat.<Void>builder()
+                .code(HttpStatus.OK.value())
+                .message(HttpStatus.OK.name())
+                .detail("구독 해지 성공")
+                .build());
+  }
 }

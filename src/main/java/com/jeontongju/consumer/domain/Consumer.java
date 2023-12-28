@@ -91,8 +91,12 @@ public class Consumer extends BaseEntity {
   public void assignProfileImageUrl(String profileImageUrl) {
     this.profileImageUrl = profileImageUrl;
   }
-  
+
   public void assignPoint(Long point) {
     this.point = point;
+  }
+
+  public void unsubscribe() {
+    this.isRegularPayment = false;
   }
 }
