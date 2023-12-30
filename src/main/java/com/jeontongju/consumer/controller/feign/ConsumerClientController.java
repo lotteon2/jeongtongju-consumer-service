@@ -25,6 +25,14 @@ public class ConsumerClientController {
     return FeignFormat.<Void>builder().code(HttpStatus.OK.value()).build();
   }
 
+  @PutMapping("/consumers/account-consolidation")
+  public FeignFormat<Void> updateConsumerForAccountConsolidation(
+      @RequestBody ConsumerInfoForAccountConsolidationDto accountConsolidationDto) {
+
+    consumerService.updateConsumerForAccountConsolidation(accountConsolidationDto);
+    return FeignFormat.<Void>builder().code(HttpStatus.OK.value()).build();
+  }
+
   @GetMapping("/consumers/{consumerId}/name-image")
   public FeignFormat<NameImageForInquiryResponseDto> getNameNImageUrl(
       @PathVariable("consumerId") Long consumerId) {
