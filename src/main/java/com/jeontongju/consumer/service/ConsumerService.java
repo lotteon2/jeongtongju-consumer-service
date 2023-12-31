@@ -67,6 +67,21 @@ public class ConsumerService {
   }
 
   /**
+   * 계정 통합 시, 성인 인증으로 얻어온 정보 갱신(이름, 전화번호)
+   *
+   * @param accountConsolidationDto 성인 인증을 통해 얻어온 갱신 정보
+   */
+  @Transactional
+  public void updateConsumerForAccountConsolidation(
+          ConsumerInfoForAccountConsolidationDto accountConsolidationDto) {
+
+    Consumer foundConsumer = getConsumer(accountConsolidationDto.getConsumerId());
+    foundConsumer.assignName(accountConsolidationDto.getName());
+    foundConsumer.assignPhoneNumber(accountConsolidationDto.getPhoneNumber());
+    foundConsumer.approveAdult();
+  }
+
+  /**
    * 주문 및 결제 확정을 위한 포인트 차감
    *
    * @param orderInfoDto 주문 내역 정보

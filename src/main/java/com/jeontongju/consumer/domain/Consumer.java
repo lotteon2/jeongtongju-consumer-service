@@ -99,4 +99,16 @@ public class Consumer extends BaseEntity {
   public void unsubscribe() {
     this.isRegularPayment = false;
   }
+
+  public void assignName(String name) {
+    this.name = name;
+  }
+
+  public void assignPhoneNumber(String phoneNumber) {
+    this.phoneNumber = phoneNumber;
+  }
+
+  public void approveAdult() {
+    this.isAdult = true;
+  }
 }
