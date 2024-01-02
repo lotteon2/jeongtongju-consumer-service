@@ -156,6 +156,7 @@ public class ConsumerService {
    *
    * @param orderCancelDto 주문 복구 정보
    */
+  @Transactional
   public void recoverPointByFailedOrderCancel(OrderCancelDto orderCancelDto) {
 
     Consumer foundConsumer = getConsumer(orderCancelDto.getConsumerId());
