@@ -18,7 +18,7 @@ import org.springframework.stereotype.Component;
 @Slf4j
 @Component
 @RequiredArgsConstructor
-public class KafkaListenerProcessor {
+public class ConsumerKafkaListener {
 
   private final ConsumerService consumerService;
   private final HistoryService historyService;
@@ -79,7 +79,7 @@ public class KafkaListenerProcessor {
   }
 
   /**
-   * 주문 취소 실패 시, 원상 복구
+   * 주문 취소 실패 시, 포인트 차감 상태로 복구
    *
    * @param orderCancelDto 주문 복구 정보
    */
@@ -89,7 +89,17 @@ public class KafkaListenerProcessor {
       consumerService.recoverPointByFailedOrderCancel(orderCancelDto);
       consumerProducer.send(KafkaTopicNameInfo.RECOVER_CANCEL_ORDER, orderCancelDto);
     } catch (Exception e) {
-      log.error("During Recover Order By Order Cancel Fail: Error while recovering points={}", e.getMessage());
+      log.error(
+          "During Recover Order By Order Cancel Fail: Error while recovering points={}",
+          e.getMessage());
+      consumerProducer.send(
+          KafkaTopicNameInfo.SEND_ERROR_CANCELING_ORDER_NOTIFICATION,
+          ServerErrorCancelingOrderForNotificationDto.builder()
+              .recipientId(orderCancelDto.getConsumerId())
+              .recipientType(RecipientTypeEnum.ROLE_CONSUMER)
+              .notificationType(NotificationTypeEnum.INTERNAL_CONSUMER_SERVER_ERROR)
+              .orderCancelDto(orderCancelDto)
+              .build());
     }
   }
 
