@@ -78,6 +78,21 @@ public class KafkaListenerProcessor {
     }
   }
 
+  /**
+   * 주문 취소 실패 시, 원상 복구
+   *
+   * @param orderCancelDto 주문 복구 정보
+   */
+  @KafkaListener(topics = KafkaTopicNameInfo.RECOVER_CANCEL_ORDER_POINT)
+  public void recoverPointByFailedOrderCancel(OrderCancelDto orderCancelDto) {
+    try {
+      consumerService.recoverPointByFailedOrderCancel(orderCancelDto);
+      consumerProducer.send(KafkaTopicNameInfo.RECOVER_CANCEL_ORDER, orderCancelDto);
+    } catch (Exception e) {
+      log.error("During Recover Order By Order Cancel Fail: Error while recovering points={}", e.getMessage());
+    }
+  }
+
   @KafkaListener(topics = KafkaTopicNameInfo.UPDATE_CREDIT)
   public void updateCredit(CreditUpdateDto creditUpdateDto) {
 
