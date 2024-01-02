@@ -77,14 +77,20 @@ public class AddressService {
 
     Consumer foundConsumer = consumerService.getConsumer(consumerId);
 
-    List<Address> registerdAddresses = foundConsumer.getAddressList();
+    List<Address> registeredAddresses = foundConsumer.getAddressList();
+
     // 최대 5개까지 주소지 등록 가능
-    if (registerdAddresses.size() == 5) {
+    if (registeredAddresses.size() == 5) {
       deleteOldestAddress(foundConsumer);
     }
 
+    if (registeredAddresses == null) {
+      addressRepository.save(addressMapper.toEntity(registerRequestDto, foundConsumer));
+      return;
+    }
+
     // 기본 주소지가 있다면 기본 주소지 해제
-    if (registerRequestDto.getIsDefault() && !registerdAddresses.isEmpty()) {
+    if (registerRequestDto.getIsDefault() && !registeredAddresses.isEmpty()) {
       Address defaultAddress =
           addressRepository
               .findByConsumerAndIsDefault(foundConsumer, true)
