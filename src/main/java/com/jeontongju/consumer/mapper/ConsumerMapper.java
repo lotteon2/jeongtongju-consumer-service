@@ -67,6 +67,7 @@ public class ConsumerMapper {
         .name(consumer.getName())
         .isAdult(consumer.getIsAdult())
         .isRegularPayment(consumer.getIsRegularPayment())
+        .isPaymentReservation(consumer.getIsPaymentReservation())
         .point(consumer.getPoint())
         .credit(consumer.getAuctionCredit())
         .phoneNumber(consumer.getPhoneNumber())

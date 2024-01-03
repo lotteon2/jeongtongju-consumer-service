@@ -17,6 +17,7 @@ public class MyInfoAfterSignInForResponseDto {
   private String name;
   private Boolean isAdult;
   private Boolean isRegularPayment;
+  private Boolean isPaymentReservation;
   private Long point;
   private Long credit;
   private String phoneNumber;

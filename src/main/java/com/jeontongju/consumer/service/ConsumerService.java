@@ -158,12 +158,25 @@ public class ConsumerService {
   }
 
   /**
+   * 주문 취소 실패 시, 포인트 원상 복구
+   *
+   * @param orderCancelDto 주문 복구 정보
+   */
+  @Transactional
+  public void recoverPointByFailedOrderCancel(OrderCancelDto orderCancelDto) {
+
+    Consumer foundConsumer = getConsumer(orderCancelDto.getConsumerId());
+    foundConsumer.assignPoint(foundConsumer.getPoint() - orderCancelDto.getPoint());
+  }
+
+  /**
    * 구독 결제 완료 후, 구독권 생성
    *
    * @param subscriptionDto 구독권 정보
    */
   @Transactional
   public void createSubscription(SubscriptionDto subscriptionDto) {
+
     Consumer foundConsumer = getConsumer(subscriptionDto.getConsumerId());
     foundConsumer.addSubscriptionInfo();
 
@@ -206,19 +219,20 @@ public class ConsumerService {
   public boolean getConsumerRegularPaymentInfo(Long consumerId) {
 
     Consumer foundConsumer = getConsumer(consumerId);
-    boolean isRegularInfo = foundConsumer.getIsRegularPayment();
-    boolean isExpired = false;
-
-    Optional<Subscription> latestSubscription =
-        foundConsumer.getSubscriptionList().stream()
-            .max(Comparator.comparing(Subscription::getEndDate));
-
-    if (latestSubscription.isPresent()
-        && latestSubscription.get().getEndDate().isAfter(LocalDateTime.now())) {
-      isExpired = true;
-    }
-
-    return isRegularInfo || isExpired;
+//    boolean isRegularInfo = foundConsumer.getIsRegularPayment();
+//    boolean isExpired = false;
+//
+//    Optional<Subscription> latestSubscription =
+//        foundConsumer.getSubscriptionList().stream()
+//            .max(Comparator.comparing(Subscription::getEndDate));
+//
+//    if (latestSubscription.isPresent()
+//        && latestSubscription.get().getEndDate().isAfter(LocalDateTime.now())) {
+//      isExpired = true;
+//    }
+//
+//    return isRegularInfo || isExpired;
+    return foundConsumer.getIsRegularPayment();
   }
 
   /**
@@ -281,7 +295,7 @@ public class ConsumerService {
    * 구독 결제 내역 조회 (+페이징)
    *
    * @param consumerId 로그인 한 회원의 정보
-   * @param page 페이징 첫페이지 번호
+   * @param page 페이징 첫 페이지 번호
    * @param size 페이지 당 보여줄 게시물 개수
    * @return {Page<SubscriptionPaymentsInfoForInquiryResponseDto>}
    */
@@ -303,19 +317,6 @@ public class ConsumerService {
 
     Consumer foundConsumer = getConsumer(consumerId);
     foundConsumer.assignProfileImageUrl(modifyRequestDto.getProfileImageUrl());
-  }
-
-  /**
-   * consumerId로 Consumer 찾기 (공통화)
-   *
-   * @param consumerId 회원의 식별자
-   * @return {Consumer} 식별자로 찾은 소비자 객체
-   */
-  public Consumer getConsumer(Long consumerId) {
-
-    return consumerRepository
-        .findByConsumerId(consumerId)
-        .orElseThrow(() -> new ConsumerNotFoundException(CustomErrMessage.NOT_FOUND_CONSUMER));
   }
 
   /**
@@ -386,5 +387,18 @@ public class ConsumerService {
 
     Pageable pageable = paginationManager.getPageableByCreatedAt(page, size);
     return paginationManager.wrapByPage(allConsumersDto, pageable, foundAllConsumers.size());
+  }
+  
+  /**
+   * consumerId로 Consumer 찾기 (공통화)
+   *
+   * @param consumerId 회원의 식별자
+   * @return {Consumer} 식별자로 찾은 소비자 객체
+   */
+  public Consumer getConsumer(Long consumerId) {
+
+    return consumerRepository
+        .findByConsumerId(consumerId)
+        .orElseThrow(() -> new ConsumerNotFoundException(CustomErrMessage.NOT_FOUND_CONSUMER));
   }
 }
