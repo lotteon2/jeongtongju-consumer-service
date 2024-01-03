@@ -367,6 +367,24 @@ public class ConsumerService {
   }
 
   /**
+   * 특정 회원 상세 조회
+   *
+   * @param consumerId 조회할 회원 식별자
+   * @param memberRole 해당 작업을 수행할 회원의 역할(ROLE_ADMIN)
+   * @return {SpecificConsumerDetailForInquiryResponseDto} 특정 회원 상세 정보
+   */
+  public SpecificConsumerDetailForInquiryResponseDto getConsumerDetailForInquiry(
+      Long consumerId, MemberRoleEnum memberRole) {
+
+    if (memberRole != MemberRoleEnum.ROLE_ADMIN) {
+      throw new RuntimeException();
+    }
+
+    Consumer foundConsumer = getConsumer(consumerId);
+    return consumerMapper.toSpecificConsumerDetailDto(foundConsumer);
+  }
+  
+  /**
    * 모든 소비자 목록 조회 (탈퇴한 회원 포함)
    *
    * @param memberRole 해당 작업을 수행할 회원의 역할(ROLE_ADMIN)
