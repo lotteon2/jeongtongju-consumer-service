@@ -2,6 +2,7 @@ package com.jeontongju.consumer.mapper;
 
 import com.jeontongju.consumer.domain.Consumer;
 import com.jeontongju.consumer.domain.PointHistory;
+import com.jeontongju.consumer.dto.response.ConsumerDetailForSingleInquiryResponseDto;
 import com.jeontongju.consumer.dto.response.ConsumerInfoForInquiryResponseDto;
 import com.jeontongju.consumer.dto.response.MyInfoAfterSignInForResponseDto;
 import com.jeontongju.consumer.dto.response.PointCreditForInquiryResponseDto;
@@ -10,6 +11,9 @@ import com.jeontongju.consumer.dto.temp.ConsumerInfoForCreateRequestDto;
 import com.jeontongju.consumer.dto.temp.NameImageForInquiryResponseDto;
 import com.jeontongju.consumer.dto.temp.TradePathEnum;
 import org.springframework.stereotype.Component;
+
+import java.util.ArrayList;
+import java.util.List;
 
 @Component
 public class ConsumerMapper {
@@ -86,5 +90,28 @@ public class ConsumerMapper {
         .tradePathEnum(tradePath)
         .consumer(consumer)
         .build();
+  }
+
+  public List<ConsumerDetailForSingleInquiryResponseDto> toAllConsumersDto(
+      List<Consumer> consumers) {
+
+    List<ConsumerDetailForSingleInquiryResponseDto> allConsumersDtos = new ArrayList<>();
+    for (Consumer consumer : consumers) {
+      ConsumerDetailForSingleInquiryResponseDto build =
+          ConsumerDetailForSingleInquiryResponseDto.builder()
+              .consumerId(consumer.getConsumerId())
+              .thumbnail(consumer.getProfileImageUrl())
+              .name(consumer.getName())
+              .email(consumer.getEmail())
+              .phoneNumber(consumer.getPhoneNumber())
+              .point(consumer.getPoint())
+              .credit(consumer.getAuctionCredit())
+              .isYangban(consumer.getIsRegularPayment())
+              .createdAt(consumer.getCreatedAt())
+              .isDeleted(consumer.getIsDeleted())
+              .build();
+      allConsumersDtos.add(build);
+    }
+    return allConsumersDtos;
   }
 }
