@@ -15,15 +15,20 @@ import com.jeontongju.consumer.mapper.CouponMapper;
 import com.jeontongju.consumer.repository.ConsumerRepository;
 import com.jeontongju.consumer.repository.PointHistoryRepository;
 import com.jeontongju.consumer.utils.CustomErrMessage;
+import com.jeontongju.consumer.utils.PaginationManager;
 import io.github.bitbox.bitbox.dto.*;
+import io.github.bitbox.bitbox.enums.MemberRoleEnum;
 import io.github.bitbox.bitbox.util.KafkaTopicNameInfo;
+
 import java.time.LocalDateTime;
 import java.util.Comparator;
+import java.util.List;
 import java.util.Optional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.kafka.common.KafkaException;
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -39,6 +44,7 @@ public class ConsumerService {
   private final SubscriptionService subscriptionService;
   private final ConsumerMapper consumerMapper;
   private final CouponMapper couponMapper;
+  private final PaginationManager paginationManager;
 
   private final KafkaTemplate<String, ConsumerRegularPaymentsCouponDto> kafkaTemplate;
 
@@ -360,6 +366,29 @@ public class ConsumerService {
     return accPoint;
   }
 
+  /**
+   * 모든 소비자 목록 조회 (탈퇴한 회원 포함)
+   *
+   * @param memberRole 해당 작업을 수행할 회원의 역할(ROLE_ADMIN)
+   * @param page 페이징 첫 페이지 번호
+   * @param size 페이지 당 보여줄 게시물 개수
+   * @return {Page<ConsumerDetailForSingleInquiryResponseDto>} 모든 소비자 상세 정보
+   */
+  public Page<ConsumerDetailForSingleInquiryResponseDto> getMembersForListLookup(
+      MemberRoleEnum memberRole, int page, int size) {
+
+    if (memberRole != MemberRoleEnum.ROLE_ADMIN) {
+      throw new NotAdminAccessDeniedException(CustomErrMessage.NOT_ADMIN_ACCESS_DENIED);
+    }
+
+    List<Consumer> foundAllConsumers = consumerRepository.findAll();
+    List<ConsumerDetailForSingleInquiryResponseDto> allConsumersDto =
+        consumerMapper.toAllConsumersDto(foundAllConsumers);
+
+    Pageable pageable = paginationManager.getPageableByCreatedAt(page, size);
+    return paginationManager.wrapByPage(allConsumersDto, pageable, foundAllConsumers.size());
+  }
+  
   /**
    * consumerId로 Consumer 찾기 (공통화)
    *

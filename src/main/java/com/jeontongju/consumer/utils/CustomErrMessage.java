@@ -10,4 +10,5 @@ public interface CustomErrMessage {
   String NOT_FOUND_ADDRESS = "찾을 수 없는 주소지";
   String NOT_FOUND_DEFAULT_ADDRESS = "찾을 수 없는 기본 주소지";
   String UNSUBSCRIBED_CONSUMER = "구독하지 않은 소비자";
+  String NOT_ADMIN_ACCESS_DENIED = "관리자만 접근 허용";
 }
