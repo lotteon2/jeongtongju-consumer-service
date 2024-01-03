@@ -73,7 +73,7 @@ public class ConsumerService {
    */
   @Transactional
   public void updateConsumerForAccountConsolidation(
-          ConsumerInfoForAccountConsolidationDto accountConsolidationDto) {
+      ConsumerInfoForAccountConsolidationDto accountConsolidationDto) {
 
     Consumer foundConsumer = getConsumer(accountConsolidationDto.getConsumerId());
     foundConsumer.assignName(accountConsolidationDto.getName());
@@ -149,6 +149,18 @@ public class ConsumerService {
 
     Consumer foundConsumer = getConsumer(orderCancelDto.getConsumerId());
     foundConsumer.assignPoint(foundConsumer.getPoint() + orderCancelDto.getPoint());
+  }
+
+  /**
+   * 주문 취소 실패 시, 포인트 원상 복구
+   *
+   * @param orderCancelDto 주문 복구 정보
+   */
+  @Transactional
+  public void recoverPointByFailedOrderCancel(OrderCancelDto orderCancelDto) {
+
+    Consumer foundConsumer = getConsumer(orderCancelDto.getConsumerId());
+    foundConsumer.assignPoint(foundConsumer.getPoint() - orderCancelDto.getPoint());
   }
 
   /**
