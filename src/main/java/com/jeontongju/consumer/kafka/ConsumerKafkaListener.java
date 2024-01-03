@@ -94,11 +94,10 @@ public class ConsumerKafkaListener {
           e.getMessage());
       consumerProducer.send(
           KafkaTopicNameInfo.SEND_ERROR_CANCELING_ORDER_NOTIFICATION,
-          ServerErrorCancelingOrderForNotificationDto.builder()
+          MemberInfoForNotificationDto.builder()
               .recipientId(orderCancelDto.getConsumerId())
               .recipientType(RecipientTypeEnum.ROLE_CONSUMER)
               .notificationType(NotificationTypeEnum.INTERNAL_CONSUMER_SERVER_ERROR)
-              .orderCancelDto(orderCancelDto)
               .build());
     }
   }
