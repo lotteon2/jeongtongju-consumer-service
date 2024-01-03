@@ -5,6 +5,7 @@ import com.jeontongju.consumer.dto.response.*;
 import com.jeontongju.consumer.dto.response.ConsumerInfoForInquiryResponseDto;
 import com.jeontongju.consumer.service.ConsumerService;
 import io.github.bitbox.bitbox.dto.ResponseFormat;
+import io.github.bitbox.bitbox.enums.MemberRoleEnum;
 import javax.validation.Valid;
 
 import io.github.bitbox.bitbox.enums.MemberRoleEnum;
@@ -39,6 +40,23 @@ public class ConsumerRestController {
                 .message(HttpStatus.OK.name())
                 .detail("소비자 개인정보 조회 성공")
                 .data(myInfoResponseDto)
+                .build());
+  }
+
+  @GetMapping("/consumers-list")
+  public ResponseEntity<ResponseFormat<Page<ConsumerDetailForSingleInquiryResponseDto>>>
+      getMembersForListLookup(
+          @RequestHeader MemberRoleEnum memberRole,
+          @RequestParam int page,
+          @RequestParam int size) {
+
+    return ResponseEntity.ok()
+        .body(
+            ResponseFormat.<Page<ConsumerDetailForSingleInquiryResponseDto>>builder()
+                .code(HttpStatus.OK.value())
+                .message(HttpStatus.OK.name())
+                .detail("회원 목록 조회 성공")
+                .data(consumerService.getMembersForListLookup(memberRole, page, size))
                 .build());
   }
 

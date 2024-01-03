@@ -15,16 +15,20 @@ import com.jeontongju.consumer.mapper.CouponMapper;
 import com.jeontongju.consumer.repository.ConsumerRepository;
 import com.jeontongju.consumer.repository.PointHistoryRepository;
 import com.jeontongju.consumer.utils.CustomErrMessage;
+import com.jeontongju.consumer.utils.PaginationManager;
 import io.github.bitbox.bitbox.dto.*;
 import io.github.bitbox.bitbox.enums.MemberRoleEnum;
 import io.github.bitbox.bitbox.util.KafkaTopicNameInfo;
+
 import java.time.LocalDateTime;
 import java.util.Comparator;
+import java.util.List;
 import java.util.Optional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.kafka.common.KafkaException;
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -40,6 +44,7 @@ public class ConsumerService {
   private final SubscriptionService subscriptionService;
   private final ConsumerMapper consumerMapper;
   private final CouponMapper couponMapper;
+  private final PaginationManager paginationManager;
 
   private final KafkaTemplate<String, ConsumerRegularPaymentsCouponDto> kafkaTemplate;
 
@@ -153,12 +158,25 @@ public class ConsumerService {
   }
 
   /**
+   * 주문 취소 실패 시, 포인트 원상 복구
+   *
+   * @param orderCancelDto 주문 복구 정보
+   */
+  @Transactional
+  public void recoverPointByFailedOrderCancel(OrderCancelDto orderCancelDto) {
+
+    Consumer foundConsumer = getConsumer(orderCancelDto.getConsumerId());
+    foundConsumer.assignPoint(foundConsumer.getPoint() - orderCancelDto.getPoint());
+  }
+
+  /**
    * 구독 결제 완료 후, 구독권 생성
    *
    * @param subscriptionDto 구독권 정보
    */
   @Transactional
   public void createSubscription(SubscriptionDto subscriptionDto) {
+
     Consumer foundConsumer = getConsumer(subscriptionDto.getConsumerId());
     foundConsumer.addSubscriptionInfo();
 
@@ -201,19 +219,20 @@ public class ConsumerService {
   public boolean getConsumerRegularPaymentInfo(Long consumerId) {
 
     Consumer foundConsumer = getConsumer(consumerId);
-    boolean isRegularInfo = foundConsumer.getIsRegularPayment();
-    boolean isExpired = false;
-
-    Optional<Subscription> latestSubscription =
-        foundConsumer.getSubscriptionList().stream()
-            .max(Comparator.comparing(Subscription::getEndDate));
-
-    if (latestSubscription.isPresent()
-        && latestSubscription.get().getEndDate().isAfter(LocalDateTime.now())) {
-      isExpired = true;
-    }
-
-    return isRegularInfo || isExpired;
+//    boolean isRegularInfo = foundConsumer.getIsRegularPayment();
+//    boolean isExpired = false;
+//
+//    Optional<Subscription> latestSubscription =
+//        foundConsumer.getSubscriptionList().stream()
+//            .max(Comparator.comparing(Subscription::getEndDate));
+//
+//    if (latestSubscription.isPresent()
+//        && latestSubscription.get().getEndDate().isAfter(LocalDateTime.now())) {
+//      isExpired = true;
+//    }
+//
+//    return isRegularInfo || isExpired;
+    return foundConsumer.getIsRegularPayment();
   }
 
   /**
@@ -276,7 +295,7 @@ public class ConsumerService {
    * 구독 결제 내역 조회 (+페이징)
    *
    * @param consumerId 로그인 한 회원의 정보
-   * @param page 페이징 첫페이지 번호
+   * @param page 페이징 첫 페이지 번호
    * @param size 페이지 당 보여줄 게시물 개수
    * @return {Page<SubscriptionPaymentsInfoForInquiryResponseDto>}
    */
@@ -298,19 +317,6 @@ public class ConsumerService {
 
     Consumer foundConsumer = getConsumer(consumerId);
     foundConsumer.assignProfileImageUrl(modifyRequestDto.getProfileImageUrl());
-  }
-
-  /**
-   * consumerId로 Consumer 찾기 (공통화)
-   *
-   * @param consumerId 회원의 식별자
-   * @return {Consumer} 식별자로 찾은 소비자 객체
-   */
-  public Consumer getConsumer(Long consumerId) {
-
-    return consumerRepository
-        .findByConsumerId(consumerId)
-        .orElseThrow(() -> new ConsumerNotFoundException(CustomErrMessage.NOT_FOUND_CONSUMER));
   }
 
   /**
@@ -376,5 +382,41 @@ public class ConsumerService {
 
     Consumer foundConsumer = getConsumer(consumerId);
     return consumerMapper.toSpecificConsumerDetailDto(foundConsumer);
+  }
+  
+  /**
+   * 모든 소비자 목록 조회 (탈퇴한 회원 포함)
+   *
+   * @param memberRole 해당 작업을 수행할 회원의 역할(ROLE_ADMIN)
+   * @param page 페이징 첫 페이지 번호
+   * @param size 페이지 당 보여줄 게시물 개수
+   * @return {Page<ConsumerDetailForSingleInquiryResponseDto>} 모든 소비자 상세 정보
+   */
+  public Page<ConsumerDetailForSingleInquiryResponseDto> getMembersForListLookup(
+      MemberRoleEnum memberRole, int page, int size) {
+
+    if (memberRole != MemberRoleEnum.ROLE_ADMIN) {
+      throw new NotAdminAccessDeniedException(CustomErrMessage.NOT_ADMIN_ACCESS_DENIED);
+    }
+
+    List<Consumer> foundAllConsumers = consumerRepository.findAll();
+    List<ConsumerDetailForSingleInquiryResponseDto> allConsumersDto =
+        consumerMapper.toAllConsumersDto(foundAllConsumers);
+
+    Pageable pageable = paginationManager.getPageableByCreatedAt(page, size);
+    return paginationManager.wrapByPage(allConsumersDto, pageable, foundAllConsumers.size());
+  }
+  
+  /**
+   * consumerId로 Consumer 찾기 (공통화)
+   *
+   * @param consumerId 회원의 식별자
+   * @return {Consumer} 식별자로 찾은 소비자 객체
+   */
+  public Consumer getConsumer(Long consumerId) {
+
+    return consumerRepository
+        .findByConsumerId(consumerId)
+        .orElseThrow(() -> new ConsumerNotFoundException(CustomErrMessage.NOT_FOUND_CONSUMER));
   }
 }
