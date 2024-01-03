@@ -16,6 +16,7 @@ import com.jeontongju.consumer.repository.ConsumerRepository;
 import com.jeontongju.consumer.repository.PointHistoryRepository;
 import com.jeontongju.consumer.utils.CustomErrMessage;
 import io.github.bitbox.bitbox.dto.*;
+import io.github.bitbox.bitbox.enums.MemberRoleEnum;
 import io.github.bitbox.bitbox.util.KafkaTopicNameInfo;
 import java.time.LocalDateTime;
 import java.util.Comparator;
@@ -73,7 +74,7 @@ public class ConsumerService {
    */
   @Transactional
   public void updateConsumerForAccountConsolidation(
-          ConsumerInfoForAccountConsolidationDto accountConsolidationDto) {
+      ConsumerInfoForAccountConsolidationDto accountConsolidationDto) {
 
     Consumer foundConsumer = getConsumer(accountConsolidationDto.getConsumerId());
     foundConsumer.assignName(accountConsolidationDto.getName());
@@ -357,5 +358,23 @@ public class ConsumerService {
     pointHistoryRepository.save(
         consumerMapper.toPointHistoryEntity(accPoint, tradePath, foundConsumer));
     return accPoint;
+  }
+
+  /**
+   * 특정 회원 상세 조회
+   *
+   * @param consumerId 조회할 회원 식별자
+   * @param memberRole 해당 작업을 수행할 회원의 역할(ROLE_ADMIN)
+   * @return {SpecificConsumerDetailForInquiryResponseDto} 특정 회원 상세 정보
+   */
+  public SpecificConsumerDetailForInquiryResponseDto getConsumerDetailForInquiry(
+      Long consumerId, MemberRoleEnum memberRole) {
+
+    if (memberRole != MemberRoleEnum.ROLE_ADMIN) {
+      throw new RuntimeException();
+    }
+
+    Consumer foundConsumer = getConsumer(consumerId);
+    return consumerMapper.toSpecificConsumerDetailDto(foundConsumer);
   }
 }

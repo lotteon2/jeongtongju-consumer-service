@@ -6,6 +6,8 @@ import com.jeontongju.consumer.dto.response.ConsumerInfoForInquiryResponseDto;
 import com.jeontongju.consumer.service.ConsumerService;
 import io.github.bitbox.bitbox.dto.ResponseFormat;
 import javax.validation.Valid;
+
+import io.github.bitbox.bitbox.enums.MemberRoleEnum;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
@@ -52,6 +54,21 @@ public class ConsumerRestController {
                 .code(HttpStatus.OK.value())
                 .message(HttpStatus.OK.name())
                 .detail("소비자 개인정보 수정 성공")
+                .build());
+  }
+
+  @GetMapping("/consumers/{consumerId}")
+  public ResponseEntity<ResponseFormat<SpecificConsumerDetailForInquiryResponseDto>>
+      getConsumerDetailForInquiry(
+          @PathVariable Long consumerId, @RequestHeader MemberRoleEnum memberRole) {
+
+    return ResponseEntity.ok()
+        .body(
+            ResponseFormat.<SpecificConsumerDetailForInquiryResponseDto>builder()
+                .code(HttpStatus.OK.value())
+                .message(HttpStatus.OK.name())
+                .detail("회원 상세 조회 성공")
+                .data(consumerService.getConsumerDetailForInquiry(consumerId, memberRole))
                 .build());
   }
 

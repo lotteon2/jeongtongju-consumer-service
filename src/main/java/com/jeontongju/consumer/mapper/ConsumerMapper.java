@@ -2,6 +2,7 @@ package com.jeontongju.consumer.mapper;
 
 import com.jeontongju.consumer.domain.Consumer;
 import com.jeontongju.consumer.domain.PointHistory;
+import com.jeontongju.consumer.dto.response.SpecificConsumerDetailForInquiryResponseDto;
 import com.jeontongju.consumer.dto.response.ConsumerInfoForInquiryResponseDto;
 import com.jeontongju.consumer.dto.response.MyInfoAfterSignInForResponseDto;
 import com.jeontongju.consumer.dto.response.PointCreditForInquiryResponseDto;
@@ -85,6 +86,20 @@ public class ConsumerMapper {
         .tradePoint(tradePoint)
         .tradePathEnum(tradePath)
         .consumer(consumer)
+        .build();
+  }
+
+  public SpecificConsumerDetailForInquiryResponseDto toSpecificConsumerDetailDto(
+      Consumer consumer) {
+
+    return SpecificConsumerDetailForInquiryResponseDto.builder()
+        .consumerId(consumer.getConsumerId())
+        .thumbnail(consumer.getProfileImageUrl())
+        .name(consumer.getName())
+        .email(consumer.getEmail())
+        .phoneNumber(consumer.getPhoneNumber())
+        .point(consumer.getPoint())
+        .credit(consumer.getAuctionCredit())
         .build();
   }
 }
