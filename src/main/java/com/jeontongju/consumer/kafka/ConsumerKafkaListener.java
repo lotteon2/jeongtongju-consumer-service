@@ -102,6 +102,21 @@ public class ConsumerKafkaListener {
     }
   }
 
+  /**
+   * 리뷰 작성 시 해당 회원의 포인트 적립
+   *
+   * @param pointUpdateDto 회원 및 적립 포인트 정보
+   */
+  @KafkaListener(topics = KafkaTopicNameInfo.UPDATE_REVIEW_POINT)
+  public void accPointByWritingReview(PointUpdateDto pointUpdateDto) {
+
+    try {
+      consumerService.accPointByWritingReview(pointUpdateDto);
+    } catch (Exception e) {
+      log.error("[During Accumulate Point By Writing Review]: Error={}", e.getMessage());
+    }
+  }
+
   @KafkaListener(topics = KafkaTopicNameInfo.UPDATE_CREDIT)
   public void updateCredit(CreditUpdateDto creditUpdateDto) {
 
