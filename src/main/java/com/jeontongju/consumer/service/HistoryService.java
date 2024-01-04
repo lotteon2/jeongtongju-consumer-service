@@ -7,11 +7,11 @@ import com.jeontongju.consumer.dto.response.CreditTradeInfoForSingleInquiryRespo
 import com.jeontongju.consumer.dto.response.CreditTradeInfoForSummaryNDetailsResponseDto;
 import com.jeontongju.consumer.dto.response.PointTradeInfoForSingleInquiryResponseDto;
 import com.jeontongju.consumer.dto.response.PointTradeInfoForSummaryNDetailsResponseDto;
-import com.jeontongju.consumer.dto.temp.TradePathEnum;
 import com.jeontongju.consumer.mapper.HistoryMapper;
 import com.jeontongju.consumer.repository.CreditHistoryRepository;
 import com.jeontongju.consumer.repository.PointHistoryRepository;
 import com.jeontongju.consumer.utils.PaginationManager;
+import io.github.bitbox.bitbox.dto.CreditUpdateDto;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.*;
@@ -35,11 +35,11 @@ public class HistoryService {
   /**
    * 포인트 요약 정보 및 내역 조회
    *
-   * @param consumerId
-   * @param search
-   * @param page
-   * @param size
-   * @return
+   * @param consumerId 로그인 한 회원 식별자
+   * @param search 필터링 기준
+   * @param page 페이징 첫 페이지 번호
+   * @param size 페이지 당 보여줄 게시물 개수
+   * @return {PointTradeInfoForSummaryNDetailsResponseDto} 포인트 내역 요약 및 세부 정보
    */
   public PointTradeInfoForSummaryNDetailsResponseDto getMyPointSummaryNDetails(
       Long consumerId, String search, int page, int size) {
@@ -59,13 +59,13 @@ public class HistoryService {
   }
 
   /**
-   * 한 페이지만큼의 포인트 내역 조회 (+필터링)
+   * 한 페이지만큼의 포인트 거래 내역 조회 (+필터링)
    *
-   * @param consumer
-   * @param search
-   * @param page
-   * @param size
-   * @return
+   * @param consumer 현재 로그인 한 회원 객체
+   * @param search 필터링 기준
+   * @param page 페이징 첫 페이지 번호
+   * @param size 페이지 당 보여줄 게시물 개수
+   * @return {Page<PointTradeInfoForSingleInquiryResponseDto>} 한 페이지에 보여줄 포인트 거래 내역
    */
   public Page<PointTradeInfoForSingleInquiryResponseDto> getPointHistoriesPaged(
       Consumer consumer, String search, int page, int size) {
@@ -93,8 +93,8 @@ public class HistoryService {
   /**
    * 포인트 요약 정보 계산
    *
-   * @param histories
-   * @return
+   * @param histories 로그인 한 회원의 모든 포인트 거래 내역
+   * @return {long[]} 첫번째 인자: 총 적립액, 두번째 인자: 총 사용액
    */
   public long[] calcPointSummary(List<PointHistory> histories) {
 
@@ -115,10 +115,10 @@ public class HistoryService {
   /**
    * 크레딧 요약 정보 및 내역 조회
    *
-   * @param consumerId
-   * @param page
-   * @param size
-   * @return
+   * @param consumerId 로그인 한 회원 식별자
+   * @param page 페이징 첫 페이지 번호
+   * @param size 페이지 당 보여줄 게시물 개수
+   * @return {CreditTradeInfoForSummaryNDetailsResponseDto} 크레딧 내역 요약 및 세부 정보
    */
   public CreditTradeInfoForSummaryNDetailsResponseDto getMyCreditSummaryNDetails(
       Long consumerId, String search, int page, int size) {
@@ -140,11 +140,11 @@ public class HistoryService {
   /**
    * 한 페이지만큼의 크레딧 내역 조회 (+필터링)
    *
-   * @param consumer
-   * @param search
-   * @param page
-   * @param size
-   * @return
+   * @param consumer 현재 로그인 한 회원 객체
+   * @param search 필터링 기준
+   * @param page 페이징 첫 페이지 번호
+   * @param size 페이지 당 보여줄 게시물 개수
+   * @return {Page<CreditTradeInfoForSingleInquiryResponseDto>} 한 페이지에 보여줄 크레딧 거래 내역
    */
   public Page<CreditTradeInfoForSingleInquiryResponseDto> getCreditHistoriesPaged(
       Consumer consumer, String search, int page, int size) {
@@ -169,22 +169,27 @@ public class HistoryService {
     return creditPaginationManager.wrapByPage(histories, pageable, totalSize);
   }
 
+  /**
+   * 크레딧 결제 성공 시, 결제한 양만큼 크레딧 충전
+   *
+   * @param creditUpdateDto 회원 식별자 및 충전할 크레딧 정보
+   */
   @Transactional
-  public void updateConsumerCredit(Long consumerId, Long credit) {
+  public void updateConsumerCredit(CreditUpdateDto creditUpdateDto) {
 
-    Consumer foundConsumer = consumerService.getConsumer(consumerId);
-
-    foundConsumer.assignAuctionCredit(foundConsumer.getAuctionCredit() + credit);
+    Consumer foundConsumer = consumerService.getConsumer(creditUpdateDto.getConsumerId());
+    foundConsumer.assignAuctionCredit(
+        foundConsumer.getAuctionCredit() + creditUpdateDto.getCredit());
 
     creditHistoryRepository.save(
-        historyMapper.toCreditHistoryEntityByCharge(foundConsumer, credit));
+        historyMapper.toCreditHistoryEntityByCharge(foundConsumer, creditUpdateDto.getCredit()));
   }
 
   /**
    * 크레딧 요약 정보 계산
    *
-   * @param histories
-   * @return
+   * @param histories 로그인 한 회원의 모든 크레딧 거래 내역
+   * @return {long[]} 첫번째 인자: 총 충전액, 두번째 인자: 총 사용액
    */
   public long[] calcCreditSummary(List<CreditHistory> histories) {
 

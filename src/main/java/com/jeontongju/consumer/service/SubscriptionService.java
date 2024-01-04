@@ -26,30 +26,31 @@ public class SubscriptionService {
   private final SubscriptionKakaoRespository subscriptionKakaoRespository;
   private final SubscriptionMapper subscriptionMapper;
 
+  /**
+   * 구독권 생성
+   *
+   * @param subscriptionDto 구독권 정보
+   * @param consumer 구독 결제 완료한 회원 객체
+   */
   public void createSubscription(SubscriptionDto subscriptionDto, Consumer consumer) {
     Subscription subscription =
-        subscriptionRespository.save(
-            Subscription.builder()
-                .consumer(consumer)
-                .subscriptionType(subscriptionDto.getSubscriptionType())
-                .paymentAmount(subscriptionDto.getPaymentAmount())
-                .startDate(subscriptionDto.getStartDate())
-                .endDate(subscriptionDto.getEndDate())
-                .paymentMethod(subscriptionDto.getPaymentMethod())
-                .build());
+        subscriptionRespository.save(subscriptionMapper.toEntity(subscriptionDto, consumer));
 
     if (subscriptionDto.getPaymentMethod() == PaymentMethodEnum.KAKAO) {
       KakaoSubscription kakaoSubscription = (KakaoSubscription) subscriptionDto.getSubscripton();
       subscriptionKakaoRespository.save(
-          SubscriptionKakao.builder()
-              .kakaoSid(kakaoSubscription.getSid())
-              .kakaoStoreCode(kakaoSubscription.getCid())
-              .kakaoOrderId(kakaoSubscription.getOrderId())
-              .subscription(subscription)
-              .build());
+          subscriptionMapper.toKakaoEntity(kakaoSubscription, subscription));
     }
   }
 
+  /**
+   * 구독 결제 내역 가져오기
+   *
+   * @param consumer 현재 로그인 한 회원 객체
+   * @param page 페이징 첫 페이지 번호
+   * @param size 페이지 당 보여줄 게시물 개수
+   * @return {Page<SubscriptionPaymentsInfoForInquiryResponseDto>} 한 페이지에 보여줄 구독 결제 내역 정보
+   */
   public Page<SubscriptionPaymentsInfoForInquiryResponseDto> getSubscriptionHistories(
       Consumer consumer, int page, int size) {
 

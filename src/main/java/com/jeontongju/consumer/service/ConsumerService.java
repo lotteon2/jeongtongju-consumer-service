@@ -189,7 +189,7 @@ public class ConsumerService {
   /**
    * 주문에 들어가기 전, 주문에 필요한 포인트 소유 여부 확인
    *
-   * @param userPointUpdateDto
+   * @param userPointUpdateDto 회원 식별자 및 포인트 사용 확인에 필요한 정보
    */
   public void checkPoint(UserPointUpdateDto userPointUpdateDto) {
 

@@ -21,7 +21,7 @@ public class AddressRestController {
 
   @GetMapping("/consumers/addresses/{addressId}")
   public ResponseEntity<ResponseFormat<AddressInfoForSingleInquiryResponseDto>>
-      getSingleAddressForInquiry(@PathVariable("addressId") Long addressId) {
+      getSingleAddressForInquiry(@PathVariable Long addressId) {
 
     return ResponseEntity.ok()
         .body(
@@ -65,7 +65,7 @@ public class AddressRestController {
   @PutMapping("/consumers/addresses/{addressId}")
   public ResponseEntity<ResponseFormat<Void>> modifyAddress(
       @RequestHeader Long memberId,
-      @PathVariable("addressId") Long addressId,
+      @PathVariable Long addressId,
       @Valid @RequestBody AddressInfoForModifyRequestDto modifyRequestDto) {
 
     addressService.modifyAddress(memberId, addressId, modifyRequestDto);
@@ -80,7 +80,7 @@ public class AddressRestController {
 
   @PatchMapping("/consumers/addresses/{addressId}/default")
   public ResponseEntity<ResponseFormat<Void>> changeDefaultAddress(
-      @RequestHeader Long memberId, @PathVariable("addressId") Long addressId) {
+      @RequestHeader Long memberId, @PathVariable Long addressId) {
 
     addressService.changeDefaultAddress(memberId, addressId);
     return ResponseEntity.ok()
@@ -94,7 +94,7 @@ public class AddressRestController {
 
   @DeleteMapping("/consumers/address/{addressId}")
   public ResponseEntity<ResponseFormat<Void>> deleteAddress(
-      @RequestHeader Long memberId, @PathVariable("addressId") Long addressId) {
+      @RequestHeader Long memberId, @PathVariable Long addressId) {
 
     addressService.deleteAddress(memberId, addressId);
     return ResponseEntity.ok()

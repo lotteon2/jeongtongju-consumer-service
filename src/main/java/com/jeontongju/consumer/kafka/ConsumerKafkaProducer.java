@@ -6,7 +6,7 @@ import org.springframework.stereotype.Component;
 
 @Component
 @RequiredArgsConstructor
-public class ConsumerProducer<T> {
+public class ConsumerKafkaProducer<T> {
 
   private final KafkaTemplate<String, T> kafkaTemplate;
 
