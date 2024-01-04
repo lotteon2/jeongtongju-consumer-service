@@ -1,5 +1,6 @@
 package com.jeontongju.consumer.controller;
 
+import com.jeontongju.consumer.dto.response.CreditTradeInfoForSingleInquiryResponseDto;
 import com.jeontongju.consumer.dto.response.CreditTradeInfoForSummaryNDetailsResponseDto;
 import com.jeontongju.consumer.dto.response.PointTradeInfoForSingleInquiryResponseDto;
 import com.jeontongju.consumer.dto.response.PointTradeInfoForSummaryNDetailsResponseDto;
@@ -74,6 +75,26 @@ public class HistoryRestController {
                 .message(HttpStatus.OK.name())
                 .detail("크레딧 내역 조회 성공")
                 .data(historyService.getMyCreditSummaryNDetails(memberId, search, page, size))
+                .build());
+  }
+
+  @GetMapping("/consumers/{consumerId}/credits")
+  public ResponseEntity<ResponseFormat<Page<CreditTradeInfoForSingleInquiryResponseDto>>>
+      getSpecificConsumerCreditsHistory(
+          @PathVariable Long consumerId,
+          @RequestHeader MemberRoleEnum memberRole,
+          @RequestParam(value = "page", defaultValue = "0") int page,
+          @RequestParam(value = "size", defaultValue = "10") int size) {
+
+    return ResponseEntity.ok()
+        .body(
+            ResponseFormat.<Page<CreditTradeInfoForSingleInquiryResponseDto>>builder()
+                .code(HttpStatus.OK.value())
+                .message(HttpStatus.OK.name())
+                .detail("회원 경매 크레딧 내역 조회 성공")
+                .data(
+                    historyService.getSpecificConsumerCreditsHistory(
+                        consumerId, memberRole, page, size))
                 .build());
   }
 }

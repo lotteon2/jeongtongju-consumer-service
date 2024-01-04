@@ -230,4 +230,24 @@ public class HistoryService {
     Consumer foundConsumer = consumerService.getConsumer(consumerId);
     return getPointHistoriesPaged(foundConsumer, null, page, size);
   }
+
+  /**
+   * 특정 회원 크레딧 거래 내역 조회
+   *
+   * @param consumerId 조회할 회원 식별자
+   * @param memberRole 해당 작업을 호출할 회원의 역할(R0LE_ADMIN)
+   * @param page 페이징 첫 페이지 번호
+   * @param size 페이지 당 보여줄 게시물 개수
+   * @return {Page<CreditTradeInfoForSingleInquiryResponseDto>} 한 페이지에 보여줄 특정 회원의 크레딧 거래 내역
+   */
+  public Page<CreditTradeInfoForSingleInquiryResponseDto> getSpecificConsumerCreditsHistory(
+      Long consumerId, MemberRoleEnum memberRole, int page, int size) {
+
+    if (memberRole != MemberRoleEnum.ROLE_ADMIN) {
+      throw new NotAdminAccessDeniedException(CustomErrMessage.NOT_ADMIN_ACCESS_DENIED);
+    }
+
+    Consumer foundConsumer = consumerService.getConsumer(consumerId);
+    return getCreditHistoriesPaged(foundConsumer, null, page, size);
+  }
 }
