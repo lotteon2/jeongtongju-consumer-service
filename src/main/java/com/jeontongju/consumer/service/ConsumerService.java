@@ -9,6 +9,7 @@ import com.jeontongju.consumer.dto.temp.ConsumerInfoForAuctionResponse;
 import com.jeontongju.consumer.dto.temp.ConsumerInfoForCreateBySnsRequestDto;
 import com.jeontongju.consumer.dto.temp.ConsumerInfoForCreateRequestDto;
 import com.jeontongju.consumer.exception.*;
+import com.jeontongju.consumer.kafka.ConsumerKafkaProducer;
 import com.jeontongju.consumer.mapper.ConsumerMapper;
 import com.jeontongju.consumer.mapper.CouponMapper;
 import com.jeontongju.consumer.repository.ConsumerRepository;
@@ -40,6 +41,7 @@ public class ConsumerService {
   private final ConsumerMapper consumerMapper;
   private final CouponMapper couponMapper;
   private final PaginationManager paginationManager;
+  private final ConsumerKafkaProducer consumerKafkaProducer;
 
   private final KafkaTemplate<String, ConsumerRegularPaymentsCouponDto> kafkaTemplate;
 
@@ -295,7 +297,7 @@ public class ConsumerService {
    * @return {Page<SubscriptionPaymentsInfoForInquiryResponseDto>}
    */
   public Page<SubscriptionPaymentsInfoForInquiryResponseDto> getMySubscriptionHistories(
-      Long consumerId, int page, int size) {
+          Long consumerId, int page, int size) {
 
     Consumer foundConsumer = getConsumer(consumerId);
     return subscriptionService.getSubscriptionHistories(foundConsumer, page, size);
@@ -312,6 +314,10 @@ public class ConsumerService {
 
     Consumer foundConsumer = getConsumer(consumerId);
     foundConsumer.assignProfileImageUrl(modifyRequestDto.getProfileImageUrl());
+
+    consumerKafkaProducer.send(
+        KafkaTopicNameInfo.UPDATE_CONSUMER_TO_REVIEW,
+        consumerMapper.toUpdatedNameImageDto(foundConsumer));
   }
 
   /**

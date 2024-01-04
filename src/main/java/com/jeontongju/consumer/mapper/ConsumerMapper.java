@@ -11,6 +11,7 @@ import com.jeontongju.consumer.dto.temp.ConsumerInfoForCreateBySnsRequestDto;
 import com.jeontongju.consumer.dto.temp.ConsumerInfoForCreateRequestDto;
 import com.jeontongju.consumer.dto.temp.NameImageForInquiryResponseDto;
 import com.jeontongju.consumer.dto.temp.TradePathEnum;
+import io.github.bitbox.bitbox.dto.ConsumerNameImageDto;
 import org.springframework.stereotype.Component;
 
 import java.util.ArrayList;
@@ -107,7 +108,7 @@ public class ConsumerMapper {
         .credit(consumer.getAuctionCredit())
         .build();
   }
-  
+
   public List<ConsumerDetailForSingleInquiryResponseDto> toAllConsumersDto(
       List<Consumer> consumers) {
 
@@ -128,5 +129,13 @@ public class ConsumerMapper {
       allConsumersDtos.add(build);
     }
     return allConsumersDtos;
+  }
+
+  public ConsumerNameImageDto toUpdatedNameImageDto(Consumer foundConsumer) {
+
+    return ConsumerNameImageDto.builder()
+        .name(foundConsumer.getName())
+        .imageUrl(foundConsumer.getProfileImageUrl())
+        .build();
   }
 }
