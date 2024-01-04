@@ -7,12 +7,16 @@ import com.jeontongju.consumer.dto.response.CreditTradeInfoForSingleInquiryRespo
 import com.jeontongju.consumer.dto.response.CreditTradeInfoForSummaryNDetailsResponseDto;
 import com.jeontongju.consumer.dto.response.PointTradeInfoForSingleInquiryResponseDto;
 import com.jeontongju.consumer.dto.response.PointTradeInfoForSummaryNDetailsResponseDto;
+import com.jeontongju.consumer.exception.NotAdminAccessDeniedException;
 import com.jeontongju.consumer.mapper.HistoryMapper;
 import com.jeontongju.consumer.repository.CreditHistoryRepository;
 import com.jeontongju.consumer.repository.PointHistoryRepository;
+import com.jeontongju.consumer.utils.CustomErrMessage;
 import com.jeontongju.consumer.utils.PaginationManager;
 import io.github.bitbox.bitbox.dto.CreditUpdateDto;
 import java.util.List;
+
+import io.github.bitbox.bitbox.enums.MemberRoleEnum;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.*;
 import org.springframework.stereotype.Service;
@@ -205,5 +209,25 @@ public class HistoryService {
       }
     }
     return new long[] {totalAcc, totalUse};
+  }
+
+  /**
+   * 특정 회원 포인트 거래 내역 조회
+   *
+   * @param consumerId 조회할 회원 식별자
+   * @param memberRole 해당 작업을 호출할 회원의 역할(R0LE_ADMIN)
+   * @param page 페이징 첫 페이지 번호
+   * @param size 페이지 당 보여줄 게시물 개수
+   * @return {Page<PointTradeInfoForSingleInquiryResponseDto>} 한 페이지에 보여줄 특정 회원의 포인트 거래 내역
+   */
+  public Page<PointTradeInfoForSingleInquiryResponseDto> getSpecificConsumerPointsHistory(
+      Long consumerId, MemberRoleEnum memberRole, int page, int size) {
+
+    if (memberRole != MemberRoleEnum.ROLE_ADMIN) {
+      throw new NotAdminAccessDeniedException(CustomErrMessage.NOT_ADMIN_ACCESS_DENIED);
+    }
+
+    Consumer foundConsumer = consumerService.getConsumer(consumerId);
+    return getPointHistoriesPaged(foundConsumer, null, page, size);
   }
 }
