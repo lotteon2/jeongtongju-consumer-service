@@ -7,8 +7,6 @@ import com.jeontongju.consumer.service.ConsumerService;
 import io.github.bitbox.bitbox.dto.ResponseFormat;
 import io.github.bitbox.bitbox.enums.MemberRoleEnum;
 import javax.validation.Valid;
-
-import io.github.bitbox.bitbox.enums.MemberRoleEnum;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
