@@ -1,7 +1,6 @@
 package com.jeontongju.consumer.service;
 
 import com.jeontongju.consumer.domain.Consumer;
-import com.jeontongju.consumer.domain.Subscription;
 import com.jeontongju.consumer.dto.request.ProfileImageUrlForModifyRequestDto;
 import com.jeontongju.consumer.dto.response.*;
 import com.jeontongju.consumer.dto.response.ConsumerInfoForInquiryResponseDto;
@@ -19,11 +18,7 @@ import com.jeontongju.consumer.utils.PaginationManager;
 import io.github.bitbox.bitbox.dto.*;
 import io.github.bitbox.bitbox.enums.MemberRoleEnum;
 import io.github.bitbox.bitbox.util.KafkaTopicNameInfo;
-
-import java.time.LocalDateTime;
-import java.util.Comparator;
 import java.util.List;
-import java.util.Optional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.kafka.common.KafkaException;
@@ -376,6 +371,19 @@ public class ConsumerService {
 
     Consumer foundConsumer = getConsumer(pointUpdateDto.getConsumerId());
     foundConsumer.assignPoint(foundConsumer.getPoint() + pointUpdateDto.getPoint());
+  }
+
+  /**
+   * (최초 소셜 로그인 후) 성인 인증 정보 갱신 (With OpenFeign)
+   *
+   * @param authInfoDto 성인인증으로 얻은 정보
+   */
+  @Transactional
+  public void updateConsumerByAuth19(ImpAuthInfoForUpdateDto authInfoDto) {
+
+    Consumer foundConsumer = getConsumer(authInfoDto.getConsumerId());
+    foundConsumer.assignName(authInfoDto.getName());
+    foundConsumer.assignPhoneNumber(authInfoDto.getPhoneNumber());
   }
 
   /**
