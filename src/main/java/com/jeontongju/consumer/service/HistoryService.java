@@ -3,10 +3,7 @@ package com.jeontongju.consumer.service;
 import com.jeontongju.consumer.domain.Consumer;
 import com.jeontongju.consumer.domain.CreditHistory;
 import com.jeontongju.consumer.domain.PointHistory;
-import com.jeontongju.consumer.dto.response.CreditTradeInfoForSingleInquiryResponseDto;
-import com.jeontongju.consumer.dto.response.CreditTradeInfoForSummaryNDetailsResponseDto;
-import com.jeontongju.consumer.dto.response.PointTradeInfoForSingleInquiryResponseDto;
-import com.jeontongju.consumer.dto.response.PointTradeInfoForSummaryNDetailsResponseDto;
+import com.jeontongju.consumer.dto.response.*;
 import com.jeontongju.consumer.exception.NotAdminAccessDeniedException;
 import com.jeontongju.consumer.mapper.HistoryMapper;
 import com.jeontongju.consumer.repository.CreditHistoryRepository;
@@ -220,7 +217,7 @@ public class HistoryService {
    * @param size 페이지 당 보여줄 게시물 개수
    * @return {Page<PointTradeInfoForSingleInquiryResponseDto>} 한 페이지에 보여줄 특정 회원의 포인트 거래 내역
    */
-  public Page<PointTradeInfoForSingleInquiryResponseDto> getSpecificConsumerPointsHistory(
+  public Page<PointTradeInfoForAdminResponseDto> getSpecificConsumerPointsHistory(
       Long consumerId, MemberRoleEnum memberRole, int page, int size) {
 
     if (memberRole != MemberRoleEnum.ROLE_ADMIN) {
@@ -228,7 +225,12 @@ public class HistoryService {
     }
 
     Consumer foundConsumer = consumerService.getConsumer(consumerId);
-    return getPointHistoriesPaged(foundConsumer, null, page, size);
+
+    return historyMapper.toPointHistoriesPagedForAdminResponseDto(
+        getPointHistoriesPaged(foundConsumer, null, page, size),
+        page,
+        size,
+        foundConsumer.getPointHistoryList().size());
   }
 
   /**
@@ -240,7 +242,7 @@ public class HistoryService {
    * @param size 페이지 당 보여줄 게시물 개수
    * @return {Page<CreditTradeInfoForSingleInquiryResponseDto>} 한 페이지에 보여줄 특정 회원의 크레딧 거래 내역
    */
-  public Page<CreditTradeInfoForSingleInquiryResponseDto> getSpecificConsumerCreditsHistory(
+  public Page<CreditTradeInfoForAdminResponseDto> getSpecificConsumerCreditsHistory(
       Long consumerId, MemberRoleEnum memberRole, int page, int size) {
 
     if (memberRole != MemberRoleEnum.ROLE_ADMIN) {
@@ -248,6 +250,11 @@ public class HistoryService {
     }
 
     Consumer foundConsumer = consumerService.getConsumer(consumerId);
-    return getCreditHistoriesPaged(foundConsumer, null, page, size);
+
+    return historyMapper.toCreditHistoriesPagedForAdminResponseDto(
+        getCreditHistoriesPaged(foundConsumer, null, page, size),
+        page,
+        size,
+        foundConsumer.getCreditHistoryList().size());
   }
 }

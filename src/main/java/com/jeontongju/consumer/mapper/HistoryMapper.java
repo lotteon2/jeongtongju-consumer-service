@@ -1,22 +1,24 @@
 package com.jeontongju.consumer.mapper;
 
-
 import com.jeontongju.consumer.domain.Consumer;
 import com.jeontongju.consumer.domain.CreditHistory;
 import com.jeontongju.consumer.domain.PointHistory;
-import com.jeontongju.consumer.dto.response.CreditTradeInfoForSingleInquiryResponseDto;
-import com.jeontongju.consumer.dto.response.CreditTradeInfoForSummaryNDetailsResponseDto;
-import com.jeontongju.consumer.dto.response.PointTradeInfoForSingleInquiryResponseDto;
-import com.jeontongju.consumer.dto.response.PointTradeInfoForSummaryNDetailsResponseDto;
+import com.jeontongju.consumer.dto.response.*;
+
 import java.util.ArrayList;
 import java.util.List;
 
 import com.jeontongju.consumer.dto.temp.TradePathEnum;
+import com.jeontongju.consumer.utils.PaginationManager;
+import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.stereotype.Component;
 
 @Component
+@RequiredArgsConstructor
 public class HistoryMapper {
+
+  private final PaginationManager paginationManager;
 
   public List<PointTradeInfoForSingleInquiryResponseDto> toPointHistoriesPagedResponseDto(
       Page<PointHistory> histories) {
@@ -58,7 +60,7 @@ public class HistoryMapper {
         .consumer(consumer)
         .build();
   }
-  
+
   public List<CreditTradeInfoForSingleInquiryResponseDto> toCreditHistoriesPagedResponseDto(
       Page<CreditHistory> creditHistoriesPaged) {
 
@@ -90,5 +92,48 @@ public class HistoryMapper {
         .totalUse(totalUse)
         .histories(histories)
         .build();
+  }
+
+  public Page<PointTradeInfoForAdminResponseDto> toPointHistoriesPagedForAdminResponseDto(
+      Page<PointTradeInfoForSingleInquiryResponseDto> pointHistoriesPaged,
+      int page,
+      int size,
+      int totalSize) {
+
+    List<PointTradeInfoForAdminResponseDto> pointTradeResponseDtos = new ArrayList<>();
+    for (PointTradeInfoForSingleInquiryResponseDto pointHistory : pointHistoriesPaged) {
+
+      PointTradeInfoForAdminResponseDto build =
+          PointTradeInfoForAdminResponseDto.builder()
+              .tradePath(pointHistory.getTradePath())
+              .tradePoint(pointHistory.getTradePoint())
+              .tradeDate(pointHistory.getTradeDate())
+              .build();
+      pointTradeResponseDtos.add(build);
+    }
+
+    return paginationManager.wrapByPage(
+        pointTradeResponseDtos, paginationManager.getPageableByCreatedAt(page, size), totalSize);
+  }
+
+  public Page<CreditTradeInfoForAdminResponseDto> toCreditHistoriesPagedForAdminResponseDto(
+      Page<CreditTradeInfoForSingleInquiryResponseDto> creditHistoriesPaged,
+      int page,
+      int size,
+      int totalSize) {
+
+    List<CreditTradeInfoForAdminResponseDto> creditTradeResponseDtos = new ArrayList<>();
+    for (CreditTradeInfoForSingleInquiryResponseDto creditHistory : creditHistoriesPaged) {
+
+      CreditTradeInfoForAdminResponseDto build =
+          CreditTradeInfoForAdminResponseDto.builder()
+              .tradeCredit(creditHistory.getTradeCredit())
+              .tradeDate(creditHistory.getTradeDate())
+              .build();
+      creditTradeResponseDtos.add(build);
+    }
+
+    return paginationManager.wrapByPage(
+        creditTradeResponseDtos, paginationManager.getPageableByCreatedAt(page, size), totalSize);
   }
 }
