@@ -1,9 +1,6 @@
 package com.jeontongju.consumer.controller;
 
-import com.jeontongju.consumer.dto.response.CreditTradeInfoForSingleInquiryResponseDto;
-import com.jeontongju.consumer.dto.response.CreditTradeInfoForSummaryNDetailsResponseDto;
-import com.jeontongju.consumer.dto.response.PointTradeInfoForSingleInquiryResponseDto;
-import com.jeontongju.consumer.dto.response.PointTradeInfoForSummaryNDetailsResponseDto;
+import com.jeontongju.consumer.dto.response.*;
 import com.jeontongju.consumer.service.HistoryService;
 import io.github.bitbox.bitbox.dto.ResponseFormat;
 import io.github.bitbox.bitbox.enums.MemberRoleEnum;
@@ -41,7 +38,7 @@ public class HistoryRestController {
   }
 
   @GetMapping("/consumers/{consumerId}/points")
-  public ResponseEntity<ResponseFormat<Page<PointTradeInfoForSingleInquiryResponseDto>>>
+  public ResponseEntity<ResponseFormat<Page<PointTradeInfoForAdminResponseDto>>>
       getSpecificConsumerPointsHistory(
           @PathVariable Long consumerId,
           @RequestHeader MemberRoleEnum memberRole,
@@ -50,7 +47,7 @@ public class HistoryRestController {
 
     return ResponseEntity.ok()
         .body(
-            ResponseFormat.<Page<PointTradeInfoForSingleInquiryResponseDto>>builder()
+            ResponseFormat.<Page<PointTradeInfoForAdminResponseDto>>builder()
                 .code(HttpStatus.OK.value())
                 .message(HttpStatus.OK.name())
                 .detail("회원 포인트 내역 조회 성공")
@@ -79,7 +76,7 @@ public class HistoryRestController {
   }
 
   @GetMapping("/consumers/{consumerId}/credits")
-  public ResponseEntity<ResponseFormat<Page<CreditTradeInfoForSingleInquiryResponseDto>>>
+  public ResponseEntity<ResponseFormat<Page<CreditTradeInfoForAdminResponseDto>>>
       getSpecificConsumerCreditsHistory(
           @PathVariable Long consumerId,
           @RequestHeader MemberRoleEnum memberRole,
@@ -88,7 +85,7 @@ public class HistoryRestController {
 
     return ResponseEntity.ok()
         .body(
-            ResponseFormat.<Page<CreditTradeInfoForSingleInquiryResponseDto>>builder()
+            ResponseFormat.<Page<CreditTradeInfoForAdminResponseDto>>builder()
                 .code(HttpStatus.OK.value())
                 .message(HttpStatus.OK.name())
                 .detail("회원 경매 크레딧 내역 조회 성공")

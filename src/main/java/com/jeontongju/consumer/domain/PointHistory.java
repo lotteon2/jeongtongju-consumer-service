@@ -3,8 +3,8 @@ package com.jeontongju.consumer.domain;
 import static javax.persistence.GenerationType.IDENTITY;
 
 import com.jeontongju.consumer.domain.common.BaseEntity;
-import com.jeontongju.consumer.dto.temp.TradePathEnum;
 import javax.persistence.*;
+import com.jeontongju.consumer.dto.temp.TradePathEnum;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
