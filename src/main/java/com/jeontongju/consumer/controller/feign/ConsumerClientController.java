@@ -4,6 +4,7 @@ import com.jeontongju.consumer.dto.temp.*;
 import com.jeontongju.consumer.service.AddressService;
 import com.jeontongju.consumer.service.ConsumerService;
 import io.github.bitbox.bitbox.dto.AddressDto;
+import io.github.bitbox.bitbox.dto.ImpAuthInfoForUpdateDto;
 import io.github.bitbox.bitbox.dto.OrderConfirmDto;
 import io.github.bitbox.bitbox.dto.UserPointUpdateDto;
 import lombok.RequiredArgsConstructor;
@@ -30,6 +31,13 @@ public class ConsumerClientController {
       @RequestBody ConsumerInfoForAccountConsolidationDto accountConsolidationDto) {
 
     consumerService.updateConsumerForAccountConsolidation(accountConsolidationDto);
+    return FeignFormat.<Void>builder().code(HttpStatus.OK.value()).build();
+  }
+
+  @PutMapping("/consumers/adult-certification")
+  public FeignFormat<Void> updateConsumerByAuth19(@RequestBody ImpAuthInfoForUpdateDto authInfoDto) {
+
+    consumerService.updateConsumerByAuth19(authInfoDto);
     return FeignFormat.<Void>builder().code(HttpStatus.OK.value()).build();
   }
 
