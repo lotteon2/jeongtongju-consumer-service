@@ -44,7 +44,7 @@ public class ConsumerClientController {
   }
 
   @GetMapping("/consumers/{consumerId}/address")
-  public FeignFormat<AddressDto> getConsumerAddress(@PathVariable("consumerId") Long consumerId) {
+  public FeignFormat<AddressDto> getConsumerAddress(@PathVariable Long consumerId) {
 
     return FeignFormat.<AddressDto>builder()
         .code(HttpStatus.OK.value())

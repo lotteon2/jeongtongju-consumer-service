@@ -189,7 +189,7 @@ public class ConsumerService {
   /**
    * 주문에 들어가기 전, 주문에 필요한 포인트 소유 여부 확인
    *
-   * @param userPointUpdateDto
+   * @param userPointUpdateDto 회원 식별자 및 포인트 사용 확인에 필요한 정보
    */
   public void checkPoint(UserPointUpdateDto userPointUpdateDto) {
 
@@ -219,19 +219,19 @@ public class ConsumerService {
   public boolean getConsumerRegularPaymentInfo(Long consumerId) {
 
     Consumer foundConsumer = getConsumer(consumerId);
-//    boolean isRegularInfo = foundConsumer.getIsRegularPayment();
-//    boolean isExpired = false;
-//
-//    Optional<Subscription> latestSubscription =
-//        foundConsumer.getSubscriptionList().stream()
-//            .max(Comparator.comparing(Subscription::getEndDate));
-//
-//    if (latestSubscription.isPresent()
-//        && latestSubscription.get().getEndDate().isAfter(LocalDateTime.now())) {
-//      isExpired = true;
-//    }
-//
-//    return isRegularInfo || isExpired;
+    //    boolean isRegularInfo = foundConsumer.getIsRegularPayment();
+    //    boolean isExpired = false;
+    //
+    //    Optional<Subscription> latestSubscription =
+    //        foundConsumer.getSubscriptionList().stream()
+    //            .max(Comparator.comparing(Subscription::getEndDate));
+    //
+    //    if (latestSubscription.isPresent()
+    //        && latestSubscription.get().getEndDate().isAfter(LocalDateTime.now())) {
+    //      isExpired = true;
+    //    }
+    //
+    //    return isRegularInfo || isExpired;
     return foundConsumer.getIsRegularPayment();
   }
 
@@ -367,6 +367,18 @@ public class ConsumerService {
   }
 
   /**
+   * 리뷰 작성 시 해당 회원의 포인트 적립 (with Kafka)
+   *
+   * @param pointUpdateDto 회원 및 적립 포인트 정보
+   */
+  @Transactional
+  public void accPointByWritingReview(PointUpdateDto pointUpdateDto) {
+
+    Consumer foundConsumer = getConsumer(pointUpdateDto.getConsumerId());
+    foundConsumer.assignPoint(foundConsumer.getPoint() + pointUpdateDto.getPoint());
+  }
+
+  /**
    * 특정 회원 상세 조회
    *
    * @param consumerId 조회할 회원 식별자
@@ -383,7 +395,7 @@ public class ConsumerService {
     Consumer foundConsumer = getConsumer(consumerId);
     return consumerMapper.toSpecificConsumerDetailDto(foundConsumer);
   }
-  
+
   /**
    * 모든 소비자 목록 조회 (탈퇴한 회원 포함)
    *
@@ -406,7 +418,7 @@ public class ConsumerService {
     Pageable pageable = paginationManager.getPageableByCreatedAt(page, size);
     return paginationManager.wrapByPage(allConsumersDto, pageable, foundAllConsumers.size());
   }
-  
+
   /**
    * consumerId로 Consumer 찾기 (공통화)
    *

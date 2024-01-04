@@ -28,8 +28,8 @@ public class AddressService {
   /**
    * 주소지 단일 조회
    *
-   * @param addressId
-   * @return
+   * @param addressId 조회할 주소지 식별자
+   * @return {AddressInfoForSingleInquiryResponseDto} 해당 주소지 세부 정보
    */
   public AddressInfoForSingleInquiryResponseDto getSingleAddressForInquiry(Long addressId) {
 
@@ -43,8 +43,8 @@ public class AddressService {
   /**
    * 주소지 목록 조회
    *
-   * @param consumerId
-   * @return
+   * @param consumerId 로그인 한 회원 식별자
+   * @return {List<AddressInfoForSingleInquiryResponseDto>} 해당 회원의 주소지 목록 (최대 5개)
    */
   public List<AddressInfoForSingleInquiryResponseDto> getAddressesForListLookup(Long consumerId) {
 
@@ -54,6 +54,12 @@ public class AddressService {
     return addressMapper.toListLookupResponseDto(addresses);
   }
 
+  /**
+   * 경매 낙찰 시, 해당 회원 배송지 정보 가져오기
+   * 
+   * @param consumerId 해당 회원 식별자
+   * @return {AddressDto} 해당 회원의 배송지 정보
+   */
   public AddressDto getConsumerAddress(Long consumerId) {
 
     Consumer foundConsumer = consumerService.getConsumer(consumerId);
@@ -68,8 +74,8 @@ public class AddressService {
   /**
    * 주소지 추가
    *
-   * @param consumerId
-   * @param registerRequestDto
+   * @param consumerId 로그인 한 회원 식별자
+   * @param registerRequestDto 주소지 등록에 필요한 정보
    */
   @Transactional
   public void registerAddress(
@@ -105,7 +111,7 @@ public class AddressService {
   /**
    * 기본 주소지가 아닌 가장 오래된 주소지 삭제
    *
-   * @param consumer
+   * @param consumer 현재 로그인 한 회원 객체 
    */
   @Transactional
   public void deleteOldestAddress(Consumer consumer) {
@@ -124,9 +130,9 @@ public class AddressService {
   /**
    * 주소지 수정
    *
-   * @param consumerId
-   * @param addressId
-   * @param modifyRequestDto
+   * @param consumerId 로그인 한 회원 식별자
+   * @param addressId 변경할 주소지 식별자
+   * @param modifyRequestDto 주소지 변경할 정보
    */
   @Transactional
   public void modifyAddress(
@@ -148,7 +154,7 @@ public class AddressService {
   /**
    * 기존 주소지를 일반 주소지로 해제
    *
-   * @param consumer
+   * @param consumer 현재 로그인 한 회원 객체
    */
   @Transactional
   public void cancelOriginDefaultAddress(Consumer consumer) {
@@ -161,6 +167,12 @@ public class AddressService {
     foundAddress.assignIsDefault(false);
   }
 
+  /**
+   * 기본 주소지 변경 요청이 있거나, 새로운 주소지가 기본 주소지로 추가되었을 때, 기본 주소지 변경
+   * 
+   * @param consumerId 로그인 한 회원 식별자
+   * @param addressId 기본 주소지로 변경될 주소지 식별자
+   */
   @Transactional
   public void changeDefaultAddress(Long consumerId, Long addressId) {
 
@@ -174,6 +186,12 @@ public class AddressService {
     foundAddress.assignIsDefault(true);
   }
 
+  /**
+   * 해당 주소지 삭제
+   * 
+   * @param consumerId 로그인 한 회원 식별자
+   * @param addressId 삭제할 주소지 식별자
+   */
   @Transactional
   public void deleteAddress(Long consumerId, Long addressId) {
 
