@@ -124,7 +124,6 @@ public class ConsumerMapper {
               .credit(consumer.getAuctionCredit())
               .isYangban(consumer.getIsRegularPayment())
               .createdAt(consumer.getCreatedAt())
-              .isDeleted(consumer.getIsDeleted())
               .build();
       allConsumersDtos.add(build);
     }
