@@ -4,13 +4,18 @@ import com.jeontongju.consumer.domain.Consumer;
 import com.jeontongju.consumer.domain.CreditHistory;
 import com.jeontongju.consumer.domain.PointHistory;
 import com.jeontongju.consumer.dto.response.*;
+import com.jeontongju.consumer.dto.temp.TradePathEnum;
+import com.jeontongju.consumer.exception.ConsumerNotFoundException;
 import com.jeontongju.consumer.exception.NotAdminAccessDeniedException;
 import com.jeontongju.consumer.mapper.HistoryMapper;
+import com.jeontongju.consumer.repository.ConsumerRepository;
 import com.jeontongju.consumer.repository.CreditHistoryRepository;
 import com.jeontongju.consumer.repository.PointHistoryRepository;
 import com.jeontongju.consumer.utils.CustomErrMessage;
 import com.jeontongju.consumer.utils.PaginationManager;
 import io.github.bitbox.bitbox.dto.CreditUpdateDto;
+
+import java.time.LocalDateTime;
 import java.util.List;
 
 import io.github.bitbox.bitbox.enums.MemberRoleEnum;
@@ -25,13 +30,43 @@ public class HistoryService {
 
   private final CreditHistoryRepository creditHistoryRepository;
   private final PointHistoryRepository pointHistoryRepository;
-  private final ConsumerService consumerService;
+  private final ConsumerRepository consumerRepository;
   private final HistoryMapper historyMapper;
+  private final PaginationManager paginationManager;
 
   private final PaginationManager<PointTradeInfoForSingleInquiryResponseDto> pointPaginationManager;
 
   private final PaginationManager<CreditTradeInfoForSingleInquiryResponseDto>
       creditPaginationManager;
+
+  @Transactional
+  public void addPointHistory(Consumer consumer, Long tradePoint, TradePathEnum tradePathEnum) {
+
+    PointHistory latestPointHistory =
+        pointHistoryRepository
+            .findFirstByConsumerByCreatedAtDesc(
+                consumer, paginationManager.getPageableByCreatedAt(0, 1))
+            .get(0);
+
+    int dayOfMonth = LocalDateTime.now().getDayOfMonth();
+    long accPointBySubscriptionPerMonth =
+        dayOfMonth == 1 ? 0 : latestPointHistory.getPointAccBySubscription();
+
+    if (tradePathEnum == TradePathEnum.YANGBAN_CONFIRMED && consumer.getIsRegularPayment()) {
+      accPointBySubscriptionPerMonth += tradePoint;
+    }
+
+    pointHistoryRepository.save(
+        historyMapper.toPointHistoryEntity(
+            consumer, accPointBySubscriptionPerMonth, tradePoint, tradePathEnum));
+  }
+
+  @Transactional
+  public void addCreditHistory(Consumer consumer, Long tradeCredit, TradePathEnum tradePathEnum) {
+
+    creditHistoryRepository.save(
+        historyMapper.toCreditHistoryEntity(consumer, tradeCredit, tradePathEnum));
+  }
 
   /**
    * 포인트 요약 정보 및 내역 조회
@@ -45,7 +80,7 @@ public class HistoryService {
   public PointTradeInfoForSummaryNDetailsResponseDto getMyPointSummaryNDetails(
       Long consumerId, String search, int page, int size) {
 
-    Consumer foundConsumer = consumerService.getConsumer(consumerId);
+    Consumer foundConsumer = getConsumer(consumerId);
 
     // 포인트 거래내역 가져오기 (한 페이지 만큼)
     Page<PointTradeInfoForSingleInquiryResponseDto> pointHistoriesPaged =
@@ -124,7 +159,7 @@ public class HistoryService {
   public CreditTradeInfoForSummaryNDetailsResponseDto getMyCreditSummaryNDetails(
       Long consumerId, String search, int page, int size) {
 
-    Consumer foundConsumer = consumerService.getConsumer(consumerId);
+    Consumer foundConsumer = getConsumer(consumerId);
 
     // 크레딧 거래내역 가져오기 (한 페이지 만큼)
     Page<CreditTradeInfoForSingleInquiryResponseDto> creditHistoriesPaged =
@@ -178,12 +213,13 @@ public class HistoryService {
   @Transactional
   public void updateConsumerCredit(CreditUpdateDto creditUpdateDto) {
 
-    Consumer foundConsumer = consumerService.getConsumer(creditUpdateDto.getConsumerId());
+    Consumer foundConsumer = getConsumer(creditUpdateDto.getConsumerId());
     foundConsumer.assignAuctionCredit(
         foundConsumer.getAuctionCredit() + creditUpdateDto.getCredit());
 
     creditHistoryRepository.save(
-        historyMapper.toCreditHistoryEntityByCharge(foundConsumer, creditUpdateDto.getCredit()));
+        historyMapper.toCreditHistoryEntity(
+            foundConsumer, creditUpdateDto.getCredit(), TradePathEnum.CHARGE_CREDIT));
   }
 
   /**
@@ -224,7 +260,7 @@ public class HistoryService {
       throw new NotAdminAccessDeniedException(CustomErrMessage.NOT_ADMIN_ACCESS_DENIED);
     }
 
-    Consumer foundConsumer = consumerService.getConsumer(consumerId);
+    Consumer foundConsumer = getConsumer(consumerId);
 
     return historyMapper.toPointHistoriesPagedForAdminResponseDto(
         getPointHistoriesPaged(foundConsumer, null, page, size),
@@ -249,12 +285,44 @@ public class HistoryService {
       throw new NotAdminAccessDeniedException(CustomErrMessage.NOT_ADMIN_ACCESS_DENIED);
     }
 
-    Consumer foundConsumer = consumerService.getConsumer(consumerId);
+    Consumer foundConsumer = getConsumer(consumerId);
 
     return historyMapper.toCreditHistoriesPagedForAdminResponseDto(
         getCreditHistoriesPaged(foundConsumer, null, page, size),
         page,
         size,
         foundConsumer.getCreditHistoryList().size());
+  }
+
+  /**
+   * consumerId로 Consumer 찾기 (공통화)
+   *
+   * @param consumerId 회원의 식별자
+   * @return {Consumer} 식별자로 찾은 소비자 객체
+   */
+  private Consumer getConsumer(Long consumerId) {
+    return consumerRepository
+        .findByConsumerId(consumerId)
+        .orElseThrow(() -> new ConsumerNotFoundException(CustomErrMessage.NOT_FOUND_CONSUMER));
+  }
+
+  public PointHistory getLatestPointHistory(Consumer foundConsumer) {
+
+    return pointHistoryRepository
+        .findFirstByConsumerByCreatedAtDesc(
+            foundConsumer, pointPaginationManager.getPageableByCreatedAt(0, 1))
+        .get(0);
+  }
+
+  @Transactional
+  public void rollbackPointUseHistory(Consumer foundConsumer, TradePathEnum tradePathEnum) {
+
+    PointHistory pointHistory =
+        pointHistoryRepository
+            .findFirstByConsumerAndTradePathEnumByCreatedAtDesc(
+                foundConsumer, tradePathEnum, pointPaginationManager.getPageableByCreatedAt(0, 1))
+            .get(0);
+
+    pointHistoryRepository.delete(pointHistory);
   }
 }

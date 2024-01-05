@@ -20,6 +20,17 @@ public class HistoryMapper {
 
   private final PaginationManager paginationManager;
 
+  public PointHistory toPointHistoryEntity(
+      Consumer consumer, Long accPointByMonth, Long point, TradePathEnum tradePath) {
+
+    return PointHistory.builder()
+        .tradePoint(point)
+        .tradePathEnum(tradePath)
+        .pointAccBySubscription(accPointByMonth)
+        .consumer(consumer)
+        .build();
+  }
+
   public List<PointTradeInfoForSingleInquiryResponseDto> toPointHistoriesPagedResponseDto(
       Page<PointHistory> histories) {
 
@@ -52,11 +63,11 @@ public class HistoryMapper {
         .build();
   }
 
-  public CreditHistory toCreditHistoryEntityByCharge(Consumer consumer, Long credit) {
+  public CreditHistory toCreditHistoryEntity(Consumer consumer, Long credit, TradePathEnum tradePathEnum) {
 
     return CreditHistory.builder()
         .tradeCredit(credit)
-        .tradePath(TradePathEnum.CHARGE_CREDIT)
+        .tradePath(tradePathEnum)
         .consumer(consumer)
         .build();
   }

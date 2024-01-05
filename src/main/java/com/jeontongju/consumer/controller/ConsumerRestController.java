@@ -4,7 +4,9 @@ import com.jeontongju.consumer.dto.request.ProfileImageUrlForModifyRequestDto;
 import com.jeontongju.consumer.dto.response.*;
 import com.jeontongju.consumer.dto.response.ConsumerInfoForInquiryResponseDto;
 import com.jeontongju.consumer.service.ConsumerService;
+import com.jeontongju.consumer.service.SubscriptionService;
 import io.github.bitbox.bitbox.dto.ResponseFormat;
+import io.github.bitbox.bitbox.dto.SubscriptionCouponBenefitForInquiryResponseDto;
 import io.github.bitbox.bitbox.enums.MemberRoleEnum;
 import javax.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -25,6 +27,7 @@ import org.springframework.web.bind.annotation.RestController;
 public class ConsumerRestController {
 
   private final ConsumerService consumerService;
+  private final SubscriptionService subscriptionService;
 
   @GetMapping("/consumers")
   public ResponseEntity<ResponseFormat<ConsumerInfoForInquiryResponseDto>> getMyInfo(
@@ -115,7 +118,7 @@ public class ConsumerRestController {
                 .code(HttpStatus.OK.value())
                 .message(HttpStatus.OK.name())
                 .detail("구독 결제 내역 조회 성공")
-                .data(consumerService.getMySubscriptionHistories(memberId, page, size))
+                .data(subscriptionService.getMySubscriptionHistories(memberId, page, size))
                 .build());
   }
 
@@ -143,6 +146,20 @@ public class ConsumerRestController {
                 .code(HttpStatus.OK.value())
                 .message(HttpStatus.OK.name())
                 .detail("구독 해지 성공")
+                .build());
+  }
+
+  @GetMapping("/consumers/subscriptions/benefit")
+  public ResponseEntity<ResponseFormat<SubscriptionBenefitForInquiryResponseDto>>
+      getSubscriptionBenefit(@RequestHeader Long memberId) {
+
+    return ResponseEntity.ok()
+        .body(
+            ResponseFormat.<SubscriptionBenefitForInquiryResponseDto>builder()
+                .code(HttpStatus.OK.value())
+                .message(HttpStatus.OK.name())
+                .detail("구독권 혜택 조회 성공")
+                .data(consumerService.getSubscriptionBenefit(memberId))
                 .build());
   }
 }

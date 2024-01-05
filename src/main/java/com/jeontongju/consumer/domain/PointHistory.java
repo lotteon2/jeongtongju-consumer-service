@@ -30,6 +30,9 @@ public class PointHistory extends BaseEntity {
   @Column(name = "trade_path", nullable = false)
   private TradePathEnum tradePathEnum;
 
+  @Column(name = "point_acc_by_subscription", nullable = false)
+  private Long pointAccBySubscription;
+
   @ManyToOne
   @JoinColumn(name = "consumer_id")
   private Consumer consumer;
