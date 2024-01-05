@@ -57,7 +57,7 @@ public class ConsumerKafkaListener {
   }
 
   /**
-   * 주문 및 결제 로직에서 에러 발생 시, 포인트 롤백
+   * 주문 실패 시, 포인트 롤백
    *
    * @param orderInfoDto 롤백할 주문 내역 정보
    */

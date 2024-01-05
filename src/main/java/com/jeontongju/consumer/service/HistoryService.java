@@ -49,11 +49,16 @@ public class HistoryService {
             .get(0);
 
     int dayOfMonth = LocalDateTime.now().getDayOfMonth();
-    long accPointByMonth = dayOfMonth == 1 ? 0 : latestPointHistory.getPointAccBySubscription();
+    long accPointBySubscriptionPerMonth =
+        dayOfMonth == 1 ? 0 : latestPointHistory.getPointAccBySubscription();
+
+    if (tradePathEnum == TradePathEnum.YANGBAN_CONFIRMED && consumer.getIsRegularPayment()) {
+      accPointBySubscriptionPerMonth += tradePoint;
+    }
 
     pointHistoryRepository.save(
         historyMapper.toPointHistoryEntity(
-            consumer, accPointByMonth + tradePoint, tradePoint, tradePathEnum));
+            consumer, accPointBySubscriptionPerMonth, tradePoint, tradePathEnum));
   }
 
   @Transactional

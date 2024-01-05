@@ -3,7 +3,10 @@ package com.jeontongju.consumer.mapper;
 import com.jeontongju.consumer.domain.Consumer;
 import com.jeontongju.consumer.domain.Subscription;
 import com.jeontongju.consumer.domain.SubscriptionKakao;
+import com.jeontongju.consumer.dto.response.SubscriptionBenefitForInquiryResponseDto;
 import com.jeontongju.consumer.dto.response.SubscriptionPaymentsInfoForInquiryResponseDto;
+
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -57,5 +60,17 @@ public class SubscriptionMapper {
       subscriptionHistoryInquiryDto.add(build);
     }
     return subscriptionHistoryInquiryDto;
+  }
+
+  public SubscriptionBenefitForInquiryResponseDto toSubscriptionBenefitDto(
+      String name, Long pointAcc, Long couponUse, LocalDateTime nextPaymentReservation) {
+
+    return SubscriptionBenefitForInquiryResponseDto.builder()
+        .name(name)
+        .savingAmount(pointAcc + couponUse)
+        .pointAcc(pointAcc)
+        .couponUse(couponUse)
+        .nextPaymentReservation(nextPaymentReservation)
+        .build();
   }
 }

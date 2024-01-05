@@ -6,6 +6,7 @@ import com.jeontongju.consumer.dto.response.ConsumerInfoForInquiryResponseDto;
 import com.jeontongju.consumer.service.ConsumerService;
 import com.jeontongju.consumer.service.SubscriptionService;
 import io.github.bitbox.bitbox.dto.ResponseFormat;
+import io.github.bitbox.bitbox.dto.SubscriptionCouponBenefitForInquiryResponseDto;
 import io.github.bitbox.bitbox.enums.MemberRoleEnum;
 import javax.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -145,6 +146,20 @@ public class ConsumerRestController {
                 .code(HttpStatus.OK.value())
                 .message(HttpStatus.OK.name())
                 .detail("구독 해지 성공")
+                .build());
+  }
+
+  @GetMapping("/consumers/subscriptions/benefit")
+  public ResponseEntity<ResponseFormat<SubscriptionBenefitForInquiryResponseDto>>
+      getSubscriptionBenefit(@RequestHeader Long memberId) {
+
+    return ResponseEntity.ok()
+        .body(
+            ResponseFormat.<SubscriptionBenefitForInquiryResponseDto>builder()
+                .code(HttpStatus.OK.value())
+                .message(HttpStatus.OK.name())
+                .detail("구독권 혜택 조회 성공")
+                .data(consumerService.getSubscriptionBenefit(memberId))
                 .build());
   }
 }

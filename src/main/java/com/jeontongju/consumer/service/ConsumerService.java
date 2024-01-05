@@ -1,6 +1,8 @@
 package com.jeontongju.consumer.service;
 
 import com.jeontongju.consumer.domain.Consumer;
+import com.jeontongju.consumer.domain.PointHistory;
+import com.jeontongju.consumer.domain.Subscription;
 import com.jeontongju.consumer.dto.request.ProfileImageUrlForModifyRequestDto;
 import com.jeontongju.consumer.dto.response.*;
 import com.jeontongju.consumer.dto.response.ConsumerInfoForInquiryResponseDto;
@@ -12,12 +14,15 @@ import com.jeontongju.consumer.exception.*;
 import com.jeontongju.consumer.kafka.ConsumerKafkaProducer;
 import com.jeontongju.consumer.mapper.ConsumerMapper;
 import com.jeontongju.consumer.mapper.CouponMapper;
+import com.jeontongju.consumer.mapper.SubscriptionMapper;
 import com.jeontongju.consumer.repository.ConsumerRepository;
+import com.jeontongju.consumer.feign.CouponClientService;
 import com.jeontongju.consumer.utils.CustomErrMessage;
 import com.jeontongju.consumer.utils.PaginationManager;
 import io.github.bitbox.bitbox.dto.*;
 import io.github.bitbox.bitbox.enums.MemberRoleEnum;
 import io.github.bitbox.bitbox.util.KafkaTopicNameInfo;
+import java.time.LocalDateTime;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -37,8 +42,10 @@ public class ConsumerService {
   private final ConsumerRepository consumerRepository;
   private final HistoryService historyService;
   private final SubscriptionService subscriptionService;
+  private final CouponClientService couponClientService;
   private final ConsumerMapper consumerMapper;
   private final CouponMapper couponMapper;
+  private final SubscriptionMapper subscriptionMapper;
   private final PaginationManager paginationManager;
   private final ConsumerKafkaProducer consumerKafkaProducer;
 
@@ -109,7 +116,7 @@ public class ConsumerService {
   }
 
   /**
-   * 구독 결제 완료 후, 구독권 생성
+   * 구독 결제 완료 후, 구독권 생성 (with Kafka)
    *
    * @param subscriptionDto 구독권 정보
    */
@@ -123,6 +130,49 @@ public class ConsumerService {
     kafkaTemplate.send(
         KafkaTopicNameInfo.ISSUE_REGULAR_PAYMENTS_COUPON,
         couponMapper.toConsumerRegularPaymentsCouponDto(subscriptionDto));
+  }
+
+  /**
+   * 멤버십 구독 혜택 조회
+   *
+   * @param consumerId 로그인 한 회원 식별자
+   * @return {SubscriptionBenefitForInquiryResponseDto} 멤버십 구독 혜택 정보
+   */
+  public SubscriptionBenefitForInquiryResponseDto getSubscriptionBenefit(Long consumerId) {
+
+    Consumer foundConsumer = getConsumer(consumerId);
+
+    PointHistory latestPointHistory = historyService.getLatestPointHistory(foundConsumer);
+    Long pointAccBySubscription = latestPointHistory.getPointAccBySubscription();
+
+    // 현재 유효한 구독권 정보 가져오기
+    Subscription curValidSubscription = subscriptionService.getCurValidSubscription(foundConsumer);
+    LocalDateTime subscriptionPaymentDate = curValidSubscription.getStartDate();
+    int subscriptionPaymentDayOfMonth = subscriptionPaymentDate.getDayOfMonth();
+    int nowDayOfMonth = LocalDateTime.now().getDayOfMonth();
+
+    LocalDateTime nextPaymentReservation =
+        nowDayOfMonth < subscriptionPaymentDayOfMonth
+            ? LocalDateTime.of(
+                subscriptionPaymentDate.getYear(),
+                subscriptionPaymentDate.getMonth(),
+                subscriptionPaymentDayOfMonth,
+                0,
+                0,
+                0)
+            : LocalDateTime.of(
+                subscriptionPaymentDate.getYear(),
+                subscriptionPaymentDate.getMonth().getValue() + 1,
+                subscriptionPaymentDayOfMonth,
+                0,
+                0,
+                0);
+
+    SubscriptionCouponBenefitForInquiryResponseDto subscriptionCouponBenefit =
+        couponClientService.getSubscriptionBenefit(consumerId);
+    Long couponUse = subscriptionCouponBenefit.getCouponUse();
+    return subscriptionMapper.toSubscriptionBenefitDto(
+        foundConsumer.getName(), pointAccBySubscription, couponUse, nextPaymentReservation);
   }
 
   /**
