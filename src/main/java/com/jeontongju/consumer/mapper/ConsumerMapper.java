@@ -2,11 +2,7 @@ package com.jeontongju.consumer.mapper;
 
 import com.jeontongju.consumer.domain.Consumer;
 import com.jeontongju.consumer.domain.PointHistory;
-import com.jeontongju.consumer.dto.response.SpecificConsumerDetailForInquiryResponseDto;
-import com.jeontongju.consumer.dto.response.ConsumerDetailForSingleInquiryResponseDto;
-import com.jeontongju.consumer.dto.response.ConsumerInfoForInquiryResponseDto;
-import com.jeontongju.consumer.dto.response.MyInfoAfterSignInForResponseDto;
-import com.jeontongju.consumer.dto.response.PointCreditForInquiryResponseDto;
+import com.jeontongju.consumer.dto.response.*;
 import com.jeontongju.consumer.dto.temp.ConsumerInfoForCreateBySnsRequestDto;
 import com.jeontongju.consumer.dto.temp.ConsumerInfoForCreateRequestDto;
 import com.jeontongju.consumer.dto.temp.NameImageForInquiryResponseDto;
@@ -137,5 +133,10 @@ public class ConsumerMapper {
         .name(foundConsumer.getName())
         .imageUrl(foundConsumer.getProfileImageUrl())
         .build();
+  }
+
+  public AvailablePointsAtOrderResponseDto toAvailablePointsDto(long availablePoints) {
+
+    return AvailablePointsAtOrderResponseDto.builder().availablePoints(availablePoints).build();
   }
 }
