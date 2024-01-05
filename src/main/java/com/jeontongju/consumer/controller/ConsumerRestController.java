@@ -1,12 +1,12 @@
 package com.jeontongju.consumer.controller;
 
+import com.jeontongju.consumer.dto.request.OrderPriceForCheckValidRequestDto;
 import com.jeontongju.consumer.dto.request.ProfileImageUrlForModifyRequestDto;
 import com.jeontongju.consumer.dto.response.*;
 import com.jeontongju.consumer.dto.response.ConsumerInfoForInquiryResponseDto;
 import com.jeontongju.consumer.service.ConsumerService;
 import com.jeontongju.consumer.service.SubscriptionService;
 import io.github.bitbox.bitbox.dto.ResponseFormat;
-import io.github.bitbox.bitbox.dto.SubscriptionCouponBenefitForInquiryResponseDto;
 import io.github.bitbox.bitbox.enums.MemberRoleEnum;
 import javax.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -160,6 +160,22 @@ public class ConsumerRestController {
                 .message(HttpStatus.OK.name())
                 .detail("구독권 혜택 조회 성공")
                 .data(consumerService.getSubscriptionBenefit(memberId))
+                .build());
+  }
+
+  @PostMapping("/consumers/points-available")
+  public ResponseEntity<ResponseFormat<AvailablePointsAtOrderResponseDto>>
+      getAvailablePointsAtOrder(
+          @RequestHeader Long memberId,
+          @Valid @RequestBody OrderPriceForCheckValidRequestDto checkValidRequestDto) {
+
+    return ResponseEntity.ok()
+        .body(
+            ResponseFormat.<AvailablePointsAtOrderResponseDto>builder()
+                .code(HttpStatus.OK.value())
+                .message(HttpStatus.OK.name())
+                .detail("사용 가능한 내 포인트 조회 성공")
+                .data(consumerService.getAvailablePointsAtOrder(memberId, checkValidRequestDto))
                 .build());
   }
 }

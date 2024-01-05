@@ -3,6 +3,7 @@ package com.jeontongju.consumer.service;
 import com.jeontongju.consumer.domain.Consumer;
 import com.jeontongju.consumer.domain.PointHistory;
 import com.jeontongju.consumer.domain.Subscription;
+import com.jeontongju.consumer.dto.request.OrderPriceForCheckValidRequestDto;
 import com.jeontongju.consumer.dto.request.ProfileImageUrlForModifyRequestDto;
 import com.jeontongju.consumer.dto.response.*;
 import com.jeontongju.consumer.dto.response.ConsumerInfoForInquiryResponseDto;
@@ -410,6 +411,28 @@ public class ConsumerService {
 
     Consumer foundConsumer = getConsumer(consumerId);
     return consumerMapper.toPointCreditInquiryDto(foundConsumer);
+  }
+
+  /**
+   * 주문 시, 사용 가능한 최대 포인트 조회 (총 주문 금액의 10%를 넘게 사용 x)
+   *
+   * @param consumerId 로그인 한 회원 식별자
+   * @param checkValidRequestDto 정책 확인에 필요한 총 주문금액
+   * @return {AvailablePointsAtOrderResponseDto} 주문 시, 사용 가능한 최대 포인트
+   */
+  public AvailablePointsAtOrderResponseDto getAvailablePointsAtOrder(
+      Long consumerId, OrderPriceForCheckValidRequestDto checkValidRequestDto) {
+
+    Consumer foundConsumer = getConsumer(consumerId);
+    Long point = foundConsumer.getPoint();
+
+    // 포인트 사용 정책 확인
+    if (point >= checkValidRequestDto.getTotalAmount() * 0.1) {
+      return consumerMapper.toAvailablePointsDto(
+          (long) Math.floor(checkValidRequestDto.getTotalAmount() * 0.1));
+    }
+
+    return consumerMapper.toAvailablePointsDto(point);
   }
 
   /**
