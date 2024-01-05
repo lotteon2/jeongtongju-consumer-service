@@ -4,6 +4,7 @@ import com.jeontongju.consumer.dto.request.ProfileImageUrlForModifyRequestDto;
 import com.jeontongju.consumer.dto.response.*;
 import com.jeontongju.consumer.dto.response.ConsumerInfoForInquiryResponseDto;
 import com.jeontongju.consumer.service.ConsumerService;
+import com.jeontongju.consumer.service.SubscriptionService;
 import io.github.bitbox.bitbox.dto.ResponseFormat;
 import io.github.bitbox.bitbox.enums.MemberRoleEnum;
 import javax.validation.Valid;
@@ -25,6 +26,7 @@ import org.springframework.web.bind.annotation.RestController;
 public class ConsumerRestController {
 
   private final ConsumerService consumerService;
+  private final SubscriptionService subscriptionService;
 
   @GetMapping("/consumers")
   public ResponseEntity<ResponseFormat<ConsumerInfoForInquiryResponseDto>> getMyInfo(
@@ -115,7 +117,7 @@ public class ConsumerRestController {
                 .code(HttpStatus.OK.value())
                 .message(HttpStatus.OK.name())
                 .detail("구독 결제 내역 조회 성공")
-                .data(consumerService.getMySubscriptionHistories(memberId, page, size))
+                .data(subscriptionService.getMySubscriptionHistories(memberId, page, size))
                 .build());
   }
 
