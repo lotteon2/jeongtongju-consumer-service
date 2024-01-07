@@ -2,7 +2,7 @@ package com.jeontongju.consumer.controller;
 
 import com.jeontongju.consumer.dto.request.AddressInfoForModifyRequestDto;
 import com.jeontongju.consumer.dto.request.AddressInfoForRegisterRequestDto;
-import com.jeontongju.consumer.dto.response.AddressInfoForSingleInquiryResponseDto;
+import com.jeontongju.consumer.dto.response.DefaultAddressInfoForInquiryResponseDto;
 import com.jeontongju.consumer.service.AddressService;
 import io.github.bitbox.bitbox.dto.ResponseFormat;
 import java.util.List;
@@ -19,27 +19,27 @@ public class AddressRestController {
 
   private final AddressService addressService;
 
-  @GetMapping("/consumers/addresses/{addressId}")
-  public ResponseEntity<ResponseFormat<AddressInfoForSingleInquiryResponseDto>>
-      getSingleAddressForInquiry(@PathVariable Long addressId) {
+  @GetMapping("/consumers/addresses/default")
+  public ResponseEntity<ResponseFormat<DefaultAddressInfoForInquiryResponseDto>>
+      getSingleAddressForInquiry(@RequestHeader Long memberId) {
 
     return ResponseEntity.ok()
         .body(
-            ResponseFormat.<AddressInfoForSingleInquiryResponseDto>builder()
+            ResponseFormat.<DefaultAddressInfoForInquiryResponseDto>builder()
                 .code(HttpStatus.OK.value())
                 .message(HttpStatus.OK.name())
-                .detail("주소지 단일 조회 성공")
-                .data(addressService.getSingleAddressForInquiry(addressId))
+                .detail("기본 주소지 조회 성공")
+                .data(addressService.getSingleAddressForInquiry(memberId))
                 .build());
   }
 
   @GetMapping("/consumers/addresses")
-  public ResponseEntity<ResponseFormat<List<AddressInfoForSingleInquiryResponseDto>>>
+  public ResponseEntity<ResponseFormat<List<DefaultAddressInfoForInquiryResponseDto>>>
       getAddressesForListLookup(@RequestHeader Long memberId) {
 
     return ResponseEntity.ok()
         .body(
-            ResponseFormat.<List<AddressInfoForSingleInquiryResponseDto>>builder()
+            ResponseFormat.<List<DefaultAddressInfoForInquiryResponseDto>>builder()
                 .code(HttpStatus.OK.value())
                 .message(HttpStatus.OK.name())
                 .detail("주소지 목록 조회 성공")

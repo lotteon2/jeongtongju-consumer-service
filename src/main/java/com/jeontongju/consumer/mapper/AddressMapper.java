@@ -4,7 +4,7 @@ import com.jeontongju.consumer.domain.Address;
 import com.jeontongju.consumer.domain.Consumer;
 import com.jeontongju.consumer.dto.request.AddressInfoForModifyRequestDto;
 import com.jeontongju.consumer.dto.request.AddressInfoForRegisterRequestDto;
-import com.jeontongju.consumer.dto.response.AddressInfoForSingleInquiryResponseDto;
+import com.jeontongju.consumer.dto.response.DefaultAddressInfoForInquiryResponseDto;
 import io.github.bitbox.bitbox.dto.AddressDto;
 import java.util.ArrayList;
 import java.util.List;
@@ -13,9 +13,9 @@ import org.springframework.stereotype.Component;
 @Component
 public class AddressMapper {
 
-  public AddressInfoForSingleInquiryResponseDto toSingleInquiryResponseDto(Address address) {
+  public DefaultAddressInfoForInquiryResponseDto toDefaultAddressInquiryResponseDto(Address address) {
 
-    return AddressInfoForSingleInquiryResponseDto.builder()
+    return DefaultAddressInfoForInquiryResponseDto.builder()
         .addressId(address.getAddressId())
         .basicAddress(address.getBasicAddress())
         .addressDetail(address.getAddressDetail())
@@ -26,13 +26,13 @@ public class AddressMapper {
         .build();
   }
 
-  public List<AddressInfoForSingleInquiryResponseDto> toListLookupResponseDto(
+  public List<DefaultAddressInfoForInquiryResponseDto> toListLookupResponseDto(
       List<Address> addresses) {
 
-    List<AddressInfoForSingleInquiryResponseDto> addressesResponseDto = new ArrayList<>();
+    List<DefaultAddressInfoForInquiryResponseDto> addressesResponseDto = new ArrayList<>();
 
     for (Address address : addresses) {
-      addressesResponseDto.add(toSingleInquiryResponseDto(address));
+      addressesResponseDto.add(toDefaultAddressInquiryResponseDto(address));
     }
     return addressesResponseDto;
   }
