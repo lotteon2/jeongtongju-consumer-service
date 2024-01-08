@@ -11,6 +11,7 @@ import com.jeontongju.consumer.dto.temp.*;
 import com.jeontongju.consumer.dto.temp.ConsumerInfoForAuctionResponse;
 import com.jeontongju.consumer.dto.temp.ConsumerInfoForCreateBySnsRequestDto;
 import com.jeontongju.consumer.exception.*;
+import com.jeontongju.consumer.feign.OrderClientService;
 import com.jeontongju.consumer.kafka.ConsumerKafkaProducer;
 import com.jeontongju.consumer.mapper.ConsumerMapper;
 import com.jeontongju.consumer.mapper.CouponMapper;
@@ -49,6 +50,7 @@ public class ConsumerService {
   private final SubscriptionMapper subscriptionMapper;
   private final PaginationManager paginationManager;
   private final ConsumerKafkaProducer consumerKafkaProducer;
+  private final OrderClientService orderClientService;
 
   private final KafkaTemplate<String, ConsumerRegularPaymentsCouponDto> kafkaTemplate;
 
@@ -486,6 +488,42 @@ public class ConsumerService {
 
     Pageable pageable = paginationManager.getPageableByCreatedAt(page, size);
     return paginationManager.wrapByPage(allConsumersDto, pageable, foundAllConsumers.size());
+  }
+
+  /**
+   * 셀러별, 해당 셀러의 상품을 구입한 소비자 연령 분포 가져오기
+   *
+   * @param memberId 로그인 한 회원(셀러) 식별자
+   * @param memberRole 로그인 한 회원의 역할(ROLE_SELLER)
+   */
+  public AgeDistributionForShowResponseDto getAgeDistribution(Long memberId, MemberRoleEnum memberRole) {
+
+    if (memberRole != MemberRoleEnum.ROLE_SELLER) {
+      throw new NotSellerAccessDeniedException(CustomErrMessage.NOT_SELLER_ACCESS_DENIED);
+    }
+
+    List<Long> consumerIds = orderClientService.getConsumerOrderIdsBySellerId(memberId);
+    List<Object[]> result = consumerRepository.findAgeGroupTotals(consumerIds);
+
+    AgeDistributionForShowResponseDto ageDistributionDto = AgeDistributionForShowResponseDto.builder().build();
+    for(Object[] row : result) {
+      int ageGroup = (Integer) row[0];
+      Long total = (Long) row[1];
+      log.info("[ageGroup]: " + ageGroup);
+      log.info("[total]: " + total);
+
+      if(ageGroup == 10) {
+        ageDistributionDto.assignTeenage(total);
+      } else if(ageGroup == 20) {
+        ageDistributionDto.assignTwenty(total);
+      } else if(ageGroup == 30) {
+        ageDistributionDto.assignThirty(total);
+      } else {
+        ageDistributionDto.assignFortyOver(total);
+      }
+    }
+
+    return ageDistributionDto;
   }
 
   /**

@@ -178,4 +178,18 @@ public class ConsumerRestController {
                 .data(consumerService.getAvailablePointsAtOrder(memberId, checkValidRequestDto))
                 .build());
   }
+
+  @PostMapping("/sellers/consumers/age-analysis")
+  public ResponseEntity<ResponseFormat<AgeDistributionForShowResponseDto>> getAgeDistribution(
+      @RequestHeader Long memberId, @RequestHeader MemberRoleEnum memberRole) {
+
+    return ResponseEntity.ok()
+        .body(
+            ResponseFormat.<AgeDistributionForShowResponseDto>builder()
+                .code(HttpStatus.OK.value())
+                .message(HttpStatus.OK.name())
+                .detail("셀러별, 상품 구매한 소비자 연령 분포 조회 성공")
+                .data(consumerService.getAgeDistribution(memberId, memberRole))
+                .build());
+  }
 }
