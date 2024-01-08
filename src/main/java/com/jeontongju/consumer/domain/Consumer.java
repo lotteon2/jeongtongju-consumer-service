@@ -30,6 +30,9 @@ public class Consumer extends BaseEntity {
   @Column(name = "name")
   private String name;
 
+  @Column(name = "age")
+  private Integer age;
+
   @Column(name = "point", nullable = false)
   @Builder.Default
   private Long point = 0L;
