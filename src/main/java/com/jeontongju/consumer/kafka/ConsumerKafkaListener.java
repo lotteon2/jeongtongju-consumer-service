@@ -52,7 +52,6 @@ public class ConsumerKafkaListener {
               .notificationType(NotificationTypeEnum.INTERNAL_CONSUMER_SERVER_ERROR)
               .error(orderInfoDto)
               .build());
-      //      throw new KafkaDuringOrderException(CustomErrMessage.ERROR_KAFKA);
     }
   }
 
@@ -68,7 +67,14 @@ public class ConsumerKafkaListener {
       consumerService.rollbackPoint(orderInfoDto);
     } catch (Exception e) {
       log.error("During Rollback Points: Error while add points={}", e.getMessage());
-      throw new KafkaDuringOrderException(CustomErrMessage.ERROR_KAFKA);
+      consumerKafkaProducer.send(
+          KafkaTopicNameInfo.SEND_ERROR_NOTIFICATION,
+          ServerErrorForNotificationDto.builder()
+              .recipientId(orderInfoDto.getUserCouponUpdateDto().getConsumerId())
+              .recipientType(RecipientTypeEnum.ROLE_CONSUMER)
+              .notificationType(NotificationTypeEnum.INTERNAL_CONSUMER_SERVER_ERROR)
+              .error(orderInfoDto)
+              .build());
     }
   }
 
@@ -89,7 +95,13 @@ public class ConsumerKafkaListener {
       }
     } catch (Exception e) {
       log.error("During Cancel Order: Error while refunding points={}", e.getMessage());
-      //      throw new KafkaDuringOrderException(CustomErrMessage.ERROR_KAFKA);
+      consumerKafkaProducer.send(
+          KafkaTopicNameInfo.SEND_ERROR_NOTIFICATION,
+          ServerErrorForNotificationDto.builder()
+              .recipientId(orderCancelDto.getConsumerId())
+              .recipientType(RecipientTypeEnum.ROLE_CONSUMER)
+              .notificationType(NotificationTypeEnum.INTERNAL_CONSUMER_SERVER_ERROR)
+              .build());
     }
   }
 
@@ -145,10 +157,10 @@ public class ConsumerKafkaListener {
     } catch (Exception e) {
       log.error("During Subscription Payments: Error while create subscription={}", e.getMessage());
       kafkaTemplate.send(
-              KafkaTopicNameInfo.CANCEL_KAKAOPAY,
-              subscriptionDto
-                      .getSubscripton()
-                      .cancel(subscriptionDto.getPaymentAmount(), subscriptionDto.getTaxFreeAmount()));
+          KafkaTopicNameInfo.CANCEL_KAKAOPAY,
+          subscriptionDto
+              .getSubscripton()
+              .cancel(subscriptionDto.getPaymentAmount(), subscriptionDto.getTaxFreeAmount()));
     }
   }
 
