@@ -4,6 +4,7 @@ import com.jeontongju.consumer.dto.temp.*;
 import com.jeontongju.consumer.service.AddressService;
 import com.jeontongju.consumer.service.ConsumerService;
 import io.github.bitbox.bitbox.dto.AddressDto;
+import io.github.bitbox.bitbox.dto.ConsumerInfoForCreateRequestDto;
 import io.github.bitbox.bitbox.dto.ImpAuthInfoForUpdateDto;
 import io.github.bitbox.bitbox.dto.OrderConfirmDto;
 import io.github.bitbox.bitbox.dto.UserPointUpdateDto;

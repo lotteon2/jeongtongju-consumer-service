@@ -4,9 +4,9 @@ import com.jeontongju.consumer.domain.Consumer;
 import com.jeontongju.consumer.domain.PointHistory;
 import com.jeontongju.consumer.dto.response.*;
 import com.jeontongju.consumer.dto.temp.ConsumerInfoForCreateBySnsRequestDto;
-import com.jeontongju.consumer.dto.temp.ConsumerInfoForCreateRequestDto;
 import com.jeontongju.consumer.dto.temp.NameImageForInquiryResponseDto;
 import com.jeontongju.consumer.dto.temp.TradePathEnum;
+import io.github.bitbox.bitbox.dto.ConsumerInfoForCreateRequestDto;
 import io.github.bitbox.bitbox.dto.ConsumerNameImageDto;
 import org.springframework.stereotype.Component;
 
@@ -22,6 +22,7 @@ public class ConsumerMapper {
         .consumerId(createRequestDto.getConsumerId())
         .email(createRequestDto.getEmail())
         .name(createRequestDto.getName())
+        .age(createRequestDto.getAge())
         .phoneNumber(createRequestDto.getPhoneNumber())
         .build();
   }
