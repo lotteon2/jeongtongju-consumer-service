@@ -57,7 +57,7 @@ public class ConsumerMapper {
         .build();
   }
 
-  public MyInfoAfterSignInForResponseDto toMyInfoDto(Consumer consumer) {
+  public MyInfoAfterSignInForResponseDto toMyInfoDto(Consumer consumer, Boolean existSnsAccount) {
 
     return MyInfoAfterSignInForResponseDto.builder()
         .memberId(consumer.getConsumerId())
@@ -67,6 +67,7 @@ public class ConsumerMapper {
         .isAdult(consumer.getIsAdult())
         .isRegularPayment(consumer.getIsRegularPayment())
         .isPaymentReservation(consumer.getIsPaymentReservation())
+        .isSocial(existSnsAccount)
         .point(consumer.getPoint())
         .credit(consumer.getAuctionCredit())
         .phoneNumber(consumer.getPhoneNumber())

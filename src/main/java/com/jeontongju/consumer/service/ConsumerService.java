@@ -12,6 +12,7 @@ import com.jeontongju.consumer.dto.temp.ConsumerInfoForAuctionResponse;
 import com.jeontongju.consumer.dto.temp.ConsumerInfoForCreateBySnsRequestDto;
 import com.jeontongju.consumer.exception.*;
 import com.jeontongju.consumer.feign.OrderClientService;
+import com.jeontongju.consumer.feign.authentication.AuthenticationClientService;
 import com.jeontongju.consumer.kafka.ConsumerKafkaProducer;
 import com.jeontongju.consumer.mapper.ConsumerMapper;
 import com.jeontongju.consumer.mapper.CouponMapper;
@@ -45,6 +46,7 @@ public class ConsumerService {
   private final HistoryService historyService;
   private final SubscriptionService subscriptionService;
   private final CouponClientService couponClientService;
+  private final AuthenticationClientService authenticationClientService;
   private final ConsumerMapper consumerMapper;
   private final CouponMapper couponMapper;
   private final SubscriptionMapper subscriptionMapper;
@@ -400,7 +402,8 @@ public class ConsumerService {
    */
   public MyInfoAfterSignInForResponseDto getMyInfoAfterSignIn(Long consumerId) {
 
-    return consumerMapper.toMyInfoDto(getConsumer(consumerId));
+    Boolean existSocialAccount = authenticationClientService.isExistSocialAccount(consumerId);
+    return consumerMapper.toMyInfoDto(getConsumer(consumerId), existSocialAccount);
   }
 
   /**
