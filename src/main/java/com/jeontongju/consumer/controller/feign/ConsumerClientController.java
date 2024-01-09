@@ -4,6 +4,8 @@ import com.jeontongju.consumer.dto.temp.*;
 import com.jeontongju.consumer.service.AddressService;
 import com.jeontongju.consumer.service.ConsumerService;
 import io.github.bitbox.bitbox.dto.AddressDto;
+import io.github.bitbox.bitbox.dto.ConsumerInfoForCreateRequestDto;
+import io.github.bitbox.bitbox.dto.ImpAuthInfoForUpdateDto;
 import io.github.bitbox.bitbox.dto.OrderConfirmDto;
 import io.github.bitbox.bitbox.dto.UserPointUpdateDto;
 import lombok.RequiredArgsConstructor;
@@ -33,6 +35,13 @@ public class ConsumerClientController {
     return FeignFormat.<Void>builder().code(HttpStatus.OK.value()).build();
   }
 
+  @PutMapping("/consumers/adult-certification")
+  public FeignFormat<Void> updateConsumerByAuth19(@RequestBody ImpAuthInfoForUpdateDto authInfoDto) {
+
+    consumerService.updateConsumerByAuth19(authInfoDto);
+    return FeignFormat.<Void>builder().code(HttpStatus.OK.value()).build();
+  }
+
   @GetMapping("/consumers/{consumerId}/name-image")
   public FeignFormat<NameImageForInquiryResponseDto> getNameNImageUrl(
       @PathVariable("consumerId") Long consumerId) {
@@ -44,7 +53,7 @@ public class ConsumerClientController {
   }
 
   @GetMapping("/consumers/{consumerId}/address")
-  public FeignFormat<AddressDto> getConsumerAddress(@PathVariable("consumerId") Long consumerId) {
+  public FeignFormat<AddressDto> getConsumerAddress(@PathVariable Long consumerId) {
 
     return FeignFormat.<AddressDto>builder()
         .code(HttpStatus.OK.value())

@@ -1,7 +1,7 @@
 package com.jeontongju.consumer.dto.response;
 
+import java.time.LocalDateTime;
 import com.jeontongju.consumer.dto.temp.TradePathEnum;
-import java.sql.Timestamp;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
@@ -16,5 +16,5 @@ public class PointTradeInfoForSingleInquiryResponseDto {
   private Long tradeId;
   private Long tradePoint;
   private TradePathEnum tradePath;
-  private Timestamp tradeDate;
+  private LocalDateTime tradeDate;
 }

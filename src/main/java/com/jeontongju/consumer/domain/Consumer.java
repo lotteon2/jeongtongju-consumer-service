@@ -30,6 +30,9 @@ public class Consumer extends BaseEntity {
   @Column(name = "name")
   private String name;
 
+  @Column(name = "age")
+  private Integer age;
+
   @Column(name = "point", nullable = false)
   @Builder.Default
   private Long point = 0L;
@@ -44,10 +47,6 @@ public class Consumer extends BaseEntity {
   @Column(name = "phone_number")
   private String phoneNumber;
 
-  @Column(name = "is_first_login", nullable = false)
-  @Builder.Default
-  private Boolean isFirstLogin = true;
-
   @Column(name = "is_default", nullable = false)
   @Builder.Default
   private Boolean isAdult = false;
@@ -56,9 +55,9 @@ public class Consumer extends BaseEntity {
   @Builder.Default
   private Boolean isRegularPayment = false;
 
-  @Column(name = "is_deleted", nullable = false)
+  @Column(name = "is_payment_reservation", nullable = false)
   @Builder.Default
-  private Boolean isDeleted = false;
+  private Boolean isPaymentReservation = false;
 
   @OneToMany(mappedBy = "consumer")
   private List<Address> addressList;
@@ -82,6 +81,7 @@ public class Consumer extends BaseEntity {
 
   public void addSubscriptionInfo() {
     this.isRegularPayment = true;
+    this.isPaymentReservation = true;
   }
 
   public void assignAuctionCredit(Long auctionCredit) {
@@ -97,7 +97,7 @@ public class Consumer extends BaseEntity {
   }
 
   public void unsubscribe() {
-    this.isRegularPayment = false;
+    this.isPaymentReservation = false;
   }
 
   public void assignName(String name) {

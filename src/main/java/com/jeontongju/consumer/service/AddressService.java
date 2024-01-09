@@ -4,7 +4,7 @@ import com.jeontongju.consumer.domain.Address;
 import com.jeontongju.consumer.domain.Consumer;
 import com.jeontongju.consumer.dto.request.AddressInfoForModifyRequestDto;
 import com.jeontongju.consumer.dto.request.AddressInfoForRegisterRequestDto;
-import com.jeontongju.consumer.dto.response.AddressInfoForSingleInquiryResponseDto;
+import com.jeontongju.consumer.dto.response.DefaultAddressInfoForInquiryResponseDto;
 import com.jeontongju.consumer.exception.AddressNotFoundException;
 import com.jeontongju.consumer.mapper.AddressMapper;
 import com.jeontongju.consumer.repository.AddressRepository;
@@ -28,25 +28,28 @@ public class AddressService {
   /**
    * 주소지 단일 조회
    *
-   * @param addressId
-   * @return
+   * @param consumerId 로그인 한 회원 식별자
+   * @return {AddressInfoForSingleInquiryResponseDto} 해당 주소지 세부 정보
    */
-  public AddressInfoForSingleInquiryResponseDto getSingleAddressForInquiry(Long addressId) {
+  public DefaultAddressInfoForInquiryResponseDto getSingleAddressForInquiry(Long consumerId) {
 
-    Address foundAddress =
+    Consumer foundConsumer = consumerService.getConsumer(consumerId);
+
+    Address foundDefaultAddress =
         addressRepository
-            .findByAddressId(addressId)
+            .findByConsumerAndIsDefault(foundConsumer, true)
             .orElseThrow(() -> new AddressNotFoundException(CustomErrMessage.NOT_FOUND_ADDRESS));
-    return addressMapper.toSingleInquiryResponseDto(foundAddress);
+
+    return addressMapper.toDefaultAddressInquiryResponseDto(foundDefaultAddress);
   }
 
   /**
    * 주소지 목록 조회
    *
-   * @param consumerId
-   * @return
+   * @param consumerId 로그인 한 회원 식별자
+   * @return {List<AddressInfoForSingleInquiryResponseDto>} 해당 회원의 주소지 목록 (최대 5개)
    */
-  public List<AddressInfoForSingleInquiryResponseDto> getAddressesForListLookup(Long consumerId) {
+  public List<DefaultAddressInfoForInquiryResponseDto> getAddressesForListLookup(Long consumerId) {
 
     Consumer foundConsumer = consumerService.getConsumer(consumerId);
 
@@ -54,6 +57,12 @@ public class AddressService {
     return addressMapper.toListLookupResponseDto(addresses);
   }
 
+  /**
+   * 경매 낙찰 시, 해당 회원 배송지 정보 가져오기
+   *
+   * @param consumerId 해당 회원 식별자
+   * @return {AddressDto} 해당 회원의 배송지 정보
+   */
   public AddressDto getConsumerAddress(Long consumerId) {
 
     Consumer foundConsumer = consumerService.getConsumer(consumerId);
@@ -64,12 +73,12 @@ public class AddressService {
 
     return addressMapper.toDefaultAddressDto(foundDefaultAddress);
   }
-  
+
   /**
    * 주소지 추가
    *
-   * @param consumerId
-   * @param registerRequestDto
+   * @param consumerId 로그인 한 회원 식별자
+   * @param registerRequestDto 주소지 등록에 필요한 정보
    */
   @Transactional
   public void registerAddress(
@@ -77,14 +86,20 @@ public class AddressService {
 
     Consumer foundConsumer = consumerService.getConsumer(consumerId);
 
-    List<Address> registerdAddresses = foundConsumer.getAddressList();
+    List<Address> registeredAddresses = foundConsumer.getAddressList();
+
     // 최대 5개까지 주소지 등록 가능
-    if (registerdAddresses.size() == 5) {
+    if (registeredAddresses.size() == 5) {
       deleteOldestAddress(foundConsumer);
     }
 
+    if (registeredAddresses == null) {
+      addressRepository.save(addressMapper.toEntity(registerRequestDto, foundConsumer));
+      return;
+    }
+
     // 기본 주소지가 있다면 기본 주소지 해제
-    if (registerRequestDto.getIsDefault() && !registerdAddresses.isEmpty()) {
+    if (registerRequestDto.getIsDefault() && !registeredAddresses.isEmpty()) {
       Address defaultAddress =
           addressRepository
               .findByConsumerAndIsDefault(foundConsumer, true)
@@ -99,7 +114,7 @@ public class AddressService {
   /**
    * 기본 주소지가 아닌 가장 오래된 주소지 삭제
    *
-   * @param consumer
+   * @param consumer 현재 로그인 한 회원 객체
    */
   @Transactional
   public void deleteOldestAddress(Consumer consumer) {
@@ -118,9 +133,9 @@ public class AddressService {
   /**
    * 주소지 수정
    *
-   * @param consumerId
-   * @param addressId
-   * @param modifyRequestDto
+   * @param consumerId 로그인 한 회원 식별자
+   * @param addressId 변경할 주소지 식별자
+   * @param modifyRequestDto 주소지 변경할 정보
    */
   @Transactional
   public void modifyAddress(
@@ -142,7 +157,7 @@ public class AddressService {
   /**
    * 기존 주소지를 일반 주소지로 해제
    *
-   * @param consumer
+   * @param consumer 현재 로그인 한 회원 객체
    */
   @Transactional
   public void cancelOriginDefaultAddress(Consumer consumer) {
@@ -155,6 +170,12 @@ public class AddressService {
     foundAddress.assignIsDefault(false);
   }
 
+  /**
+   * 기본 주소지 변경 요청이 있거나, 새로운 주소지가 기본 주소지로 추가되었을 때, 기본 주소지 변경
+   *
+   * @param consumerId 로그인 한 회원 식별자
+   * @param addressId 기본 주소지로 변경될 주소지 식별자
+   */
   @Transactional
   public void changeDefaultAddress(Long consumerId, Long addressId) {
 
@@ -168,6 +189,12 @@ public class AddressService {
     foundAddress.assignIsDefault(true);
   }
 
+  /**
+   * 해당 주소지 삭제
+   *
+   * @param consumerId 로그인 한 회원 식별자
+   * @param addressId 삭제할 주소지 식별자
+   */
   @Transactional
   public void deleteAddress(Long consumerId, Long addressId) {
 

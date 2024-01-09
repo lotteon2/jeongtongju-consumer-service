@@ -13,9 +13,6 @@ import lombok.NoArgsConstructor;
 public class AddressInfoForRegisterRequestDto {
 
   @NotNull(message = "필수 주소지 정보 미입력")
-  private String addressType;
-
-  @NotNull(message = "필수 주소지 정보 미입력")
   private String basicAddress;
 
   private String addressDetail;

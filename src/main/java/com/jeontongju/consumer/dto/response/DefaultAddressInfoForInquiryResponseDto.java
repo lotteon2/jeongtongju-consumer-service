@@ -9,7 +9,7 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @Builder
 @Getter
-public class AddressInfoForSingleInquiryResponseDto {
+public class DefaultAddressInfoForInquiryResponseDto {
 
   private Long addressId;
   private String basicAddress;

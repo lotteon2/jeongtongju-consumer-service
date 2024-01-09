@@ -1,10 +1,13 @@
 package com.jeontongju.consumer.controller;
 
+import com.jeontongju.consumer.dto.request.OrderPriceForCheckValidRequestDto;
 import com.jeontongju.consumer.dto.request.ProfileImageUrlForModifyRequestDto;
 import com.jeontongju.consumer.dto.response.*;
 import com.jeontongju.consumer.dto.response.ConsumerInfoForInquiryResponseDto;
 import com.jeontongju.consumer.service.ConsumerService;
+import com.jeontongju.consumer.service.SubscriptionService;
 import io.github.bitbox.bitbox.dto.ResponseFormat;
+import io.github.bitbox.bitbox.enums.MemberRoleEnum;
 import javax.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -24,6 +27,7 @@ import org.springframework.web.bind.annotation.RestController;
 public class ConsumerRestController {
 
   private final ConsumerService consumerService;
+  private final SubscriptionService subscriptionService;
 
   @GetMapping("/consumers")
   public ResponseEntity<ResponseFormat<ConsumerInfoForInquiryResponseDto>> getMyInfo(
@@ -40,6 +44,23 @@ public class ConsumerRestController {
                 .build());
   }
 
+  @GetMapping("/consumers-list")
+  public ResponseEntity<ResponseFormat<Page<ConsumerDetailForSingleInquiryResponseDto>>>
+      getMembersForListLookup(
+          @RequestHeader MemberRoleEnum memberRole,
+          @RequestParam int page,
+          @RequestParam int size) {
+
+    return ResponseEntity.ok()
+        .body(
+            ResponseFormat.<Page<ConsumerDetailForSingleInquiryResponseDto>>builder()
+                .code(HttpStatus.OK.value())
+                .message(HttpStatus.OK.name())
+                .detail("회원 목록 조회 성공")
+                .data(consumerService.getMembersForListLookup(memberRole, page, size))
+                .build());
+  }
+
   @PatchMapping("/consumers")
   public ResponseEntity<ResponseFormat<Void>> modifyMyInfo(
       @RequestHeader Long memberId,
@@ -52,6 +73,21 @@ public class ConsumerRestController {
                 .code(HttpStatus.OK.value())
                 .message(HttpStatus.OK.name())
                 .detail("소비자 개인정보 수정 성공")
+                .build());
+  }
+
+  @GetMapping("/consumers/{consumerId}")
+  public ResponseEntity<ResponseFormat<SpecificConsumerDetailForInquiryResponseDto>>
+      getConsumerDetailForInquiry(
+          @PathVariable Long consumerId, @RequestHeader MemberRoleEnum memberRole) {
+
+    return ResponseEntity.ok()
+        .body(
+            ResponseFormat.<SpecificConsumerDetailForInquiryResponseDto>builder()
+                .code(HttpStatus.OK.value())
+                .message(HttpStatus.OK.name())
+                .detail("회원 상세 조회 성공")
+                .data(consumerService.getConsumerDetailForInquiry(consumerId, memberRole))
                 .build());
   }
 
@@ -82,7 +118,7 @@ public class ConsumerRestController {
                 .code(HttpStatus.OK.value())
                 .message(HttpStatus.OK.name())
                 .detail("구독 결제 내역 조회 성공")
-                .data(consumerService.getMySubscriptionHistories(memberId, page, size))
+                .data(subscriptionService.getMySubscriptionHistories(memberId, page, size))
                 .build());
   }
 
@@ -110,6 +146,50 @@ public class ConsumerRestController {
                 .code(HttpStatus.OK.value())
                 .message(HttpStatus.OK.name())
                 .detail("구독 해지 성공")
+                .build());
+  }
+
+  @GetMapping("/consumers/subscriptions/benefit")
+  public ResponseEntity<ResponseFormat<SubscriptionBenefitForInquiryResponseDto>>
+      getSubscriptionBenefit(@RequestHeader Long memberId) {
+
+    return ResponseEntity.ok()
+        .body(
+            ResponseFormat.<SubscriptionBenefitForInquiryResponseDto>builder()
+                .code(HttpStatus.OK.value())
+                .message(HttpStatus.OK.name())
+                .detail("구독권 혜택 조회 성공")
+                .data(consumerService.getSubscriptionBenefit(memberId))
+                .build());
+  }
+
+  @PostMapping("/consumers/points-available")
+  public ResponseEntity<ResponseFormat<AvailablePointsAtOrderResponseDto>>
+      getAvailablePointsAtOrder(
+          @RequestHeader Long memberId,
+          @Valid @RequestBody OrderPriceForCheckValidRequestDto checkValidRequestDto) {
+
+    return ResponseEntity.ok()
+        .body(
+            ResponseFormat.<AvailablePointsAtOrderResponseDto>builder()
+                .code(HttpStatus.OK.value())
+                .message(HttpStatus.OK.name())
+                .detail("사용 가능한 내 포인트 조회 성공")
+                .data(consumerService.getAvailablePointsAtOrder(memberId, checkValidRequestDto))
+                .build());
+  }
+
+  @PostMapping("/sellers/consumers/age-analysis")
+  public ResponseEntity<ResponseFormat<AgeDistributionForShowResponseDto>> getAgeDistribution(
+      @RequestHeader Long memberId, @RequestHeader MemberRoleEnum memberRole) {
+
+    return ResponseEntity.ok()
+        .body(
+            ResponseFormat.<AgeDistributionForShowResponseDto>builder()
+                .code(HttpStatus.OK.value())
+                .message(HttpStatus.OK.name())
+                .detail("셀러별, 상품 구매한 소비자 연령 분포 조회 성공")
+                .data(consumerService.getAgeDistribution(memberId, memberRole))
                 .build());
   }
 }
