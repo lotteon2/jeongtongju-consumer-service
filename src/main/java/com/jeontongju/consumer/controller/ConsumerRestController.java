@@ -179,7 +179,7 @@ public class ConsumerRestController {
                 .build());
   }
 
-  @PostMapping("/sellers/consumers/age-analysis")
+  @GetMapping("/sellers/consumers/age-analysis")
   public ResponseEntity<ResponseFormat<AgeDistributionForShowResponseDto>> getAgeDistribution(
       @RequestHeader Long memberId, @RequestHeader MemberRoleEnum memberRole) {
 
