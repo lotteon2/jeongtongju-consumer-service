@@ -59,10 +59,12 @@ public class ConsumerMapper {
 
   public MyInfoAfterSignInForResponseDto toMyInfoDto(Consumer consumer, Boolean existSnsAccount) {
 
+    String profileImageUrl =
+        consumer.getProfileImageUrl() == null ? "" : consumer.getProfileImageUrl();
     return MyInfoAfterSignInForResponseDto.builder()
         .memberId(consumer.getConsumerId())
         .email(consumer.getEmail())
-        .profileImageUrl(consumer.getProfileImageUrl())
+        .profileImageUrl(profileImageUrl)
         .name(consumer.getName())
         .isAdult(consumer.getIsAdult())
         .isRegularPayment(consumer.getIsRegularPayment())
