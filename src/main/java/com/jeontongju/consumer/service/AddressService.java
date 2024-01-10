@@ -93,7 +93,7 @@ public class AddressService {
       deleteOldestAddress(foundConsumer);
     }
 
-    if (registeredAddresses == null) {
+    if (registeredAddresses.isEmpty()) {
       addressRepository.save(addressMapper.toEntity(registerRequestDto, foundConsumer));
       return;
     }
