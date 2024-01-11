@@ -11,15 +11,15 @@ import com.jeontongju.consumer.dto.temp.*;
 import com.jeontongju.consumer.dto.temp.ConsumerInfoForAuctionResponse;
 import com.jeontongju.consumer.dto.temp.ConsumerInfoForCreateBySnsRequestDto;
 import com.jeontongju.consumer.exception.*;
+import com.jeontongju.consumer.feign.CouponClientService;
 import com.jeontongju.consumer.feign.OrderClientService;
 import com.jeontongju.consumer.feign.authentication.AuthenticationClientService;
 import com.jeontongju.consumer.kafka.ConsumerKafkaProducer;
 import com.jeontongju.consumer.mapper.ConsumerMapper;
 import com.jeontongju.consumer.mapper.CouponMapper;
 import com.jeontongju.consumer.mapper.SubscriptionMapper;
-import com.jeontongju.consumer.repository.ConsumerRepository;
-import com.jeontongju.consumer.feign.CouponClientService;
 import com.jeontongju.consumer.repository.ConsumerCountRepository;
+import com.jeontongju.consumer.repository.ConsumerRepository;
 import com.jeontongju.consumer.utils.CustomErrMessage;
 import com.jeontongju.consumer.utils.PaginationManager;
 import io.github.bitbox.bitbox.dto.*;
@@ -44,6 +44,7 @@ import org.springframework.transaction.annotation.Transactional;
 public class ConsumerService {
 
   private final ConsumerRepository consumerRepository;
+  private final ConsumerCountRepository consumerCountRepository;
   private final HistoryService historyService;
   private final SubscriptionService subscriptionService;
   private final CouponClientService couponClientService;
@@ -54,8 +55,6 @@ public class ConsumerService {
   private final PaginationManager paginationManager;
   private final ConsumerKafkaProducer consumerKafkaProducer;
   private final OrderClientService orderClientService;
-
-  private final ConsumerCountRepository consumerCountRepository;
 
   private final KafkaTemplate<String, ConsumerRegularPaymentsCouponDto> kafkaTemplate;
 
@@ -504,7 +503,8 @@ public class ConsumerService {
    * @param memberId 로그인 한 회원(셀러) 식별자
    * @param memberRole 로그인 한 회원의 역할(ROLE_SELLER)
    */
-  public AgeDistributionForShowResponseDto getAgeDistribution(Long memberId, MemberRoleEnum memberRole) {
+  public AgeDistributionForShowResponseDto getAgeDistribution(
+      Long memberId, MemberRoleEnum memberRole) {
 
     if (memberRole != MemberRoleEnum.ROLE_SELLER) {
       throw new NotSellerAccessDeniedException(CustomErrMessage.NOT_SELLER_ACCESS_DENIED);
@@ -513,18 +513,19 @@ public class ConsumerService {
     List<Long> consumerIds = orderClientService.getConsumerOrderIdsBySellerId(memberId);
     List<Object[]> result = consumerRepository.findAgeGroupTotals(consumerIds);
 
-    AgeDistributionForShowResponseDto ageDistributionDto = AgeDistributionForShowResponseDto.builder().build();
-    for(Object[] row : result) {
+    AgeDistributionForShowResponseDto ageDistributionDto =
+        AgeDistributionForShowResponseDto.builder().build();
+    for (Object[] row : result) {
       int ageGroup = (Integer) row[0];
       Long total = (Long) row[1];
       log.info("[ageGroup]: " + ageGroup);
       log.info("[total]: " + total);
 
-      if(ageGroup == 10) {
+      if (ageGroup == 10) {
         ageDistributionDto.assignTeenage(total);
-      } else if(ageGroup == 20) {
+      } else if (ageGroup == 20) {
         ageDistributionDto.assignTwenty(total);
-      } else if(ageGroup == 30) {
+      } else if (ageGroup == 30) {
         ageDistributionDto.assignThirty(total);
       } else {
         ageDistributionDto.assignFortyOver(total);
