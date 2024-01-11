@@ -192,4 +192,17 @@ public class ConsumerRestController {
                 .data(consumerService.getAgeDistribution(memberId, memberRole))
                 .build());
   }
+
+  @PatchMapping("/coupons/test/{memberId}")
+  public ResponseEntity<ResponseFormat<Void>> getCouponTest3(@PathVariable Long memberId) {
+
+    consumerService.apply(memberId);
+    return ResponseEntity.ok()
+        .body(
+            ResponseFormat.<Void>builder()
+                .code(HttpStatus.OK.value())
+                .message(HttpStatus.OK.name())
+                .detail("[테스트] 쿠폰 수령 성공")
+                .build());
+  }
 }

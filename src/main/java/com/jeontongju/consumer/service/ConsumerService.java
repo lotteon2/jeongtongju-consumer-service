@@ -19,6 +19,7 @@ import com.jeontongju.consumer.mapper.CouponMapper;
 import com.jeontongju.consumer.mapper.SubscriptionMapper;
 import com.jeontongju.consumer.repository.ConsumerRepository;
 import com.jeontongju.consumer.feign.CouponClientService;
+import com.jeontongju.consumer.repository.ConsumerCountRepository;
 import com.jeontongju.consumer.utils.CustomErrMessage;
 import com.jeontongju.consumer.utils.PaginationManager;
 import io.github.bitbox.bitbox.dto.*;
@@ -54,6 +55,8 @@ public class ConsumerService {
   private final ConsumerKafkaProducer consumerKafkaProducer;
   private final OrderClientService orderClientService;
 
+  private final ConsumerCountRepository consumerCountRepository;
+
   private final KafkaTemplate<String, ConsumerRegularPaymentsCouponDto> kafkaTemplate;
 
   private static final Double POINT_ACC_RATE_NORMAL = 0.01;
@@ -66,7 +69,9 @@ public class ConsumerService {
    */
   @Transactional
   public void createConsumerForSignup(ConsumerInfoForCreateRequestDto createRequestDto) {
-    consumerRepository.save(consumerMapper.toEntity(createRequestDto));
+
+    Consumer savedConsumer = consumerRepository.save(consumerMapper.toEntity(createRequestDto));
+    consumerKafkaProducer.send("issue-welcome-coupon", savedConsumer.getConsumerId());
   }
 
   /**
@@ -540,5 +545,15 @@ public class ConsumerService {
     return consumerRepository
         .findByConsumerId(consumerId)
         .orElseThrow(() -> new ConsumerNotFoundException(CustomErrMessage.NOT_FOUND_CONSUMER));
+  }
+
+  public void apply(Long consumerId) {
+
+    Long count = consumerCountRepository.increment();
+
+    if (count > 100) {
+      return;
+    }
+    consumerKafkaProducer.send("coupon-receipt", consumerId);
   }
 }

@@ -1,10 +1,8 @@
 package com.jeontongju.consumer.kafka;
 
-import com.jeontongju.consumer.exception.KafkaDuringOrderException;
 import com.jeontongju.consumer.mapper.PaymentsMapper;
 import com.jeontongju.consumer.service.ConsumerService;
 import com.jeontongju.consumer.service.HistoryService;
-import com.jeontongju.consumer.utils.CustomErrMessage;
 import io.github.bitbox.bitbox.dto.*;
 import io.github.bitbox.bitbox.enums.NotificationTypeEnum;
 import io.github.bitbox.bitbox.enums.RecipientTypeEnum;
