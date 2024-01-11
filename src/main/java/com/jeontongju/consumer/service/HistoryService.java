@@ -14,11 +14,9 @@ import com.jeontongju.consumer.repository.PointHistoryRepository;
 import com.jeontongju.consumer.utils.CustomErrMessage;
 import com.jeontongju.consumer.utils.PaginationManager;
 import io.github.bitbox.bitbox.dto.CreditUpdateDto;
-
+import io.github.bitbox.bitbox.enums.MemberRoleEnum;
 import java.time.LocalDateTime;
 import java.util.List;
-
-import io.github.bitbox.bitbox.enums.MemberRoleEnum;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.*;
 import org.springframework.stereotype.Service;
@@ -42,15 +40,18 @@ public class HistoryService {
   @Transactional
   public void addPointHistory(Consumer consumer, Long tradePoint, TradePathEnum tradePathEnum) {
 
-    PointHistory latestPointHistory =
+    List<PointHistory> latestPointHistories =
         pointHistoryRepository
             .findFirstByConsumerByCreatedAtDesc(
-                consumer, paginationManager.getPageableByCreatedAt(0, 1))
-            .get(0);
+                consumer, paginationManager.getPageableByCreatedAt(0, 1));
 
-    int dayOfMonth = LocalDateTime.now().getDayOfMonth();
-    long accPointBySubscriptionPerMonth =
-        dayOfMonth == 1 ? 0 : latestPointHistory.getPointAccBySubscription();
+    long accPointBySubscriptionPerMonth = 0;
+    if(!latestPointHistories.isEmpty()) {
+
+      int dayOfMonth = LocalDateTime.now().getDayOfMonth();
+      accPointBySubscriptionPerMonth =
+              dayOfMonth == 1 ? 0 : latestPointHistories.get(0).getPointAccBySubscription();
+    }
 
     if (tradePathEnum == TradePathEnum.YANGBAN_CONFIRMED && consumer.getIsRegularPayment()) {
       accPointBySubscriptionPerMonth += tradePoint;
