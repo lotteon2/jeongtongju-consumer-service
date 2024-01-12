@@ -219,7 +219,7 @@ public class ConsumerService {
       foundConsumer.consumePoint(foundConsumer.getPoint() - userPointUpdateDto.getPoint());
 
       historyService.addPointHistory(
-          foundConsumer, userPointUpdateDto.getPoint(), TradePathEnum.PURCHASE_USE);
+          foundConsumer, userPointUpdateDto.getPoint() * -1, TradePathEnum.PURCHASE_USE);
     }
   }
 
@@ -517,7 +517,7 @@ public class ConsumerService {
     int total = consumerIds.size();
 
     AgeDistributionForShowResponseDto ageDistributionDto =
-        AgeDistributionForShowResponseDto.builder().build();
+        consumerMapper.toInitAgeDistributionDto();
     for (Object[] row : result) {
       int ageGroup = (Integer) row[0];
       Long totalByAge = (Long) row[1];
