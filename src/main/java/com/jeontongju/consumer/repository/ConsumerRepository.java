@@ -16,4 +16,8 @@ public interface ConsumerRepository extends JpaRepository<Consumer, Long> {
   @Query(
       "SELECT FLOOR(c.age / 10) * 10 as ageGroup, COUNT(c) as total FROM Consumer c WHERE c.consumerId IN :consumerIds GROUP BY ageGroup")
   List<Object[]> findAgeGroupTotals(List<Long> consumerIds);
+
+  @Query(
+          "SELECT FLOOR(c.age / 10) * 10 as ageGroup, COUNT(c) as total FROM Consumer c GROUP BY ageGroup")
+  List<Object[]> findAgeGroupTotalsByAllMember();
 }
