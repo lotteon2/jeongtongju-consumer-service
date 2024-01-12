@@ -8,7 +8,6 @@ import com.jeontongju.consumer.dto.request.ProfileImageUrlForModifyRequestDto;
 import com.jeontongju.consumer.dto.response.*;
 import com.jeontongju.consumer.dto.response.ConsumerInfoForInquiryResponseDto;
 import com.jeontongju.consumer.dto.temp.*;
-import com.jeontongju.consumer.dto.temp.ConsumerInfoForAuctionResponse;
 import com.jeontongju.consumer.dto.temp.ConsumerInfoForCreateBySnsRequestDto;
 import com.jeontongju.consumer.exception.*;
 import com.jeontongju.consumer.feign.CouponClientService;
@@ -23,9 +22,12 @@ import com.jeontongju.consumer.repository.ConsumerRepository;
 import com.jeontongju.consumer.utils.CustomErrMessage;
 import com.jeontongju.consumer.utils.PaginationManager;
 import io.github.bitbox.bitbox.dto.*;
+import io.github.bitbox.bitbox.dto.AgeDistributionForShowResponseDto;
 import io.github.bitbox.bitbox.dto.ConsumerInfoForCreateRequestDto;
 import io.github.bitbox.bitbox.enums.MemberRoleEnum;
 import io.github.bitbox.bitbox.util.KafkaTopicNameInfo;
+
+import java.text.DecimalFormat;
 import java.time.LocalDateTime;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
@@ -345,10 +347,10 @@ public class ConsumerService {
    * @param consumerId 경매에 입장할 소비자 식별자
    * @return {ConsumerInfoForAuctionResponse} 경매에 필요한 소비자 개인 정보
    */
-  public ConsumerInfoForAuctionResponse getConsumerInfoForAuction(Long consumerId) {
+  public ConsumerInfoDto getConsumerInfoForAuction(Long consumerId) {
 
     Consumer foundConsumer = getConsumer(consumerId);
-    return ConsumerInfoForAuctionResponse.toDto(foundConsumer);
+    return consumerMapper.toConsumerInfoForAuction(foundConsumer);
   }
 
   /**
@@ -512,26 +514,66 @@ public class ConsumerService {
 
     List<Long> consumerIds = orderClientService.getConsumerOrderIdsBySellerId(memberId);
     List<Object[]> result = consumerRepository.findAgeGroupTotals(consumerIds);
+    int total = consumerIds.size();
 
     AgeDistributionForShowResponseDto ageDistributionDto =
         AgeDistributionForShowResponseDto.builder().build();
     for (Object[] row : result) {
       int ageGroup = (Integer) row[0];
-      Long total = (Long) row[1];
+      Long totalByAge = (Long) row[1];
       log.info("[ageGroup]: " + ageGroup);
       log.info("[total]: " + total);
 
+      DecimalFormat decimalFormat = new DecimalFormat("#.##");
+      double rate = ((double) totalByAge / total) * 100;
+      String formattedRate = decimalFormat.format(rate);
       if (ageGroup == 10) {
-        ageDistributionDto.assignTeenage(total);
+        ageDistributionDto.assignTeenage(Double.parseDouble(formattedRate));
       } else if (ageGroup == 20) {
-        ageDistributionDto.assignTwenty(total);
+        ageDistributionDto.assignTwenty(Double.parseDouble(formattedRate));
       } else if (ageGroup == 30) {
-        ageDistributionDto.assignThirty(total);
+        ageDistributionDto.assignThirty(Double.parseDouble(formattedRate));
       } else {
-        ageDistributionDto.assignFortyOver(total);
+        ageDistributionDto.assignFortyOver(Double.parseDouble(formattedRate));
       }
     }
 
+    return ageDistributionDto;
+  }
+
+  /**
+   * 모든 소비자의 연령 분포 가져오기
+   *
+   * @return {AgeDistributionForShowResponseDto} 각 연령대별 비율 정보
+   */
+  public AgeDistributionForShowResponseDto getAgeDistributionForAllMembers() {
+
+    AgeDistributionForShowResponseDto ageDistributionDto =
+        consumerMapper.toInitAgeDistributionDto();
+    List<Consumer> allConsumer = consumerRepository.findAll();
+    int total = allConsumer.size();
+
+    List<Object[]> result = consumerRepository.findAgeGroupTotalsByAllMember();
+
+    for (Object[] row : result) {
+      int ageGroup = (Integer) row[0];
+      Long totalByAge = (Long) row[1];
+      log.info("[ageGroup]: " + ageGroup);
+      log.info("[totalPerAge]: " + totalByAge);
+
+      DecimalFormat decimalFormat = new DecimalFormat("#.##");
+      double rate = ((double) totalByAge / total) * 100;
+      String formattedRate = decimalFormat.format(rate);
+      if (ageGroup == 10) {
+        ageDistributionDto.assignTeenage(Double.parseDouble(formattedRate));
+      } else if (ageGroup == 20) {
+        ageDistributionDto.assignTwenty(Double.parseDouble(formattedRate));
+      } else if (ageGroup == 30) {
+        ageDistributionDto.assignThirty(Double.parseDouble(formattedRate));
+      } else {
+        ageDistributionDto.assignFortyOver(Double.parseDouble(formattedRate));
+      }
+    }
     return ageDistributionDto;
   }
 

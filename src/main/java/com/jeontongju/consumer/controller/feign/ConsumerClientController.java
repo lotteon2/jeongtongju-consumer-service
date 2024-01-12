@@ -1,13 +1,12 @@
 package com.jeontongju.consumer.controller.feign;
 
 import com.jeontongju.consumer.dto.temp.*;
+import com.jeontongju.consumer.dto.temp.ConsumerInfoForCreateBySnsRequestDto;
+import com.jeontongju.consumer.dto.temp.FeignFormat;
 import com.jeontongju.consumer.service.AddressService;
 import com.jeontongju.consumer.service.ConsumerService;
-import io.github.bitbox.bitbox.dto.AddressDto;
+import io.github.bitbox.bitbox.dto.*;
 import io.github.bitbox.bitbox.dto.ConsumerInfoForCreateRequestDto;
-import io.github.bitbox.bitbox.dto.ImpAuthInfoForUpdateDto;
-import io.github.bitbox.bitbox.dto.OrderConfirmDto;
-import io.github.bitbox.bitbox.dto.UserPointUpdateDto;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
@@ -36,7 +35,8 @@ public class ConsumerClientController {
   }
 
   @PutMapping("/consumers/adult-certification")
-  public FeignFormat<Void> updateConsumerByAuth19(@RequestBody ImpAuthInfoForUpdateDto authInfoDto) {
+  public FeignFormat<Void> updateConsumerByAuth19(
+      @RequestBody ImpAuthInfoForUpdateDto authInfoDto) {
 
     consumerService.updateConsumerByAuth19(authInfoDto);
     return FeignFormat.<Void>builder().code(HttpStatus.OK.value()).build();
@@ -78,10 +78,10 @@ public class ConsumerClientController {
   }
 
   @GetMapping("/consumers/{consumerId}/auction")
-  public FeignFormat<ConsumerInfoForAuctionResponse> getConsumerInfoForAuction(
+  public FeignFormat<ConsumerInfoDto> getConsumerInfoForAuction(
       @PathVariable Long consumerId) {
 
-    return FeignFormat.<ConsumerInfoForAuctionResponse>builder()
+    return FeignFormat.<ConsumerInfoDto>builder()
         .code(HttpStatus.OK.value())
         .data(consumerService.getConsumerInfoForAuction(consumerId))
         .build();
@@ -111,6 +111,15 @@ public class ConsumerClientController {
     return FeignFormat.<Long>builder()
         .code(HttpStatus.OK.value())
         .data(consumerService.setAsidePointByOrderConfirm(orderConfirmDto))
+        .build();
+  }
+
+  @GetMapping("/consumers/age-distribution")
+  public FeignFormat<AgeDistributionForShowResponseDto> getAgeDistributionForAllMembers() {
+
+    return FeignFormat.<AgeDistributionForShowResponseDto>builder()
+        .code(HttpStatus.OK.value())
+        .data(consumerService.getAgeDistributionForAllMembers())
         .build();
   }
 }
