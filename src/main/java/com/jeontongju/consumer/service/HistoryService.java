@@ -55,10 +55,12 @@ public class HistoryService {
 
     if(consumer.getIsRegularPayment()) {
       if (tradePathEnum == TradePathEnum.YANGBAN_CONFIRMED) {
-        accPointBySubscriptionPerMonth += Math.floor(tradePoint * 0.01);
-      }else {
         accPointBySubscriptionPerMonth += Math.floor(tradePoint * 0.03);
       }
+    }
+
+    if(tradePathEnum == TradePathEnum.GENERAL_CONFIRMED) {
+      accPointBySubscriptionPerMonth += Math.floor(tradePoint * 0.01);
     }
 
     accPointBySubscriptionPerMonth += tradePoint;
