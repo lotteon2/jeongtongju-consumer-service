@@ -6,6 +6,8 @@ import com.jeontongju.consumer.dto.response.*;
 import com.jeontongju.consumer.dto.temp.ConsumerInfoForCreateBySnsRequestDto;
 import com.jeontongju.consumer.dto.temp.NameImageForInquiryResponseDto;
 import com.jeontongju.consumer.dto.temp.TradePathEnum;
+import io.github.bitbox.bitbox.dto.AgeDistributionForShowResponseDto;
+import io.github.bitbox.bitbox.dto.ConsumerInfoDto;
 import io.github.bitbox.bitbox.dto.ConsumerInfoForCreateRequestDto;
 import io.github.bitbox.bitbox.dto.ConsumerNameImageDto;
 import org.springframework.stereotype.Component;
@@ -142,5 +144,24 @@ public class ConsumerMapper {
   public AvailablePointsAtOrderResponseDto toAvailablePointsDto(long availablePoints) {
 
     return AvailablePointsAtOrderResponseDto.builder().availablePoints(availablePoints).build();
+  }
+
+  public AgeDistributionForShowResponseDto toInitAgeDistributionDto() {
+
+    return AgeDistributionForShowResponseDto.builder()
+        .teenage(0.0)
+        .twenty(0.0)
+        .thirty(0.0)
+        .fortyOver(0.0)
+        .build();
+  }
+
+  public ConsumerInfoDto toConsumerInfoForAuction(Consumer consumer) {
+
+    return ConsumerInfoDto.builder()
+        .memberNickname(consumer.getName())
+        .profileImage(consumer.getProfileImageUrl())
+        .credit(consumer.getAuctionCredit())
+        .build();
   }
 }
