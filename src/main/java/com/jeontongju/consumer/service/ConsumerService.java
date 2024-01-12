@@ -371,7 +371,7 @@ public class ConsumerService {
     }
 
     foundConsumer.assignAuctionCredit(foundConsumer.getAuctionCredit() - deductionCredit);
-    historyService.addCreditHistory(foundConsumer, deductionCredit, TradePathEnum.AUCTION_WON);
+    historyService.addCreditHistory(foundConsumer, deductionCredit * -1, TradePathEnum.AUCTION_WON);
   }
 
   /**
