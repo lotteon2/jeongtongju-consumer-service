@@ -340,8 +340,7 @@ public class ConsumerService {
     TradePathEnum tradePathEnum =
         pointUpdateDto.getPoint() == 300 ? TradePathEnum.TEXT_REVIEW : TradePathEnum.PHOTO_REVIEW;
 
-    historyService.addPointHistory(
-        foundConsumer, pointUpdateDto.getPoint(), tradePathEnum);
+    historyService.addPointHistory(foundConsumer, pointUpdateDto.getPoint(), tradePathEnum);
   }
 
   /**
@@ -494,12 +493,13 @@ public class ConsumerService {
       throw new NotAdminAccessDeniedException(CustomErrMessage.NOT_ADMIN_ACCESS_DENIED);
     }
 
-    List<Consumer> foundAllConsumers = consumerRepository.findAll();
+    Pageable pageable = paginationManager.getPageableByCreatedAt(page, size);
+
+    Page<Consumer> foundAllConsumers = consumerRepository.findAll(pageable);
     List<ConsumerDetailForSingleInquiryResponseDto> allConsumersDto =
         consumerMapper.toAllConsumersDto(foundAllConsumers);
 
-    Pageable pageable = paginationManager.getPageableByCreatedAt(page, size);
-    return paginationManager.wrapByPage(allConsumersDto, pageable, foundAllConsumers.size());
+    return paginationManager.wrapByPage(allConsumersDto, pageable, foundAllConsumers.getSize());
   }
 
   /**

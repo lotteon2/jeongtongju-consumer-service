@@ -10,10 +10,10 @@ import io.github.bitbox.bitbox.dto.AgeDistributionForShowResponseDto;
 import io.github.bitbox.bitbox.dto.ConsumerInfoDto;
 import io.github.bitbox.bitbox.dto.ConsumerInfoForCreateRequestDto;
 import io.github.bitbox.bitbox.dto.ConsumerNameImageDto;
-import org.springframework.stereotype.Component;
-
 import java.util.ArrayList;
 import java.util.List;
+import org.springframework.data.domain.Page;
+import org.springframework.stereotype.Component;
 
 @Component
 public class ConsumerMapper {
@@ -112,7 +112,7 @@ public class ConsumerMapper {
   }
 
   public List<ConsumerDetailForSingleInquiryResponseDto> toAllConsumersDto(
-      List<Consumer> consumers) {
+      Page<Consumer> consumers) {
 
     List<ConsumerDetailForSingleInquiryResponseDto> allConsumersDtos = new ArrayList<>();
     for (Consumer consumer : consumers) {
