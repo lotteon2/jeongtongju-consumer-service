@@ -53,9 +53,15 @@ public class HistoryService {
               dayOfMonth == 1 ? 0 : latestPointHistories.get(0).getPointAccBySubscription();
     }
 
-    if (tradePathEnum == TradePathEnum.YANGBAN_CONFIRMED && consumer.getIsRegularPayment()) {
-      accPointBySubscriptionPerMonth += tradePoint;
+    if(consumer.getIsRegularPayment()) {
+      if (tradePathEnum == TradePathEnum.YANGBAN_CONFIRMED) {
+        accPointBySubscriptionPerMonth += Math.floor(tradePoint * 0.01);
+      }else {
+        accPointBySubscriptionPerMonth += Math.floor(tradePoint * 0.03);
+      }
     }
+
+    accPointBySubscriptionPerMonth += tradePoint;
 
     pointHistoryRepository.save(
         historyMapper.toPointHistoryEntity(
