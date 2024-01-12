@@ -337,8 +337,11 @@ public class ConsumerService {
     Consumer foundConsumer = getConsumer(pointUpdateDto.getConsumerId());
     foundConsumer.assignPoint(foundConsumer.getPoint() + pointUpdateDto.getPoint());
 
+    TradePathEnum tradePathEnum =
+        pointUpdateDto.getPoint() == 300 ? TradePathEnum.TEXT_REVIEW : TradePathEnum.PHOTO_REVIEW;
+
     historyService.addPointHistory(
-        foundConsumer, pointUpdateDto.getPoint(), TradePathEnum.TEXT_REVIEW);
+        foundConsumer, pointUpdateDto.getPoint(), tradePathEnum);
   }
 
   /**

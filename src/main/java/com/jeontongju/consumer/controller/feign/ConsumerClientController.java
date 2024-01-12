@@ -96,7 +96,7 @@ public class ConsumerClientController {
         .build();
   }
 
-  @PatchMapping("/consumers/{consumerId}/credit/{deductionCredit}")
+  @PutMapping("/consumers/{consumerId}/credit/{deductionCredit}")
   public FeignFormat<Boolean> consumeCreditByBidding(
       @PathVariable Long consumerId, @PathVariable Long deductionCredit) {
 
