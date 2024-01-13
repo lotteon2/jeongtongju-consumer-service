@@ -596,6 +596,10 @@ public class ConsumerService {
 
   public void apply(Long consumerId) {
 
+    if(!couponClientService.prevCheck(consumerId)) {
+      return;
+    }
+
     Long count = consumerCountRepository.increment();
 
     if (count > 100) {
