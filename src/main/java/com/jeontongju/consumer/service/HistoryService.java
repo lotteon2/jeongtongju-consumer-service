@@ -109,12 +109,12 @@ public class HistoryService {
     Page<PointHistory> pagedHistories = null;
     if ("acc".equals(search)) {
       pagedHistories =
-          pointHistoryRepository.findByConsumerAndTradePointGreaterThan(consumer, 0L, pageable);
+          pointHistoryRepository.findByConsumerAndTradePointGreaterThanOrderByCreatedAtDesc(consumer, 0L, pageable);
     } else if ("use".equals(search)) {
       pagedHistories =
-          pointHistoryRepository.findByConsumerAndTradePointLessThan(consumer, 0L, pageable);
+          pointHistoryRepository.findByConsumerAndTradePointLessThanOrderByCreatedAtDesc(consumer, 0L, pageable);
     } else if (search == null) {
-      pagedHistories = pointHistoryRepository.findByConsumer(consumer, pageable);
+      pagedHistories = pointHistoryRepository.findByConsumerOrderByCreatedAtDesc(consumer, pageable);
     }
 
     List<PointTradeInfoForSingleInquiryResponseDto> histories =
@@ -188,12 +188,12 @@ public class HistoryService {
     Page<CreditHistory> creditHistoriesPaged = null;
     if ("charge".equals(search)) {
       creditHistoriesPaged =
-          creditHistoryRepository.findByConsumerAndTradeCreditGreaterThan(consumer, 0L, pageable);
+          creditHistoryRepository.findByConsumerAndTradeCreditGreaterThanOrderByCreatedAtDesc(consumer, 0L, pageable);
     } else if ("bid".equals(search)) {
       creditHistoriesPaged =
-          creditHistoryRepository.findByConsumerAndTradeCreditLessThan(consumer, 0L, pageable);
+          creditHistoryRepository.findByConsumerAndTradeCreditLessThanOrderByCreatedAtDesc(consumer, 0L, pageable);
     } else if (search == null) {
-      creditHistoriesPaged = creditHistoryRepository.findByConsumer(consumer, pageable);
+      creditHistoriesPaged = creditHistoryRepository.findByConsumerOrderByCreatedAtDesc(consumer, pageable);
     }
 
     List<CreditTradeInfoForSingleInquiryResponseDto> histories =

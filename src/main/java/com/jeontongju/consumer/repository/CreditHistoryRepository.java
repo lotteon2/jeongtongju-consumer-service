@@ -8,13 +8,16 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 public interface CreditHistoryRepository extends JpaRepository<CreditHistory, Long> {
+
   Page<CreditHistory> findByConsumer(Consumer consumer, Pageable pageable);
+
+  Page<CreditHistory> findByConsumerOrderByCreatedAtDesc(Consumer consumer, Pageable pageable);
 
   List<CreditHistory> findByConsumer(Consumer consumer);
 
-  Page<CreditHistory> findByConsumerAndTradeCreditGreaterThan(
+  Page<CreditHistory> findByConsumerAndTradeCreditGreaterThanOrderByCreatedAtDesc(
       Consumer consumer, Long tradeCredit, Pageable pageable);
 
-  Page<CreditHistory> findByConsumerAndTradeCreditLessThan(
+  Page<CreditHistory> findByConsumerAndTradeCreditLessThanOrderByCreatedAtDesc(
       Consumer consumer, long tradeCredit, Pageable pageable);
 }
