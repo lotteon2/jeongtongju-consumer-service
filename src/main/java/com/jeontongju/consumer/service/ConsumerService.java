@@ -499,7 +499,8 @@ public class ConsumerService {
     List<ConsumerDetailForSingleInquiryResponseDto> allConsumersDto =
         consumerMapper.toAllConsumersDto(foundAllConsumers);
 
-    return paginationManager.wrapByPage(allConsumersDto, pageable, foundAllConsumers.getSize());
+    return paginationManager.wrapByPage(
+        allConsumersDto, pageable, foundAllConsumers.getTotalPages());
   }
 
   /**
