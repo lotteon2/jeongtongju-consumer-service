@@ -8,7 +8,7 @@ import org.springframework.stereotype.Component;
 @Component
 public class PaginationManager<T> {
 
-  public Page<T> wrapByPage(List<T> histories, Pageable pageable, Integer totalSize) {
+  public Page<T> wrapByPage(List<T> histories, Pageable pageable, Long totalSize) {
 
     return new PageImpl<>(histories, pageable, totalSize);
   }

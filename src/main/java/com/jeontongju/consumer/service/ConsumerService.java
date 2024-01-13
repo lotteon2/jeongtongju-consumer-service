@@ -500,7 +500,7 @@ public class ConsumerService {
         consumerMapper.toAllConsumersDto(foundAllConsumers);
 
     return paginationManager.wrapByPage(
-        allConsumersDto, pageable, foundAllConsumers.getTotalPages());
+        allConsumersDto, pageable, foundAllConsumers.getTotalElements());
   }
 
   /**
