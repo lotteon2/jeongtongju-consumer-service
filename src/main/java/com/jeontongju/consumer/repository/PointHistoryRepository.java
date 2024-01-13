@@ -16,12 +16,14 @@ public interface PointHistoryRepository extends JpaRepository<PointHistory, Long
 
   Page<PointHistory> findByConsumer(Consumer consumer, Pageable pageable);
 
+  Page<PointHistory> findByConsumerOrderByCreatedAtDesc(Consumer consumer, Pageable pageable);
+
   List<PointHistory> findByConsumer(Consumer consumer);
 
-  Page<PointHistory> findByConsumerAndTradePointLessThan(
+  Page<PointHistory> findByConsumerAndTradePointLessThanOrderByCreatedAtDesc(
       Consumer consumer, Long tradePoint, Pageable pageable);
 
-  Page<PointHistory> findByConsumerAndTradePointGreaterThan(
+  Page<PointHistory> findByConsumerAndTradePointGreaterThanOrderByCreatedAtDesc(
       Consumer consumer, Long tradePoint, Pageable pageable);
 
   @Query(
