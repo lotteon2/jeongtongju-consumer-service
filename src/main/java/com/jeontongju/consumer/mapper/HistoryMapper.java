@@ -63,7 +63,8 @@ public class HistoryMapper {
         .build();
   }
 
-  public CreditHistory toCreditHistoryEntity(Consumer consumer, Long credit, TradePathEnum tradePathEnum) {
+  public CreditHistory toCreditHistoryEntity(
+      Consumer consumer, Long credit, TradePathEnum tradePathEnum) {
 
     return CreditHistory.builder()
         .tradeCredit(credit)
@@ -109,7 +110,7 @@ public class HistoryMapper {
       Page<PointTradeInfoForSingleInquiryResponseDto> pointHistoriesPaged,
       int page,
       int size,
-      int totalSize) {
+      long totalSize) {
 
     List<PointTradeInfoForAdminResponseDto> pointTradeResponseDtos = new ArrayList<>();
     for (PointTradeInfoForSingleInquiryResponseDto pointHistory : pointHistoriesPaged) {
@@ -145,6 +146,8 @@ public class HistoryMapper {
     }
 
     return paginationManager.wrapByPage(
-        creditTradeResponseDtos, paginationManager.getPageableByCreatedAt(page, size), totalSize);
+        creditTradeResponseDtos,
+        paginationManager.getPageableByCreatedAt(page, size),
+        creditHistoriesPaged.getTotalElements());
   }
 }

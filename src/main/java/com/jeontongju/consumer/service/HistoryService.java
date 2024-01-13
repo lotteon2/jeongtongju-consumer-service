@@ -41,16 +41,15 @@ public class HistoryService {
   public void addPointHistory(Consumer consumer, Long tradePoint, TradePathEnum tradePathEnum) {
 
     List<PointHistory> latestPointHistories =
-        pointHistoryRepository
-            .findFirstByConsumerByCreatedAtDesc(
-                consumer, paginationManager.getPageableByCreatedAt(0, 1));
+        pointHistoryRepository.findFirstByConsumerByCreatedAtDesc(
+            consumer, paginationManager.getPageableByCreatedAt(0, 1));
 
     long accPointBySubscriptionPerMonth = 0;
-    if(!latestPointHistories.isEmpty()) {
+    if (!latestPointHistories.isEmpty()) {
 
       int dayOfMonth = LocalDateTime.now().getDayOfMonth();
       accPointBySubscriptionPerMonth =
-              dayOfMonth == 1 ? 0 : latestPointHistories.get(0).getPointAccBySubscription();
+          dayOfMonth == 1 ? 0 : latestPointHistories.get(0).getPointAccBySubscription();
     }
 
     accPointBySubscriptionPerMonth += tradePoint;
@@ -121,8 +120,8 @@ public class HistoryService {
     List<PointTradeInfoForSingleInquiryResponseDto> histories =
         historyMapper.toPointHistoriesPagedResponseDto(pagedHistories);
 
-    int totalSize = pointHistoryRepository.findByConsumer(consumer).size();
-    return pointPaginationManager.wrapByPage(histories, pageable, totalSize);
+    return pointPaginationManager.wrapByPage(
+        histories, pageable, pagedHistories.getTotalElements());
   }
 
   /**
@@ -200,8 +199,8 @@ public class HistoryService {
     List<CreditTradeInfoForSingleInquiryResponseDto> histories =
         historyMapper.toCreditHistoriesPagedResponseDto(creditHistoriesPaged);
 
-    int totalSize = creditHistoryRepository.findByConsumer(consumer).size();
-    return creditPaginationManager.wrapByPage(histories, pageable, totalSize);
+    return creditPaginationManager.wrapByPage(
+        histories, pageable, creditHistoriesPaged.getTotalElements());
   }
 
   /**
@@ -259,13 +258,15 @@ public class HistoryService {
       throw new NotAdminAccessDeniedException(CustomErrMessage.NOT_ADMIN_ACCESS_DENIED);
     }
 
+    Pageable pageable = paginationManager.getPageableByCreatedAt(page, size);
     Consumer foundConsumer = getConsumer(consumerId);
-
+    Page<PointHistory> foundPointHistories =
+        pointHistoryRepository.findByConsumer(foundConsumer, pageable);
     return historyMapper.toPointHistoriesPagedForAdminResponseDto(
         getPointHistoriesPaged(foundConsumer, null, page, size),
         page,
         size,
-        foundConsumer.getPointHistoryList().size());
+        foundPointHistories.getTotalElements());
   }
 
   /**
