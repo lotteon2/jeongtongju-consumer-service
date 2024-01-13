@@ -17,4 +17,9 @@ public class CouponClientService {
 
     return couponServiceClient.getSubscriptionBenefit(consumerId).getData();
   }
+
+  public Boolean prevCheck(Long consumerId) {
+
+    return couponServiceClient.prevCheck(consumerId).getData();
+  }
 }

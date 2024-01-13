@@ -12,4 +12,7 @@ public interface CouponServiceClient {
   @GetMapping("/consumers/{consumerId}/coupons/benefit")
   FeignFormat<SubscriptionCouponBenefitForInquiryResponseDto> getSubscriptionBenefit(
       @PathVariable Long consumerId);
+
+  @GetMapping("/consumers/{consumerId}/promotion-coupon/prev-check")
+  FeignFormat<Boolean> prevCheck(@PathVariable Long consumerId);
 }
