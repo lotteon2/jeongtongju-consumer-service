@@ -62,6 +62,7 @@ public class ConsumerService {
 
   private static final Double POINT_ACC_RATE_NORMAL = 0.01;
   private static final Double POINT_ACC_RATE_YANGBAN = 0.03;
+  private static boolean isExhausted = false;
 
   /**
    * 소비자 회원 가입
@@ -596,6 +597,10 @@ public class ConsumerService {
 
   public void apply(Long consumerId) {
 
+    if(isExhausted) {
+      return;
+    }
+
     if(!couponClientService.prevCheck(consumerId)) {
       return;
     }
@@ -603,6 +608,7 @@ public class ConsumerService {
     Long count = consumerCountRepository.increment();
 
     if (count > 100) {
+      isExhausted = true;
       return;
     }
     consumerKafkaProducer.send("coupon-receipt", consumerId);
