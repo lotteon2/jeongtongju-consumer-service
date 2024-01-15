@@ -101,6 +101,7 @@ public class ConsumerService {
     Consumer foundConsumer = getConsumer(authInfoDto.getConsumerId());
     foundConsumer.assignName(authInfoDto.getName());
     foundConsumer.assignPhoneNumber(authInfoDto.getPhoneNumber());
+    foundConsumer.assignAge(authInfoDto.getAge());
   }
 
   /**
