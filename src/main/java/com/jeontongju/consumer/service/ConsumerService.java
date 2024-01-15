@@ -35,6 +35,8 @@ import lombok.extern.slf4j.Slf4j;
 import org.apache.kafka.common.KafkaException;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.redis.core.StringRedisTemplate;
+import org.springframework.data.redis.core.ValueOperations;
 import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -59,6 +61,7 @@ public class ConsumerService {
   private final OrderClientService orderClientService;
 
   private final KafkaTemplate<String, ConsumerRegularPaymentsCouponDto> kafkaTemplate;
+  private final StringRedisTemplate stringRedisTemplate;
 
   private static final Double POINT_ACC_RATE_NORMAL = 0.01;
   private static final Double POINT_ACC_RATE_YANGBAN = 0.03;
@@ -582,6 +585,32 @@ public class ConsumerService {
     return ageDistributionDto;
   }
 
+  public void initPromotionCouponSetting() {
+
+    isExhausted = false;
+    ValueOperations<String, String> valueOperations = stringRedisTemplate.opsForValue();
+    valueOperations.set("coupon_count", "0");
+  }
+
+  public void apply(Long consumerId) {
+
+    if (isExhausted) {
+      return;
+    }
+
+    if (!couponClientService.prevCheck(consumerId)) {
+      return;
+    }
+
+    Long count = consumerCountRepository.increment();
+
+    if (count > 100) {
+      isExhausted = true;
+      return;
+    }
+    consumerKafkaProducer.send("coupon-receipt", consumerId);
+  }
+
   /**
    * consumerId로 Consumer 찾기 (공통화)
    *
@@ -593,24 +622,5 @@ public class ConsumerService {
     return consumerRepository
         .findByConsumerId(consumerId)
         .orElseThrow(() -> new ConsumerNotFoundException(CustomErrMessage.NOT_FOUND_CONSUMER));
-  }
-
-  public void apply(Long consumerId) {
-
-    if(isExhausted) {
-      return;
-    }
-
-    if(!couponClientService.prevCheck(consumerId)) {
-      return;
-    }
-
-    Long count = consumerCountRepository.increment();
-
-    if (count > 100) {
-      isExhausted = true;
-      return;
-    }
-    consumerKafkaProducer.send("coupon-receipt", consumerId);
   }
 }
