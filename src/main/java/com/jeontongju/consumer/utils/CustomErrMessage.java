@@ -10,6 +10,9 @@ public interface CustomErrMessage {
   String NOT_FOUND_ADDRESS = "찾을 수 없는 주소지";
   String NOT_FOUND_DEFAULT_ADDRESS = "찾을 수 없는 기본 주소지";
   String UNSUBSCRIBED_CONSUMER = "구독하지 않은 소비자";
+  String ALREADY_RECEIVE_COUPON = "이미 수령한 쿠폰";
+  String EXHAUSTED_COUPON = "쿠폰 소진";
+  String NOT_OPEN_PROMOTION_COUPON_EVENT = "프로모션 쿠폰 이벤트 시각 미오픈";
   String NOT_ADMIN_ACCESS_DENIED = "관리자만 접근 허용";
   String NOT_SELLER_ACCESS_DENIED = "셀러만 접근 허용";
 }

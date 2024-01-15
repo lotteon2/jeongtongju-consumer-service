@@ -1,5 +1,6 @@
 package com.jeontongju.consumer.feign;
 
+import com.jeontongju.consumer.dto.response.CurCouponStatusForReceiveResponseDto;
 import com.jeontongju.consumer.dto.temp.FeignFormat;
 import io.github.bitbox.bitbox.dto.SubscriptionCouponBenefitForInquiryResponseDto;
 import org.springframework.cloud.openfeign.FeignClient;
@@ -14,5 +15,5 @@ public interface CouponServiceClient {
       @PathVariable Long consumerId);
 
   @GetMapping("/consumers/{consumerId}/promotion-coupon/prev-check")
-  FeignFormat<Boolean> prevCheck(@PathVariable Long consumerId);
+  FeignFormat<CurCouponStatusForReceiveResponseDto> prevCheck(@PathVariable Long consumerId);
 }
