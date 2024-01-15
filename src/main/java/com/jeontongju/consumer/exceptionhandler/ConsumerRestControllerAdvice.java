@@ -1,8 +1,9 @@
 package com.jeontongju.consumer.exceptionhandler;
 
 import com.jeontongju.consumer.dto.ErrorFormat;
-import com.jeontongju.consumer.exception.KafkaDuringOrderException;
-import com.jeontongju.consumer.exception.UnsubscribedConsumerException;
+import com.jeontongju.consumer.dto.response.CurCouponStatusForReceiveResponseDto;
+import com.jeontongju.consumer.exception.*;
+import com.jeontongju.consumer.mapper.ConsumerMapper;
 import com.jeontongju.consumer.utils.CustomErrMessage;
 import io.github.bitbox.bitbox.dto.ResponseFormat;
 import lombok.RequiredArgsConstructor;
@@ -18,6 +19,8 @@ import org.springframework.web.servlet.mvc.method.annotation.ResponseEntityExcep
 @RestControllerAdvice
 @RequiredArgsConstructor
 public class ConsumerRestControllerAdvice extends ResponseEntityExceptionHandler {
+
+  private final ConsumerMapper consumerMapper;
 
   @Override
   protected ResponseEntity<Object> handleMethodArgumentNotValid(
@@ -63,6 +66,42 @@ public class ConsumerRestControllerAdvice extends ResponseEntityExceptionHandler
                 .code(status.value())
                 .message(status.name())
                 .detail(CustomErrMessage.ERROR_KAFKA)
+                .build());
+  }
+
+  @ExceptionHandler(NotOpenPromotionCouponEventException.class)
+  public ResponseEntity<ResponseFormat<CurCouponStatusForReceiveResponseDto>>
+      handleNotOpenPromotionCouponEvent() {
+
+    return ResponseEntity.ok()
+        .body(
+            ResponseFormat.<CurCouponStatusForReceiveResponseDto>builder()
+                .code(HttpStatus.OK.value())
+                .data(consumerMapper.toCurCouponStatusDto(false, false, false))
+                .build());
+  }
+
+  @ExceptionHandler(CouponExhaustedException.class)
+  public ResponseEntity<ResponseFormat<CurCouponStatusForReceiveResponseDto>>
+      handleCouponExhausted() {
+
+    return ResponseEntity.ok()
+        .body(
+            ResponseFormat.<CurCouponStatusForReceiveResponseDto>builder()
+                .code(HttpStatus.OK.value())
+                .data(consumerMapper.toCurCouponStatusDto(true, true, false))
+                .build());
+  }
+
+  @ExceptionHandler(AlreadyReceivePromotionCouponException.class)
+  public ResponseEntity<ResponseFormat<CurCouponStatusForReceiveResponseDto>>
+      handleAlreadyReceivePromotionCoupon() {
+
+    return ResponseEntity.ok()
+        .body(
+            ResponseFormat.<CurCouponStatusForReceiveResponseDto>builder()
+                .code(HttpStatus.OK.value())
+                .data(consumerMapper.toCurCouponStatusDto(false, true, true))
                 .build());
   }
 }
