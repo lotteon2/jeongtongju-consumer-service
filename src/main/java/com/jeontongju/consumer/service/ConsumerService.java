@@ -565,6 +565,8 @@ public class ConsumerService {
     List<Object[]> result = consumerRepository.findAgeGroupTotalsByAllMember();
 
     for (Object[] row : result) {
+
+      if(row[0] == null) continue;
       int ageGroup = (Integer) row[0];
       Long totalByAge = (Long) row[1];
       log.info("[ageGroup]: " + ageGroup);
