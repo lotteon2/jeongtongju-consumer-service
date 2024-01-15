@@ -119,4 +119,8 @@ public class Consumer extends BaseEntity {
   public void delete() {
     this.isDeleted = true;
   }
+
+  public void assignAge(Integer age) {
+    this.age = age;
+  }
 }
