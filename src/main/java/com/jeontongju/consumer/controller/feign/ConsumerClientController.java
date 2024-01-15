@@ -26,6 +26,13 @@ public class ConsumerClientController {
     return FeignFormat.<Void>builder().code(HttpStatus.OK.value()).build();
   }
 
+  @PutMapping("/consumers/{consumerId}/withdrawal")
+  public FeignFormat<Void> delete(@PathVariable Long consumerId) {
+
+    consumerService.delete(consumerId);
+    return FeignFormat.<Void>builder().code(HttpStatus.OK.value()).build();
+  }
+
   @PutMapping("/consumers/account-consolidation")
   public FeignFormat<Void> updateConsumerForAccountConsolidation(
       @RequestBody ConsumerInfoForAccountConsolidationDto accountConsolidationDto) {
@@ -78,8 +85,7 @@ public class ConsumerClientController {
   }
 
   @GetMapping("/consumers/{consumerId}/auction")
-  public FeignFormat<ConsumerInfoDto> getConsumerInfoForAuction(
-      @PathVariable Long consumerId) {
+  public FeignFormat<ConsumerInfoDto> getConsumerInfoForAuction(@PathVariable Long consumerId) {
 
     return FeignFormat.<ConsumerInfoDto>builder()
         .code(HttpStatus.OK.value())

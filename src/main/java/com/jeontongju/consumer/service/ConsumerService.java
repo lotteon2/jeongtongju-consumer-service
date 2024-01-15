@@ -622,6 +622,13 @@ public class ConsumerService {
     consumerKafkaProducer.send("coupon-receipt", consumerId);
   }
 
+  @Transactional
+  public void delete(Long consumerId) {
+
+    Consumer foundConsumer = getConsumer(consumerId);
+    foundConsumer.delete();
+  }
+
   /**
    * consumerId로 Consumer 찾기 (공통화)
    *
