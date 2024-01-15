@@ -1,5 +1,6 @@
 package com.jeontongju.consumer.feign;
 
+import com.jeontongju.consumer.dto.response.CurCouponStatusForReceiveResponseDto;
 import io.github.bitbox.bitbox.dto.SubscriptionCouponBenefitForInquiryResponseDto;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -18,7 +19,7 @@ public class CouponClientService {
     return couponServiceClient.getSubscriptionBenefit(consumerId).getData();
   }
 
-  public Boolean prevCheck(Long consumerId) {
+  public CurCouponStatusForReceiveResponseDto prevCheck(Long consumerId) {
 
     return couponServiceClient.prevCheck(consumerId).getData();
   }

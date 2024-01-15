@@ -598,8 +598,19 @@ public class ConsumerService {
       return;
     }
 
-    if (!couponClientService.prevCheck(consumerId)) {
-      return;
+    CurCouponStatusForReceiveResponseDto curCouponStatusDto =
+        couponClientService.prevCheck(consumerId);
+    if (curCouponStatusDto.getIsDuplicated()) {
+      throw new AlreadyReceivePromotionCouponException(CustomErrMessage.ALREADY_RECEIVE_COUPON);
+    }
+
+    if (curCouponStatusDto.getIsSoldOut()) {
+      throw new CouponExhaustedException(CustomErrMessage.EXHAUSTED_COUPON);
+    }
+
+    if (!curCouponStatusDto.getIsOpen()) {
+      throw new NotOpenPromotionCouponEventException(
+          CustomErrMessage.NOT_OPEN_PROMOTION_COUPON_EVENT);
     }
 
     Long count = consumerCountRepository.increment();

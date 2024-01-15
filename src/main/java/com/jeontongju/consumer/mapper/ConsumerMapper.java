@@ -164,4 +164,14 @@ public class ConsumerMapper {
         .credit(consumer.getAuctionCredit())
         .build();
   }
+
+  public CurCouponStatusForReceiveResponseDto toCurCouponStatusDto(
+      boolean isSoldOut, boolean isOpen, boolean isDuplicated) {
+
+    return CurCouponStatusForReceiveResponseDto.builder()
+        .isSoldOut(isSoldOut)
+        .isOpen(isOpen)
+        .isDuplicated(isDuplicated)
+        .build();
+  }
 }
