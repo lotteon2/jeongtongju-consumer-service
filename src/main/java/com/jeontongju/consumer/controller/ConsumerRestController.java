@@ -195,7 +195,7 @@ public class ConsumerRestController {
   }
 
   @PostMapping("/consumers/coupons")
-  public ResponseEntity<ResponseFormat<Void>> receivePromotionCoupon(@PathVariable Long memberId) {
+  public ResponseEntity<ResponseFormat<Void>> receivePromotionCoupon(@RequestHeader Long memberId) {
 
     consumerService.apply(memberId);
     return ResponseEntity.ok()
