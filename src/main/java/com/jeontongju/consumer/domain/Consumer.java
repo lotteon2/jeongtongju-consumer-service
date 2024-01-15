@@ -51,6 +51,10 @@ public class Consumer extends BaseEntity {
   @Builder.Default
   private Boolean isAdult = false;
 
+  @Column(name = "is_deleted", nullable = false)
+  @Builder.Default
+  private Boolean isDeleted = false;
+
   @Column(name = "is_regular_payment", nullable = false)
   @Builder.Default
   private Boolean isRegularPayment = false;
@@ -110,5 +114,9 @@ public class Consumer extends BaseEntity {
 
   public void approveAdult() {
     this.isAdult = true;
+  }
+
+  public void delete() {
+    this.isDeleted = true;
   }
 }
