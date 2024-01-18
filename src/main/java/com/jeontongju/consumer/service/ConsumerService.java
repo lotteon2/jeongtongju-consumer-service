@@ -625,6 +625,8 @@ public class ConsumerService {
 
   public void undo() {
     isExhausted = false;
+    ValueOperations<String, String> valueOperations = stringRedisTemplate.opsForValue();
+    valueOperations.set("coupon_count", "0");
   }
 
   @Transactional
