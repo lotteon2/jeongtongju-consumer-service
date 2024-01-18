@@ -598,20 +598,20 @@ public class ConsumerService {
     }
 
     // 쿠폰 수령 조건 확인
-    CurCouponStatusForReceiveResponseDto curCouponStatusDto =
-        couponClientService.prevCheck(consumerId);
-    if (curCouponStatusDto.getIsDuplicated()) {
-      throw new AlreadyReceivePromotionCouponException(CustomErrMessage.ALREADY_RECEIVE_COUPON);
-    }
-
-    if (curCouponStatusDto.getIsSoldOut()) {
-      throw new CouponExhaustedException(CustomErrMessage.EXHAUSTED_COUPON);
-    }
-
-    if (!curCouponStatusDto.getIsOpen()) {
-      throw new NotOpenPromotionCouponEventException(
-          CustomErrMessage.NOT_OPEN_PROMOTION_COUPON_EVENT);
-    }
+//    CurCouponStatusForReceiveResponseDto curCouponStatusDto =
+//        couponClientService.prevCheck(consumerId);
+//    if (curCouponStatusDto.getIsDuplicated()) {
+//      throw new AlreadyReceivePromotionCouponException(CustomErrMessage.ALREADY_RECEIVE_COUPON);
+//    }
+//
+//    if (curCouponStatusDto.getIsSoldOut()) {
+//      throw new CouponExhaustedException(CustomErrMessage.EXHAUSTED_COUPON);
+//    }
+//
+//    if (!curCouponStatusDto.getIsOpen()) {
+//      throw new NotOpenPromotionCouponEventException(
+//          CustomErrMessage.NOT_OPEN_PROMOTION_COUPON_EVENT);
+//    }
 
     // 100개 개수 세기, Redis Incr
     Long count = consumerCountRepository.increment();
