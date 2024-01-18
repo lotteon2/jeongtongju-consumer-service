@@ -530,8 +530,6 @@ public class ConsumerService {
     for (Object[] row : result) {
       int ageGroup = (Integer) row[0];
       Long totalByAge = (Long) row[1];
-      log.info("[ageGroup]: " + ageGroup);
-      log.info("[total]: " + total);
 
       DecimalFormat decimalFormat = new DecimalFormat("#.##");
       double rate = ((double) totalByAge / total) * 100;
@@ -569,8 +567,6 @@ public class ConsumerService {
       if(row[0] == null) continue;
       int ageGroup = (Integer) row[0];
       Long totalByAge = (Long) row[1];
-      log.info("[ageGroup]: " + ageGroup);
-      log.info("[totalPerAge]: " + totalByAge);
 
       DecimalFormat decimalFormat = new DecimalFormat("#.##");
       double rate = ((double) totalByAge / total) * 100;
@@ -601,6 +597,7 @@ public class ConsumerService {
       return;
     }
 
+    // 쿠폰 수령 조건 확인
     CurCouponStatusForReceiveResponseDto curCouponStatusDto =
         couponClientService.prevCheck(consumerId);
     if (curCouponStatusDto.getIsDuplicated()) {
@@ -616,6 +613,7 @@ public class ConsumerService {
           CustomErrMessage.NOT_OPEN_PROMOTION_COUPON_EVENT);
     }
 
+    // 100개 개수 세기, Redis Incr
     Long count = consumerCountRepository.increment();
 
     if (count > 100) {
@@ -623,6 +621,10 @@ public class ConsumerService {
       return;
     }
     consumerKafkaProducer.send("coupon-receipt", consumerId);
+  }
+
+  public void undo() {
+    isExhausted = false;
   }
 
   @Transactional
