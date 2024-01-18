@@ -564,7 +564,7 @@ public class ConsumerService {
 
     for (Object[] row : result) {
 
-      if(row[0] == null) continue;
+      if (row[0] == null) continue;
       int ageGroup = (Integer) row[0];
       Long totalByAge = (Long) row[1];
 
@@ -645,5 +645,9 @@ public class ConsumerService {
     return consumerRepository
         .findByConsumerId(consumerId)
         .orElseThrow(() -> new ConsumerNotFoundException(CustomErrMessage.NOT_FOUND_CONSUMER));
+  }
+
+  public Boolean getCouponSetting() {
+    return isExhausted;
   }
 }
