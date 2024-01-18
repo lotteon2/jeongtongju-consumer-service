@@ -199,12 +199,12 @@ public class ConsumerRestController {
 
     consumerService.apply(memberId);
     return ResponseEntity.ok()
-            .body(
-                    ResponseFormat.<Void>builder()
-                            .code(HttpStatus.OK.value())
-                            .message(HttpStatus.OK.name())
-                            .detail("쿠폰 수령 성공")
-                            .build());
+        .body(
+            ResponseFormat.<Void>builder()
+                .code(HttpStatus.OK.value())
+                .message(HttpStatus.OK.name())
+                .detail("쿠폰 수령 성공")
+                .build());
   }
 
   @PatchMapping("/coupons/test/{memberId}")
@@ -217,6 +217,18 @@ public class ConsumerRestController {
                 .code(HttpStatus.OK.value())
                 .message(HttpStatus.OK.name())
                 .detail("[테스트] 쿠폰 수령 성공")
+                .build());
+  }
+
+  @PatchMapping("/coupons/test/reset")
+  public ResponseEntity<ResponseFormat<Void>> undoCouponSetting() {
+
+    consumerService.undo();
+    return ResponseEntity.ok()
+        .body(
+            ResponseFormat.<Void>builder()
+                .code(HttpStatus.OK.value())
+                .message(HttpStatus.OK.name())
                 .build());
   }
 }
