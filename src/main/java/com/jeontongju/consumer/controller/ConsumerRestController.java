@@ -231,4 +231,16 @@ public class ConsumerRestController {
                 .message(HttpStatus.OK.name())
                 .build());
   }
+
+  @GetMapping("/coupon/test/reset")
+  public ResponseEntity<ResponseFormat<Boolean>> getCouponSetting() {
+
+    return ResponseEntity.ok()
+        .body(
+            ResponseFormat.<Boolean>builder()
+                .code(HttpStatus.OK.value())
+                .message(HttpStatus.OK.name())
+                .data(consumerService.getCouponSetting())
+                .build());
+  }
 }
