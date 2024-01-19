@@ -1,5 +1,6 @@
 package com.jeontongju.consumer.controller.feign;
 
+import com.jeontongju.consumer.dto.FCMTokenDto;
 import com.jeontongju.consumer.dto.temp.*;
 import com.jeontongju.consumer.dto.temp.ConsumerInfoForCreateBySnsRequestDto;
 import com.jeontongju.consumer.dto.temp.FeignFormat;
@@ -126,6 +127,15 @@ public class ConsumerClientController {
     return FeignFormat.<AgeDistributionForShowResponseDto>builder()
         .code(HttpStatus.OK.value())
         .data(consumerService.getAgeDistributionForAllMembers())
+        .build();
+  }
+
+  @GetMapping("/consumers/{consumerId}/fcm-token")
+  public FeignFormat<FCMTokenDto> getConsumerFCMToken(@PathVariable Long consumerId) {
+
+    return FeignFormat.<FCMTokenDto>builder()
+        .code(HttpStatus.OK.value())
+        .data(consumerService.getConsumerFCMToken(consumerId))
         .build();
   }
 }
