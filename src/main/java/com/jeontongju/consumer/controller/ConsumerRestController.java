@@ -1,5 +1,6 @@
 package com.jeontongju.consumer.controller;
 
+import com.jeontongju.consumer.dto.request.FCMTokenForMessagingDto;
 import com.jeontongju.consumer.dto.request.OrderPriceForCheckValidRequestDto;
 import com.jeontongju.consumer.dto.request.ProfileImageUrlForModifyRequestDto;
 import com.jeontongju.consumer.dto.response.*;
@@ -191,6 +192,18 @@ public class ConsumerRestController {
                 .message(HttpStatus.OK.name())
                 .detail("셀러별, 상품 구매한 소비자 연령 분포 조회 성공")
                 .data(consumerService.getAgeDistribution(memberId, memberRole))
+                .build());
+  }
+
+  @PatchMapping("/fcm-token")
+  public ResponseEntity<ResponseFormat<Void>> saveFCMToken(@RequestHeader Long memberId, @RequestBody FCMTokenForMessagingDto fcmTokenDto) {
+
+    consumerService.saveFCMToken(memberId, fcmTokenDto);
+    return ResponseEntity.ok()
+        .body(
+            ResponseFormat.<Void>builder()
+                .code(HttpStatus.OK.value())
+                .message(HttpStatus.OK.name())
                 .build());
   }
 

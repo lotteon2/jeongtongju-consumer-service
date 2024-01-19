@@ -3,6 +3,8 @@ package com.jeontongju.consumer.service;
 import com.jeontongju.consumer.domain.Consumer;
 import com.jeontongju.consumer.domain.PointHistory;
 import com.jeontongju.consumer.domain.Subscription;
+import com.jeontongju.consumer.dto.FCMTokenDto;
+import com.jeontongju.consumer.dto.request.FCMTokenForMessagingDto;
 import com.jeontongju.consumer.dto.request.OrderPriceForCheckValidRequestDto;
 import com.jeontongju.consumer.dto.request.ProfileImageUrlForModifyRequestDto;
 import com.jeontongju.consumer.dto.response.*;
@@ -634,6 +636,19 @@ public class ConsumerService {
 
     Consumer foundConsumer = getConsumer(consumerId);
     foundConsumer.delete();
+  }
+
+  @Transactional
+  public void saveFCMToken(Long consumerId, FCMTokenForMessagingDto fcmTokenDto) {
+
+    Consumer foundConsumer = getConsumer(consumerId);
+    foundConsumer.assignFCMToken(fcmTokenDto.getFcmToken());
+  }
+
+  public FCMTokenDto getConsumerFCMToken(Long consumerId) {
+
+    Consumer foundConsumer = getConsumer(consumerId);
+    return FCMTokenDto.builder().fcmToken(foundConsumer.getFcmToken()).build();
   }
 
   /**

@@ -63,6 +63,9 @@ public class Consumer extends BaseEntity {
   @Builder.Default
   private Boolean isPaymentReservation = false;
 
+  @Column(name = "fcm_token")
+  private String fcmToken;
+
   @OneToMany(mappedBy = "consumer")
   private List<Address> addressList;
 
@@ -122,5 +125,9 @@ public class Consumer extends BaseEntity {
 
   public void assignAge(Integer age) {
     this.age = age;
+  }
+
+  public void assignFCMToken(String fcmToken) {
+    this.fcmToken = fcmToken;
   }
 }
